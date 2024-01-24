@@ -78,11 +78,12 @@ class CWRU():
         #self.url = "http://csegroups.case.edu/sites/default/files/bearingdatacenter/files/Datafiles/"
         self.url = "https://engineering.case.edu/sites/default/files/"
         self.n_folds = 4
-        self.sample_size = 2048
+        self.sample_size = 4096
         self.n_samples_acquisition = 30
         self.bearing_names_file = bearing_names_file
         self.bearing_labels, self.bearing_names = self.get_cwru_bearings()
-        self.signal_data = np.empty((0, 2, self.sample_size))
+        self.accelerometers = ['DE', 'FE'] #, 'BA']
+        self.signal_data = np.empty((0, self.sample_size, len(self.accelerometers)))
         self.labels = []
         self.keys = []
 
@@ -129,11 +130,11 @@ class CWRU():
         Extracts the acquisitions of each file in the dictionary files_names.
         """
         cwd = os.getcwd()
-        for key in self.files:
+        for x, key in enumerate(self.files):
             matlab_file = scipy.io.loadmat(os.path.join(cwd, self.files[key]))
             acquisition = []
-            print(key, self.files[key])
-            for position in ['DE', 'FE']:#, 'BA']:
+            print('\r', f" loading acquisitions {100*(x+1)/len(self.files):.2f} %", end='')
+            for position in self.accelerometers:
                 file_number = self.files[key][len(self.rawfilesdir)+1:-4]
                 keys = [key for key in matlab_file if key.endswith(file_number+ "_" + position + "_time")]
                 for i, array_key in enumerate(keys):
@@ -141,9 +142,10 @@ class CWRU():
             acquisition = np.array(acquisition)
             for i in range(acquisition.shape[1]//self.sample_size):
                 sample = acquisition[:,(i * self.sample_size):((i + 1) * self.sample_size)]
-                self.signal_data = np.append(self.signal_data, np.array([sample]), axis=0)
+                self.signal_data = np.append(self.signal_data, np.array([sample.T]), axis=0)
                 self.labels = np.append(self.labels, key[0])
                 self.keys = np.append(self.keys, key)
+        print()
         #print(self.signal_data)
         #print(self.labels)
         #print(self.keys)
@@ -199,7 +201,7 @@ class CWRU():
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 
 if __name__ == "__main__":
-    dataset = CWRU(bearing_names_file="cwru_bearings.csv")
+    dataset = CWRU(bearing_names_file="cwru_bearings_dbg.csv")
     # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
