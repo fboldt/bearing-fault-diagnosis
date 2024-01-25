@@ -146,10 +146,11 @@ class CWRU():
                 self.labels = np.append(self.labels, key[0])
                 self.keys = np.append(self.keys, key)
         print()
-        #print(self.signal_data)
-        #print(self.labels)
-        #print(self.keys)
-
+    
+    def get_acquisitions(self):
+        if len(self.labels) == 0:
+            self.load_acquisitions()
+        return self.signal_data, self.labels
 
     def kfold(self):
         if len(self.signal_data) == 0:

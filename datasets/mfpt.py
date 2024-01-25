@@ -165,6 +165,11 @@ class MFPT():
                 self.signal_data = np.append(self.signal_data, sample, axis=0)
                 self.labels = np.append(self.labels, key[0])
                 self.keys = np.append(self.keys, key)
+        
+    def get_acquisitions(self):
+        if len(self.labels) == 0:
+            self.load_acquisitions()
+        return self.signal_data, self.labels
 
     def kfold(self):
         if len(self.signal_data) == 0:
