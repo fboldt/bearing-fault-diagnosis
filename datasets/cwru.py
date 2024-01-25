@@ -78,7 +78,7 @@ class CWRU():
         #self.url = "http://csegroups.case.edu/sites/default/files/bearingdatacenter/files/Datafiles/"
         self.url = "https://engineering.case.edu/sites/default/files/"
         self.n_folds = 4
-        self.sample_size = 4096
+        self.sample_size = 2048
         self.n_samples_acquisition = 30
         self.bearing_names_file = bearing_names_file
         self.bearing_labels, self.bearing_names = self.get_cwru_bearings()

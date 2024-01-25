@@ -92,9 +92,10 @@ class MFPT():
         self.url="https://mfpt.org/wp-content/uploads/2020/02/MFPT-Fault-Data-Sets-20200227T131140Z-001.zip"
         self.n_folds = 5
         #self.sample_size = 8192
+        self.n_channels = 2
         self.sample_size = 4096
         self.n_samples_acquisition = 100  # used for FaultNet
-        self.signal_data = np.empty((0, self.sample_size, 1))
+        self.signal_data = np.empty((0, self.sample_size // self.n_channels, self.n_channels))
         self.labels = []
         self.keys = []
         """
@@ -160,7 +161,7 @@ class MFPT():
             vibration_data = np.array([ elem for singleList in vibration_data_raw for elem in singleList])
             for i in range(len(vibration_data)//self.sample_size):
                 sample = vibration_data[(i * self.sample_size):((i + 1) * self.sample_size)]
-                sample = np.array([sample]).reshape(1, -1, 1)
+                sample = np.array([sample]).reshape(1, -1, 2)
                 self.signal_data = np.append(self.signal_data, sample, axis=0)
                 self.labels = np.append(self.labels, key[0])
                 self.keys = np.append(self.keys, key)
