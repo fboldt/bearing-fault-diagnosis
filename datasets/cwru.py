@@ -110,7 +110,6 @@ class CWRU():
 
     def __init__(self, sample_size=2048, n_channels=2):
         self.rawfilesdir = "cwru_raw"
-        #self.url = "http://csegroups.case.edu/sites/default/files/bearingdatacenter/files/Datafiles/"
         self.url = "https://engineering.case.edu/sites/default/files/"
         self.n_folds = 4
         self.sample_size = sample_size
