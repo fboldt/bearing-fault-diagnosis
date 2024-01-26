@@ -6,7 +6,7 @@ import urllib.request
 import scipy.io
 import numpy as np
 import os
-from sklearn.model_selection import KFold, StratifiedShuffleSplit, GroupShuffleSplit
+from sklearn.model_selection import KFold, StratifiedShuffleSplit, StratifiedGroupKFold
 import shutil
 import zipfile
 import sys
@@ -90,7 +90,7 @@ class MFPT():
     def __init__(self, sample_size=2048, n_channels=2):
         self.rawfilesdir = "raw_mfpt"
         self.url="https://mfpt.org/wp-content/uploads/2020/02/MFPT-Fault-Data-Sets-20200227T131140Z-001.zip"
-        self.n_folds = 5
+        self.n_folds = 3
         self.n_channels = n_channels
         self.sample_size = sample_size
         self.signal_data = np.empty((0, self.sample_size, self.n_channels))
@@ -190,7 +190,7 @@ class MFPT():
         groups = []
         for i in self.keys:
             groups = np.append(groups, i)
-        kf = GroupShuffleSplit(n_splits=self.n_folds)
+        kf = StratifiedGroupKFold(n_splits=self.n_folds)
         for train, test in kf.split(self.signal_data, self.labels, groups):
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 

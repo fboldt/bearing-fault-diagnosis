@@ -6,7 +6,7 @@ import urllib.request
 import scipy.io
 import numpy as np
 import os
-from sklearn.model_selection import KFold, StratifiedShuffleSplit, GroupShuffleSplit
+from sklearn.model_selection import KFold, StratifiedShuffleSplit, GroupShuffleSplit, StratifiedGroupKFold
 import urllib
 import sys
 
@@ -45,13 +45,15 @@ list_of_bearings = [
     ]
 
 list_of_bearings_dbg = [
-    ("N.000.NN_0","97.mat"),        ("I.007.DE_1","106.mat"),       ("B.007.DE_2","120.mat"),       ("O.007.DE.@6_3","133.mat"),    
-    ("O.007.DE.@3_0","144.mat"),    ("O.007.DE.@12_1","158.mat"),   ("I.014.DE_2","171.mat"),       ("B.014.DE_3","188.mat"),    
-    ("O.014.DE.@6_0","197.mat"),    ("B.021.DE_1","223.mat"),       ("I.021.FE_2","272.mat"),       ("I.014.FE_3","277.mat"),    
-    ("B.007.FE_0","282.mat"),       ("I.021.DE_1","210.mat"),       ("O.021.DE.@6_2","236.mat"),    ("O.021.DE.@3_3","249.mat"),    
-    ("O.021.DE.@12_0","258.mat"),   ("I.007.FE_1","279.mat"),       ("B.014.FE_2","288.mat"),       ("B.021.FE_3","293.mat"),    
-    ("O.007.FE.@6_0","294.mat"),    ("O.021.FE.@3_1","316.mat"),    ("I.028.DE_2","3003.mat"),      ("B.028.DE_3","3008.mat"),
-    ]
+    ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
+    ("I.007.DE_0","105.mat"),       ("B.007.DE_1","119.mat"),       ("O.007.DE.@6_2","132.mat"),    ("O.007.DE.@3_3","147.mat"),    
+    ("O.007.DE.@12_0","156.mat"),   ("I.014.DE_1","170.mat"),       ("B.014.DE_2","187.mat"),       ("O.014.DE.@6_3","200.mat"),    
+    ("B.021.DE_0","222.mat"),       ("I.021.FE_1","271.mat"),       ("I.014.FE_2","276.mat"),       ("B.007.FE_3","285.mat"),    
+    ("I.021.DE_0","209.mat"),       ("O.021.DE.@6_1","235.mat"),    ("O.021.DE.@3_2","248.mat"),    ("O.021.DE.@12_3","261.mat"),    
+    ("I.007.FE_0","278.mat"),       ("B.014.FE_1","287.mat"),       ("B.021.FE_2","292.mat"),       ("O.007.FE.@6_3","297.mat"),    
+    ("O.007.FE.@3_0","298.mat"),    ("O.007.FE.@12_1","305.mat"),   ("O.014.FE.@3_2","311.mat"),    ("O.021.FE.@6_0","315.mat"),    
+    ("I.028.DE_1","3002.mat"),      ("B.028.DE_2","3007.mat"),      ("B.028.DE_3","3008.mat"),
+   ]
 
 def download_file(url, dirname, bearing):
     print("Downloading Bearing Data:", bearing)
@@ -100,14 +102,14 @@ class CWRU():
     """
 
     def get_cwru_bearings(self):
-        #'''
-        bearing_label, bearing_file_names = zip(*list_of_bearings)
-        '''
-        bearing_label, bearing_file_names = zip(*list_of_bearings_dbg)
-        #'''
+        if self.debug:
+            bearing_label, bearing_file_names = zip(*list_of_bearings_dbg)
+        else:
+            bearing_label, bearing_file_names = zip(*list_of_bearings)
         return np.array(bearing_label), np.array(bearing_file_names)
 
-    def __init__(self, sample_size=2048, n_channels=2):
+    def __init__(self, sample_size=2048, n_channels=2, debug=False):
+        self.debug = debug
         self.rawfilesdir = "raw_cwru"
         self.url = "https://engineering.case.edu/sites/default/files/"
         self.n_folds = 4
@@ -207,6 +209,16 @@ class CWRU():
             self.load_acquisitions()
         groups = []
         for i in self.keys:
+            groups = np.append(groups, i)
+        kf = StratifiedGroupKFold(n_splits=self.n_folds)
+        for train, test in kf.split(self.signal_data, self.labels, groups):
+            yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
+
+    def groupkfold_load(self):
+        if len(self.signal_data) == 0:
+            self.load_acquisitions()
+        groups = []
+        for i in self.keys:
             groups = np.append(groups, int(i[-1]) % self.n_folds)
         kf = GroupShuffleSplit(n_splits=self.n_folds)
         for train, test in kf.split(self.signal_data, self.labels, groups):
@@ -238,7 +250,7 @@ class CWRU():
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 
 if __name__ == "__main__":
-    dataset = CWRU(2048, 2)
+    dataset = CWRU(debug=True)
     # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
