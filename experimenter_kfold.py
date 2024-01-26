@@ -17,6 +17,6 @@ def experimenter(dataset, split='kfold', clf=CNN1D()):
 
 
 if __name__ == "__main__":
-    experimenter(CWRU(bearing_names_file="cwru_bearings.csv"))
+    experimenter(CWRU())
     experimenter(MFPT())
     

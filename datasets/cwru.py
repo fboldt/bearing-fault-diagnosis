@@ -7,7 +7,6 @@ import scipy.io
 import numpy as np
 import os
 from sklearn.model_selection import KFold, StratifiedShuffleSplit, GroupShuffleSplit
-import csv
 import urllib
 import sys
 
@@ -109,7 +108,7 @@ class CWRU():
         return np.array(bearing_label), np.array(bearing_file_names)
 
     def __init__(self, sample_size=2048, n_channels=2):
-        self.rawfilesdir = "cwru_raw"
+        self.rawfilesdir = "raw_cwru"
         self.url = "https://engineering.case.edu/sites/default/files/"
         self.n_folds = 4
         self.sample_size = sample_size
@@ -176,7 +175,6 @@ class CWRU():
                     acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0])
             acquisition = np.array(acquisition)
             if len(acquisition.shape)<2 or acquisition.shape[0]<self.n_channels:
-                #print(acquisition.shape)
                 continue
             for i in range(acquisition.shape[1]//self.sample_size):
                 sample = acquisition[:,(i * self.sample_size):((i + 1) * self.sample_size)]
@@ -240,13 +238,12 @@ class CWRU():
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 
 if __name__ == "__main__":
-    for i in range(1,4):
-        dataset = CWRU(2048, i)
-        # dataset.download()
-        dataset.load_acquisitions()
-        print("Signal datase shape", dataset.signal_data.shape)
-        labels = list(set(dataset.labels))
-        print("labels", labels, f"({len(labels)})")
-        keys = list(set(dataset.keys))
-        print("keys", np.array(keys), f"({len(keys)})")
+    dataset = CWRU(2048, 2)
+    # dataset.download()
+    dataset.load_acquisitions()
+    print("Signal datase shape", dataset.signal_data.shape)
+    labels = list(set(dataset.labels))
+    print("labels", labels, f"({len(labels)})")
+    keys = list(set(dataset.keys))
+    print("keys", np.array(keys), f"({len(keys)})")
     
