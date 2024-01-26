@@ -13,7 +13,7 @@ import sys
 # Code to avoid incomplete array results
 np.set_printoptions(threshold=sys.maxsize)
 
-list_of_bearings = [
+list_of_bearings_12k = [
     ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
     ("I.007.DE_0","105.mat"),       ("I.007.DE_1","106.mat"),       ("I.007.DE_2","107.mat"),       ("I.007.DE_3","108.mat"),
     ("B.007.DE_0","118.mat"),       ("B.007.DE_1","119.mat"),       ("B.007.DE_2","120.mat"),       ("B.007.DE_3","121.mat"),    
@@ -42,7 +42,14 @@ list_of_bearings = [
     ("O.021.FE.@6_0","315.mat"),    ("O.021.FE.@3_1","316.mat"),    ("O.021.FE.@3_2","317.mat"),    ("O.021.FE.@3_3","318.mat"),    
     ("I.028.DE_0","3001.mat"),      ("I.028.DE_1","3002.mat"),      ("I.028.DE_2","3003.mat"),      ("I.028.DE_3","3004.mat"),    
     ("B.028.DE_0","3005.mat"),      ("B.028.DE_1","3006.mat"),      ("B.028.DE_2","3007.mat"),      ("B.028.DE_3","3008.mat"),
-    ]
+]
+
+list_of_bearings_mert = [
+    ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
+    ("I.021.DE_0","213.mat"),       ("I.021.DE_1","214.mat"),       ("I.021.DE_2","215.mat"),       ("I.021.DE_3","217.mat"),    
+    ("O.021.DE.@6_0","238.mat"),    ("O.021.DE.@6_1","239.mat"),    ("O.021.DE.@6_2","240.mat"),    ("O.021.DE.@6_3","241.mat"),    
+    ("B.021.DE_0","226.mat"),       ("B.021.DE_1","227.mat"),       ("B.021.DE_2","228.mat"),       ("B.021.DE_3","229.mat"),    
+]
 
 list_of_bearings_dbg = [
     ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
@@ -53,7 +60,7 @@ list_of_bearings_dbg = [
     ("I.007.FE_0","278.mat"),       ("B.014.FE_1","287.mat"),       ("B.021.FE_2","292.mat"),       ("O.007.FE.@6_3","297.mat"),    
     ("O.007.FE.@3_0","298.mat"),    ("O.007.FE.@12_1","305.mat"),   ("O.014.FE.@3_2","311.mat"),    ("O.021.FE.@6_0","315.mat"),    
     ("I.028.DE_1","3002.mat"),      ("B.028.DE_2","3007.mat"),      ("B.028.DE_3","3008.mat"),
-   ]
+]
 
 def download_file(url, dirname, bearing):
     print("Downloading Bearing Data:", bearing)
@@ -102,14 +109,16 @@ class CWRU():
     """
 
     def get_cwru_bearings(self):
-        if self.debug:
+        if self.config == 'debug':
             bearing_label, bearing_file_names = zip(*list_of_bearings_dbg)
+        elif self.config == '12k':
+            bearing_label, bearing_file_names = zip(*list_of_bearings_12k)
         else:
-            bearing_label, bearing_file_names = zip(*list_of_bearings)
+            bearing_label, bearing_file_names = zip(*list_of_bearings_mert)
         return np.array(bearing_label), np.array(bearing_file_names)
 
-    def __init__(self, sample_size=2048, n_channels=2, debug=False):
-        self.debug = debug
+    def __init__(self, sample_size=1000, n_channels=1, config=False):
+        self.config = config
         self.rawfilesdir = "raw_cwru"
         self.url = "https://engineering.case.edu/sites/default/files/"
         self.n_folds = 4
@@ -250,7 +259,7 @@ class CWRU():
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 
 if __name__ == "__main__":
-    dataset = CWRU(debug=True)
+    dataset = CWRU(config='mert')
     # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)

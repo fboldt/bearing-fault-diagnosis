@@ -87,7 +87,7 @@ class MFPT():
     load_acquisitions()
       Extract data from files
     """
-    def __init__(self, sample_size=2048, n_channels=2):
+    def __init__(self, sample_size=1000, n_channels=1):
         self.rawfilesdir = "raw_mfpt"
         self.url="https://mfpt.org/wp-content/uploads/2020/02/MFPT-Fault-Data-Sets-20200227T131140Z-001.zip"
         self.n_folds = 3
