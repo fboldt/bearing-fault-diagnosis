@@ -32,6 +32,6 @@ def experimenter(sources, targets, clf=CNN1D()):
     print(confusion_matrix(yte, ypr, labels=labels))
 
 if __name__ == "__main__":
-    source = [("CWRU", CWRU(config='debug'))]
-    target = [("MFPT", MFPT())]
+    source = [("CWRU", CWRU(config='mert'))]
+    target = [("CWRU", CWRU(config='48k'))]
     experimenter(source, target)
