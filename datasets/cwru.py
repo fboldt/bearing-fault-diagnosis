@@ -52,7 +52,7 @@ list_of_bearings_12k = [
 ]
 
 list_of_bearings_48k = [
-    ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
+    # ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
     ("I.007.DE_0","109.mat"),       ("I.007.DE_1","110.mat"),       ("I.007.DE_2","111.mat"),       ("I.007.DE_3","112.mat"),
     ("B.007.DE_0","122.mat"),       ("B.007.DE_1","123.mat"),       ("B.007.DE_2","124.mat"),       ("B.007.DE_3","125.mat"),    
     ("O.007.DE.@6_0","135.mat"),    ("O.007.DE.@6_1","136.mat"),    ("O.007.DE.@6_2","137.mat"),    ("O.007.DE.@6_3","138.mat"),    
@@ -64,6 +64,23 @@ list_of_bearings_48k = [
     ("I.021.DE_0","213.mat"),       ("I.021.DE_1","214.mat"),       ("I.021.DE_2","215.mat"),       ("I.021.DE_3","217.mat"),    
     ("B.021.DE_0","226.mat"),       ("B.021.DE_1","227.mat"),       ("B.021.DE_2","228.mat"),       ("B.021.DE_3","229.mat"),    
     ("O.021.DE.@6_0","238.mat"),    ("O.021.DE.@6_1","239.mat"),    ("O.021.DE.@6_2","240.mat"),    ("O.021.DE.@6_3","241.mat"),    
+    ("O.021.DE.@3_0","250.mat"),    ("O.021.DE.@3_1","251.mat"),    ("O.021.DE.@3_2","252.mat"),    ("O.021.DE.@3_3","253.mat"),    
+    ("O.021.DE.@12_0","262.mat"),   ("O.021.DE.@12_1","263.mat"),   ("O.021.DE.@12_2","264.mat"),   ("O.021.DE.@12_3","265.mat"),    
+]
+
+list_of_bearings_cmert = [
+    # ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
+    ("I.007.DE_0","109.mat"),       ("I.007.DE_1","110.mat"),       ("I.007.DE_2","111.mat"),       ("I.007.DE_3","112.mat"),
+    ("B.007.DE_0","122.mat"),       ("B.007.DE_1","123.mat"),       ("B.007.DE_2","124.mat"),       ("B.007.DE_3","125.mat"),    
+    ("O.007.DE.@6_0","135.mat"),    ("O.007.DE.@6_1","136.mat"),    ("O.007.DE.@6_2","137.mat"),    ("O.007.DE.@6_3","138.mat"),    
+    ("O.007.DE.@3_0","148.mat"),    ("O.007.DE.@3_1","149.mat"),    ("O.007.DE.@3_2","150.mat"),    ("O.007.DE.@3_3","151.mat"),    
+    ("O.007.DE.@12_0","161.mat"),   ("O.007.DE.@12_1","162.mat"),   ("O.007.DE.@12_2","163.mat"),   ("O.007.DE.@12_3","164.mat"),    
+    ("I.014.DE_0","174.mat"),       ("I.014.DE_1","175.mat"),       ("I.014.DE_2","176.mat"),       ("I.014.DE_3","177.mat"),    
+    ("B.014.DE_0","189.mat"),       ("B.014.DE_1","190.mat"),       ("B.014.DE_2","191.mat"),       ("B.014.DE_3","192.mat"),    
+    ("O.014.DE.@6_0","201.mat"),    ("O.014.DE.@6_1","202.mat"),    ("O.014.DE.@6_2","203.mat"),    ("O.014.DE.@6_3","204.mat"),    
+    # ("I.021.DE_0","213.mat"),       ("I.021.DE_1","214.mat"),       ("I.021.DE_2","215.mat"),       ("I.021.DE_3","217.mat"),    
+    # ("B.021.DE_0","226.mat"),       ("B.021.DE_1","227.mat"),       ("B.021.DE_2","228.mat"),       ("B.021.DE_3","229.mat"),    
+    # ("O.021.DE.@6_0","238.mat"),    ("O.021.DE.@6_1","239.mat"),    ("O.021.DE.@6_2","240.mat"),    ("O.021.DE.@6_3","241.mat"),    
     ("O.021.DE.@3_0","250.mat"),    ("O.021.DE.@3_1","251.mat"),    ("O.021.DE.@3_2","252.mat"),    ("O.021.DE.@3_3","253.mat"),    
     ("O.021.DE.@12_0","262.mat"),   ("O.021.DE.@12_1","263.mat"),   ("O.021.DE.@12_2","264.mat"),   ("O.021.DE.@12_3","265.mat"),    
 ]
@@ -126,13 +143,14 @@ class CWRU():
         bearing_label, bearing_file_names = zip(*list_of_bearings)
         return np.array(bearing_label), np.array(bearing_file_names)
 
-    def __init__(self, sample_size=1000, n_channels=1, config=False):
+    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, config="dbg"):
+        self.sample_size = sample_size
+        self.n_channels = n_channels
+        self.acquisition_maxsize = acquisition_maxsize
         self.config = config
         self.rawfilesdir = "raw_cwru"
         self.url = "https://engineering.case.edu/sites/default/files/"
         self.n_folds = 4
-        self.sample_size = sample_size
-        self.n_channels = n_channels
         self.bearing_labels, self.bearing_names = self.get_cwru_bearings()
         self.accelerometers = ['DE', 'FE', 'BA'][:self.n_channels]
         self.signal_data = np.empty((0, self.sample_size, len(self.accelerometers)))
@@ -149,7 +167,7 @@ class CWRU():
         The remaining conditions follow the pattern:
         
         First two characters represent the bearing location, 
-        .e. drive end (DE) and fan end (FE). 
+        i.e. drive end (DE) and fan end (FE). 
         The following two characters represent the failure location in the bearing, 
         i.e. ball (BA), Inner Race (IR) and Outer Race (OR). 
         The next three algarisms indicate the severity of the failure, 
@@ -192,7 +210,8 @@ class CWRU():
                 if len(signal_key) == 0:
                     signal_key = [key for key in matlab_file if key.endswith("_" + position + "_time")]
                 if len(signal_key) > 0:
-                    acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0])
+                    print(f"  {key}: {matlab_file[signal_key[0]].reshape(1, -1)[0].shape}")
+                    acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0][:self.acquisition_maxsize])
             acquisition = np.array(acquisition)
             if len(acquisition.shape)<2 or acquisition.shape[0]<self.n_channels:
                 continue
@@ -268,7 +287,7 @@ class CWRU():
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 
 if __name__ == "__main__":
-    dataset = CWRU(config='dbg')
+    dataset = CWRU(config='mert')
     # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)

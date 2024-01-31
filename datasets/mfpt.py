@@ -87,12 +87,13 @@ class MFPT():
     load_acquisitions()
       Extract data from files
     """
-    def __init__(self, sample_size=1000, n_channels=1):
+    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000):
+        self.n_channels = n_channels
+        self.sample_size = sample_size
+        self.acquisition_maxsize = acquisition_maxsize
         self.rawfilesdir = "raw_mfpt"
         self.url="https://mfpt.org/wp-content/uploads/2020/02/MFPT-Fault-Data-Sets-20200227T131140Z-001.zip"
         self.n_folds = 3
-        self.n_channels = n_channels
-        self.sample_size = sample_size
         self.signal_data = np.empty((0, self.sample_size, self.n_channels))
         self.labels = []
         self.keys = []
@@ -156,10 +157,11 @@ class MFPT():
                 vibration_data_raw = matlab_file['bearing'][0][0][1]
             else:
                 vibration_data_raw = matlab_file['bearing'][0][0][2]
-            vibration_data = np.array([ elem for singleList in vibration_data_raw for elem in singleList])
-            ss = self.sample_size * self.n_channels
-            for i in range(len(vibration_data)//ss):
-                sample = vibration_data[(i * ss):((i + 1) * ss)]
+            vibration_data = np.array([elem for singleList in vibration_data_raw for elem in singleList])[:self.acquisition_maxsize]
+            for i in range(len(vibration_data)//self.sample_size):
+                sample = np.empty((self.sample_size, self.n_channels))
+                for j in range(self.n_channels):
+                    sample[:,j] = vibration_data[(i * self.sample_size):((i + 1) * self.sample_size)]
                 sample = np.array([sample]).reshape(1, -1, self.n_channels)
                 self.signal_data = np.append(self.signal_data, sample, axis=0)
                 self.labels = np.append(self.labels, key[0])

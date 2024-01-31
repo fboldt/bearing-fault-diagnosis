@@ -19,6 +19,6 @@ def experimenter(dataset, split='groupkfold_acquisition', clf=CNN1D()):
 
 
 if __name__ == "__main__":
-    experimenter(CWRU(config='12k'))
+    experimenter(CWRU(config='dbg'))
     # experimenter(MFPT())
     
