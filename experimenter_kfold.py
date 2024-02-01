@@ -1,5 +1,6 @@
 from datasets.cwru import CWRU
 from datasets.mfpt import MFPT
+from datasets.paderborn import Paderborn
 from estimators.cnn1d import CNN1D
 from sklearn.metrics import accuracy_score, confusion_matrix
 
@@ -19,6 +20,7 @@ def experimenter(dataset, split='groupkfold_acquisition', clf=CNN1D()):
 
 
 if __name__ == "__main__":
-    experimenter(CWRU(config='dbg'))
-    # experimenter(MFPT())
+    # experimenter(CWRU(config='dbg'))
+    experimenter(MFPT())
+    experimenter(Paderborn(config='dbg'))
     

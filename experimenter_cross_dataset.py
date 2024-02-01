@@ -1,5 +1,6 @@
 from datasets.cwru import CWRU
 from datasets.mfpt import MFPT
+from datasets.paderborn import Paderborn
 from estimators.cnn1d import CNN1D
 from sklearn.metrics import accuracy_score, confusion_matrix
 import numpy as np
@@ -31,7 +32,13 @@ def experimenter(sources, targets, clf=CNN1D()):
     print(f" {labels}")
     print(confusion_matrix(yte, ypr, labels=labels))
 
+datasets = [
+    ("CWRU (nio)", CWRU(config='nio')),
+    ("Paderborn (dbg)", Paderborn(config='dbg')),
+    ("MFPT", MFPT()),
+]
+
 if __name__ == "__main__":
-    source = [("CWRU", CWRU(config='dbg'))]
-    target = [("MFPT", MFPT())]
+    source = datasets[:2]
+    target = list(set(datasets) - set(source))
     experimenter(source, target)

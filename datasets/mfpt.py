@@ -151,7 +151,8 @@ class MFPT():
         """
         Extracts the acquisitions of each file in the dictionary files_names.
         """
-        for key in self.files:
+        for x, key in enumerate(self.files):
+            print('\r', f" loading acquisitions {100*(x+1)/len(self.files):.2f} %", end='')
             matlab_file = scipy.io.loadmat(self.files[key])
             if len(key) == 8:
                 vibration_data_raw = matlab_file['bearing'][0][0][1]
@@ -166,6 +167,7 @@ class MFPT():
                 self.signal_data = np.append(self.signal_data, sample, axis=0)
                 self.labels = np.append(self.labels, key[0])
                 self.keys = np.append(self.keys, key)
+        print(f"  ({len(self.labels)} examples)")
         
     def get_acquisitions(self):
         if len(self.labels) == 0:
