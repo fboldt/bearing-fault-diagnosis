@@ -110,7 +110,7 @@ class Paderborn():
         self.url = "http://groups.uni-paderborn.de/kat/BearingDataCenter/"
         self.n_folds = 4
         self.bearing_names = self.get_paderborn_bearings()
-        self.n_acquisitions = 1 if self.config == 'dbg' else 20
+        self.n_acquisitions = 2 if self.config == 'dbg' else 20
         self.signal_data = np.empty((0, self.sample_size, self.n_channels))
         self.labels = []
         self.keys = []

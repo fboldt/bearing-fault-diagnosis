@@ -20,7 +20,7 @@ def experimenter(dataset, split='groupkfold_acquisition', clf=CNN1D()):
 
 
 if __name__ == "__main__":
-    # experimenter(CWRU(config='dbg'))
-    experimenter(MFPT())
-    experimenter(Paderborn(config='dbg'))
+    # experimenter(CWRU(config='nio'))
+    experimenter(MFPT(config='dbg'))
+    # experimenter(Paderborn(config='dbg'))
     

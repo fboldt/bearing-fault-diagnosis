@@ -33,9 +33,9 @@ def experimenter(sources, targets, clf=CNN1D()):
     print(confusion_matrix(yte, ypr, labels=labels))
 
 datasets = [
-    ("CWRU (nio)", CWRU(config='nio')),
     ("Paderborn (dbg)", Paderborn(config='dbg')),
-    ("MFPT", MFPT()),
+    ("CWRU (nio)", CWRU(config='nio')),
+    ("MFPT (dbg)", MFPT(config='dbg')),
 ]
 
 if __name__ == "__main__":
