@@ -20,6 +20,21 @@ list_of_bearings_dbg = [
     ("O.021.DE.@6_0","234.mat"),    ("O.021.DE.@6_1","235.mat"),    ("O.021.DE.@6_2","236.mat"),    ("O.021.DE.@6_3","237.mat"),    
 ]
 
+list_of_bearings_nio = [
+    ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
+    ("I.007.DE_0","105.mat"),       ("I.007.DE_1","106.mat"),       ("I.007.DE_2","107.mat"),       ("I.007.DE_3","108.mat"),
+    ("O.007.DE.@6_0","130.mat"),    ("O.007.DE.@6_1","131.mat"),    ("O.007.DE.@6_2","132.mat"),    ("O.007.DE.@6_3","133.mat"),    
+    # ("O.007.DE.@3_0","144.mat"),    ("O.007.DE.@3_1","145.mat"),    ("O.007.DE.@3_2","146.mat"),    ("O.007.DE.@3_3","147.mat"),    
+    # ("O.007.DE.@12_0","156.mat"),   ("O.007.DE.@12_1","158.mat"),   ("O.007.DE.@12_2","159.mat"),   ("O.007.DE.@12_3","160.mat"),    
+    ("I.014.DE_0","169.mat"),       ("I.014.DE_1","170.mat"),       ("I.014.DE_2","171.mat"),       ("I.014.DE_3","172.mat"),    
+    ("O.014.DE.@6_0","197.mat"),    ("O.014.DE.@6_1","198.mat"),    ("O.014.DE.@6_2","199.mat"),    ("O.014.DE.@6_3","200.mat"),    
+    ("I.021.DE_0","209.mat"),       ("I.021.DE_1","210.mat"),       ("I.021.DE_2","211.mat"),       ("I.021.DE_3","212.mat"),    
+    ("O.021.DE.@6_0","234.mat"),    ("O.021.DE.@6_1","235.mat"),    ("O.021.DE.@6_2","236.mat"),    ("O.021.DE.@6_3","237.mat"),    
+    # ("O.021.DE.@3_0","246.mat"),    ("O.021.DE.@3_1","247.mat"),    ("O.021.DE.@3_2","248.mat"),    ("O.021.DE.@3_3","249.mat"),    
+    # ("O.021.DE.@12_0","258.mat"),   ("O.021.DE.@12_1","259.mat"),   ("O.021.DE.@12_2","260.mat"),   ("O.021.DE.@12_3","261.mat"),    
+    ("O.014.FE.@6_0","313.mat"),    
+]
+
 list_of_bearings_12k = [
     ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
     ("I.007.DE_0","105.mat"),       ("I.007.DE_1","106.mat"),       ("I.007.DE_2","107.mat"),       ("I.007.DE_3","108.mat"),
@@ -210,7 +225,7 @@ class CWRU():
                 if len(signal_key) == 0:
                     signal_key = [key for key in matlab_file if key.endswith("_" + position + "_time")]
                 if len(signal_key) > 0:
-                    print(f"  {key}: {matlab_file[signal_key[0]].reshape(1, -1)[0].shape}")
+                    # print(f"  {key}: {matlab_file[signal_key[0]].reshape(1, -1)[0].shape}")
                     acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0][:self.acquisition_maxsize])
             acquisition = np.array(acquisition)
             if len(acquisition.shape)<2 or acquisition.shape[0]<self.n_channels:
@@ -220,7 +235,7 @@ class CWRU():
                 self.signal_data = np.append(self.signal_data, np.array([sample.T]), axis=0)
                 self.labels = np.append(self.labels, key[0])
                 self.keys = np.append(self.keys, key)
-        print()
+        print(f"  ({len(self.labels)} examples)")
     
     def get_acquisitions(self):
         if len(self.labels) == 0:
@@ -287,7 +302,7 @@ class CWRU():
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 
 if __name__ == "__main__":
-    dataset = CWRU(config='mert')
+    dataset = CWRU(config='nio')
     # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)

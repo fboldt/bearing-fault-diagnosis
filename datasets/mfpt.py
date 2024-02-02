@@ -87,10 +87,11 @@ class MFPT():
     load_acquisitions()
       Extract data from files
     """
-    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000):
+    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, config='dbg'):
         self.n_channels = n_channels
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize
+        self.config = config
         self.rawfilesdir = "raw_mfpt"
         self.url="https://mfpt.org/wp-content/uploads/2020/02/MFPT-Fault-Data-Sets-20200227T131140Z-001.zip"
         self.n_folds = 3
@@ -116,13 +117,14 @@ class MFPT():
         files_path["OR_0"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/2 - Three Outer Race Fault Conditions/OuterRaceFault_1")
         files_path["OR_1"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/2 - Three Outer Race Fault Conditions/OuterRaceFault_2")
         files_path["OR_2"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/2 - Three Outer Race Fault Conditions/OuterRaceFault_3")
-        files_path["OR_3"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/3 - Seven More Outer Race Fault Conditions/OuterRaceFault_vload_1")
-        files_path["OR_4"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/3 - Seven More Outer Race Fault Conditions/OuterRaceFault_vload_2")
-        files_path["OR_5"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/3 - Seven More Outer Race Fault Conditions/OuterRaceFault_vload_3")
-        files_path["OR_6"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/3 - Seven More Outer Race Fault Conditions/OuterRaceFault_vload_4")
-        files_path["OR_7"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/3 - Seven More Outer Race Fault Conditions/OuterRaceFault_vload_5")
-        files_path["OR_8"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/3 - Seven More Outer Race Fault Conditions/OuterRaceFault_vload_6")
-        files_path["OR_9"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/3 - Seven More Outer Race Fault Conditions/OuterRaceFault_vload_7")
+        if self.config != 'dbg':
+            files_path["OR_3"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/3 - Seven More Outer Race Fault Conditions/OuterRaceFault_vload_1")
+            files_path["OR_4"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/3 - Seven More Outer Race Fault Conditions/OuterRaceFault_vload_2")
+            files_path["OR_5"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/3 - Seven More Outer Race Fault Conditions/OuterRaceFault_vload_3")
+            files_path["OR_6"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/3 - Seven More Outer Race Fault Conditions/OuterRaceFault_vload_4")
+            files_path["OR_7"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/3 - Seven More Outer Race Fault Conditions/OuterRaceFault_vload_5")
+            files_path["OR_8"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/3 - Seven More Outer Race Fault Conditions/OuterRaceFault_vload_6")
+            files_path["OR_9"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/3 - Seven More Outer Race Fault Conditions/OuterRaceFault_vload_7")
         # IR
         files_path["IR_0"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/4 - Seven Inner Race Fault Conditions/InnerRaceFault_vload_1")
         files_path["IR_1"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/4 - Seven Inner Race Fault Conditions/InnerRaceFault_vload_2")
@@ -151,7 +153,8 @@ class MFPT():
         """
         Extracts the acquisitions of each file in the dictionary files_names.
         """
-        for key in self.files:
+        for x, key in enumerate(self.files):
+            print('\r', f" loading acquisitions {100*(x+1)/len(self.files):.2f} %", end='')
             matlab_file = scipy.io.loadmat(self.files[key])
             if len(key) == 8:
                 vibration_data_raw = matlab_file['bearing'][0][0][1]
@@ -166,6 +169,7 @@ class MFPT():
                 self.signal_data = np.append(self.signal_data, sample, axis=0)
                 self.labels = np.append(self.labels, key[0])
                 self.keys = np.append(self.keys, key)
+        print(f"  ({len(self.labels)} examples)")
         
     def get_acquisitions(self):
         if len(self.labels) == 0:
