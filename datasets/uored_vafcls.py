@@ -235,7 +235,7 @@ class UORED_VAFCLS():
 
 if __name__ == "__main__":
     dataset = UORED_VAFCLS(config='normal')
-    dataset.download()
+    # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
