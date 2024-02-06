@@ -14,67 +14,37 @@ import csv
 # Code to avoid incomplete array results
 np.set_printoptions(threshold=sys.maxsize)
 
-urls = [
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/31863372-55f7-4c9c-91a5-4f3c907a85af",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/7615c4b8-7c8f-41fd-8034-5b6e8438eb16",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/e5abb9af-727e-4fd5-8238-0d007f4be6d6",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/371e6895-8ae8-4e30-9925-0aacb815dfe9",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/ac2a3654-a2ae-4d99-a6a8-9b8e3f7eab27",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/960e11a3-e88b-40a2-8d05-e5051951599d",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/75bf8b30-beaf-4267-9190-db1ee68c3f14",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/0714450f-ebbb-4039-b415-60fc4bef3601",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/9cd35272-6b46-4fb5-b482-05ab53cf1c95",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/128dde70-6511-4404-9779-28d4a9da7438",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/8f7cc1ad-04eb-4b68-99ef-d2adb9ed8825",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/2ca4ba4a-146c-4d56-a309-889888713491",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/c1cd9d5d-61e2-468b-bf25-9ddeeff4b487",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/30fa3b7b-db98-4328-be88-1317ebedbbb6",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/75552a72-ed20-4723-8217-afa86e341099",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/4e4b52bb-f657-4347-8965-c77b7342f905",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/edecdcaf-c6eb-4125-bb63-2b704f33956f",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/3768c855-d514-42b3-ae11-700282d57089",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/2c74bcb6-d879-4a9a-863c-b257c91a5dc0",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/45ab549d-075f-4409-b76e-b8443fa0ca0b",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/d383ee8d-75ae-49bd-9fb5-6148695ab69b",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/fb1cca43-124d-4b74-b944-f0abc3f28132",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/25e8e452-7bee-40ae-9d8a-63f32c3325a4",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/0f7addcb-ff4d-4f15-9b91-5493b5bc0dcf",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/9c815a92-e72d-48a3-8bc9-14a51f6483fa",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/05922ac8-52cd-4189-b23c-a8bc5c9b88eb",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/883ba133-1610-4a7c-8084-bb0e941125e2",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/113815c9-ddfe-4f63-8f0e-76c75b6c0581",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/770d3546-6895-4c99-bfb4-7e57b1d7228d",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/c5415d06-2607-4878-b6f5-06cc67b30540",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/b3b96601-3e54-4634-95b3-6dd8aeddf613",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/c280f3a7-90e6-4438-9ce2-db7b84eb097c",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/805c124e-df28-40a5-933e-2e1976fbb73a",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/eeb7d7a3-87f3-468a-9038-6224cb256a0a",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/66834062-c2d5-45bd-9a72-8960828a8902",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/0500d6e7-02fa-4fcb-8df6-96ade544e3e4",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/ea795582-032f-4cbd-9601-5bce5873d1f8",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/4a8bfeb4-c031-450d-86cc-78e9e7cec17d",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/e3b6e7c5-f4c9-492c-ba14-7da2f1955709",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/798664fc-ce4f-4d0c-99e0-a30bc08cd6dc",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/8d34facf-e922-46cb-9ee7-f04edf7a89d2",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/0c1ad1e3-196e-466d-968a-41803f2d020e",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/7b9f2066-b6b5-4b0e-8fce-30f0bd15574f",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/8837b687-1f08-4cb7-9c98-1bb1823723b4",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/a0a2c68c-478b-495d-868c-ffae62b5b445",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/a3bdcff7-b9d4-417b-b902-b5cfd08e0985",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/7320c429-b6dc-4d4c-9dc4-57df635e603e",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/1e5409ec-d96c-4d02-9ef6-69bfd3d6ff2a",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/03de7b86-b6e5-4e1b-8e40-d7f9fbed8a12",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/17cbbffb-987a-4706-b1b4-778012b3ac16",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/ce267f69-4027-4db6-9f23-81c96029b523",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/12e2565a-99da-41df-ae49-70f1f5b2fddf",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/59b8814c-5a04-40fe-bfd2-7e712414d68f",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/1849dd9a-55b0-4313-90d8-fd91e3f3fde6",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/c2167e9e-e981-4ca2-ac7c-7dc31e058795",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/2654cd65-e54c-4d88-9554-9dbf56a6c60e",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/95083600-04f6-4ac4-854e-d5462f8aefbb",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/b4a6118d-ddec-4e66-a2f5-ff58a4e08388",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/4ceb3588-37b6-4f62-baa4-c64cbf0179a5",
-    "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/8e8a485f-6fe9-4439-8f93-743a7ac431ec"
+files_hash = [
+    "31863372-55f7-4c9c-91a5-4f3c907a85af", "7615c4b8-7c8f-41fd-8034-5b6e8438eb16",
+    "e5abb9af-727e-4fd5-8238-0d007f4be6d6", "371e6895-8ae8-4e30-9925-0aacb815dfe9",
+    "ac2a3654-a2ae-4d99-a6a8-9b8e3f7eab27", "960e11a3-e88b-40a2-8d05-e5051951599d",
+    "75bf8b30-beaf-4267-9190-db1ee68c3f14", "0714450f-ebbb-4039-b415-60fc4bef3601",
+    "9cd35272-6b46-4fb5-b482-05ab53cf1c95", "128dde70-6511-4404-9779-28d4a9da7438",
+    "8f7cc1ad-04eb-4b68-99ef-d2adb9ed8825", "2ca4ba4a-146c-4d56-a309-889888713491",
+    "c1cd9d5d-61e2-468b-bf25-9ddeeff4b487", "30fa3b7b-db98-4328-be88-1317ebedbbb6",
+    "75552a72-ed20-4723-8217-afa86e341099", "4e4b52bb-f657-4347-8965-c77b7342f905",
+    "edecdcaf-c6eb-4125-bb63-2b704f33956f", "3768c855-d514-42b3-ae11-700282d57089",
+    "2c74bcb6-d879-4a9a-863c-b257c91a5dc0", "45ab549d-075f-4409-b76e-b8443fa0ca0b",
+    "d383ee8d-75ae-49bd-9fb5-6148695ab69b", "fb1cca43-124d-4b74-b944-f0abc3f28132",
+    "25e8e452-7bee-40ae-9d8a-63f32c3325a4", "0f7addcb-ff4d-4f15-9b91-5493b5bc0dcf",
+    "9c815a92-e72d-48a3-8bc9-14a51f6483fa", "05922ac8-52cd-4189-b23c-a8bc5c9b88eb",
+    "883ba133-1610-4a7c-8084-bb0e941125e2", "113815c9-ddfe-4f63-8f0e-76c75b6c0581",
+    "770d3546-6895-4c99-bfb4-7e57b1d7228d", "c5415d06-2607-4878-b6f5-06cc67b30540",
+    "b3b96601-3e54-4634-95b3-6dd8aeddf613", "c280f3a7-90e6-4438-9ce2-db7b84eb097c",
+    "805c124e-df28-40a5-933e-2e1976fbb73a", "eeb7d7a3-87f3-468a-9038-6224cb256a0a",
+    "66834062-c2d5-45bd-9a72-8960828a8902", "0500d6e7-02fa-4fcb-8df6-96ade544e3e4",
+    "ea795582-032f-4cbd-9601-5bce5873d1f8", "4a8bfeb4-c031-450d-86cc-78e9e7cec17d",
+    "e3b6e7c5-f4c9-492c-ba14-7da2f1955709", "798664fc-ce4f-4d0c-99e0-a30bc08cd6dc",
+    "8d34facf-e922-46cb-9ee7-f04edf7a89d2", "0c1ad1e3-196e-466d-968a-41803f2d020e",
+    "7b9f2066-b6b5-4b0e-8fce-30f0bd15574f", "8837b687-1f08-4cb7-9c98-1bb1823723b4",
+    "a0a2c68c-478b-495d-868c-ffae62b5b445", "a3bdcff7-b9d4-417b-b902-b5cfd08e0985",
+    "7320c429-b6dc-4d4c-9dc4-57df635e603e", "1e5409ec-d96c-4d02-9ef6-69bfd3d6ff2a",
+    "03de7b86-b6e5-4e1b-8e40-d7f9fbed8a12", "17cbbffb-987a-4706-b1b4-778012b3ac16",
+    "ce267f69-4027-4db6-9f23-81c96029b523", "12e2565a-99da-41df-ae49-70f1f5b2fddf",
+    "59b8814c-5a04-40fe-bfd2-7e712414d68f", "1849dd9a-55b0-4313-90d8-fd91e3f3fde6",
+    "c2167e9e-e981-4ca2-ac7c-7dc31e058795", "2654cd65-e54c-4d88-9554-9dbf56a6c60e",
+    "95083600-04f6-4ac4-854e-d5462f8aefbb", "b4a6118d-ddec-4e66-a2f5-ff58a4e08388",
+    "4ceb3588-37b6-4f62-baa4-c64cbf0179a5", "8e8a485f-6fe9-4439-8f93-743a7ac431ec"
 ]
 
 list_of_bearings_dbg = [
@@ -158,6 +128,7 @@ class UORED_VAFCLS():
 
 
     def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, config="dbg"):
+        self.url = "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/"
         self.sample_size = sample_size
         self.n_channels = n_channels
         self.acquisition_maxsize = acquisition_maxsize
@@ -183,8 +154,9 @@ class UORED_VAFCLS():
         if not os.path.exists(dirname):
             os.mkdir(dirname)
         
-        for i in range(0, len(urls)):            
-            download_file(urls[i], dirname, list_bearing_fault_all[i])
+        for i in range(0, len(files_hash)):
+            url = self.url + files_hash[i]          
+            download_file(url, dirname, list_bearing_fault_all[i])
 
 
     def load_acquisitions(self):
