@@ -1,5 +1,6 @@
 from datasets.cwru import CWRU
 from datasets.mfpt import MFPT
+from datasets.uored_vafcls import UORED_VAFCLS
 from datasets.paderborn import Paderborn
 from estimators.cnn1d import CNN1D
 from sklearn.metrics import accuracy_score, confusion_matrix
@@ -21,6 +22,7 @@ def experimenter(dataset, split='groupkfold_acquisition', clf=CNN1D()):
 
 if __name__ == "__main__":
     # experimenter(CWRU(config='nio'))
-    experimenter(MFPT(config='dbg'))
+    # experimenter(MFPT(config='dbg'))
     # experimenter(Paderborn(config='dbg'))
+    experimenter(UORED_VAFCLS(config='faulty_healthy'))
     

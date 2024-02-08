@@ -48,27 +48,40 @@ files_hash = [
 ]
 
 list_of_bearings_dbg = [
-    "H_1_0.mat", "H_2_0.mat", "H_3_0.mat", "H_4_0.mat", 
-    "I_1_1.mat", "I_2_2.mat", "I_3_1.mat", "I_4_2.mat", 
-    "O_6_1.mat", "O_7_2.mat", "O_8_1.mat", "O_9_2.mat",
-    "B_11_1.mat", "B_12_2.mat", "B_13_1.mat", "B_14_2.mat",
-    "C_16_1.mat", "C_17_2.mat", "C_18_1.mat", "C_19_2.mat"
+    "H_1_0", "H_2_0", "H_3_0", "H_4_0", 
+    "I_1_1", "I_2_2", "I_3_1", "I_4_2", 
+    "O_6_1", "O_7_2", "O_8_1", "O_9_2",
+    "B_11_1", "B_12_2", "B_13_1", "B_14_2",
+    "C_16_1", "C_17_2", "C_18_1", "C_19_2"
 ]
 
-list_bearing_fault_all = [
-    "H_1_0.mat",   "H_2_0.mat",   "H_3_0.mat",   "H_4_0.mat",   "H_5_0.mat",   
-    "H_6_0.mat",   "H_7_0.mat",   "H_8_0.mat",   "H_9_0.mat",   "H_10_0.mat",  
-    "H_11_0.mat",  "H_12_0.mat",  "H_13_0.mat",  "H_14_0.mat",  "H_15_0.mat", 
-    "H_16_0.mat",  "H_17_0.mat",  "H_18_0.mat",  "H_19_0.mat",  "H_20_0.mat",  
-    "I_1_1.mat",   "I_1_2.mat",   "I_2_1.mat",   "I_2_2.mat",   "I_3_1.mat",   
-    "I_3_2.mat",   "I_4_1.mat",   "I_4_2.mat",   "I_5_1.mat",   "I_5_2.mat",   
-    "O_6_1.mat",   "O_6_2.mat",   "O_7_1.mat",   "O_7_2.mat",   "O_8_1.mat",   
-    "O_8_2.mat",   "O_9_1.mat",   "O_9_2.mat",   "O_10_1.mat",  "O_10_2.mat", 
-    "B_11_1.mat",  "B_11_2.mat",  "B_12_1.mat",  "B_12_2.mat",  "B_13_1.mat",
-    "B_13_2.mat",  "B_14_1.mat",  "B_14_2.mat",  "B_15_1.mat",  "B_15_2.mat",
-    "C_16_1.mat",  "C_16_2.mat",  "C_17_1.mat",  "C_17_2.mat",  "C_18_1.mat", 
-    "C_18_2.mat",  "C_19_1.mat",  "C_19_2.mat",  "C_20_1.mat",  "C_20_2.mat"
+list_of_bearings_all = [
+    "H_1_0",   "H_2_0",   "H_3_0",   "H_4_0",   "H_5_0",   
+    "H_6_0",   "H_7_0",   "H_8_0",   "H_9_0",   "H_10_0",  
+    "H_11_0",  "H_12_0",  "H_13_0",  "H_14_0",  "H_15_0", 
+    "H_16_0",  "H_17_0",  "H_18_0",  "H_19_0",  "H_20_0",  
+    "I_1_1",   "I_1_2",   "I_2_1",   "I_2_2",   "I_3_1",   
+    "I_3_2",   "I_4_1",   "I_4_2",   "I_5_1",   "I_5_2",   
+    "O_6_1",   "O_6_2",   "O_7_1",   "O_7_2",   "O_8_1",   
+    "O_8_2",   "O_9_1",   "O_9_2",   "O_10_1",  "O_10_2", 
+    "B_11_1",  "B_11_2",  "B_12_1",  "B_12_2",  "B_13_1",
+    "B_13_2",  "B_14_1",  "B_14_2",  "B_15_1",  "B_15_2",
+    "C_16_1",  "C_16_2",  "C_17_1",  "C_17_2",  "C_18_1", 
+    "C_18_2",  "C_19_1",  "C_19_2",  "C_20_1",  "C_20_2"
 ]
+
+list_of_bearings_faulty_healthy = [
+    "H_1_0",   "H_2_0",   "H_3_0",   "H_4_0",   "H_5_0",   
+    "H_6_0",   "H_7_0",   "H_8_0",   "H_9_0",   "H_10_0",  
+    "H_11_0",  "H_12_0",  "H_13_0",  "H_14_0",  "H_15_0", 
+    "H_16_0",  "H_17_0",  "H_18_0",  "H_19_0",  "H_20_0",  
+    "I_1_2",   "I_2_2",   "I_3_2",   "I_4_2",   "I_5_2",   
+    "O_6_2",   "O_7_2",   "O_8_2",   "O_9_2",   "O_10_2",  
+    "B_11_2",  "B_12_2",  "B_13_2",  "B_14_2",  "B_15_2",  
+    "C_16_2",  "C_17_2",  "C_18_2",  "C_19_2",  "C_20_2"
+]
+
+
 
 
 def download_file(url, dirname, bearing):
@@ -122,8 +135,8 @@ class UORED_VAFCLS():
 
     def get_uored_vafcls_bearings(self):
         list_of_bearings = eval("list_of_bearings_"+self.config)
-        bearing_file_names = [*list_of_bearings]
-        bearing_label = [label.split('.')[0] for label in bearing_file_names]    
+        bearing_file_names = [name+'.mat' for name in list_of_bearings]
+        bearing_label = [label for label in bearing_file_names]    
         return np.array(bearing_label), np.array(bearing_file_names)
 
 
@@ -155,8 +168,9 @@ class UORED_VAFCLS():
             os.mkdir(dirname)
         
         for i in range(0, len(files_hash)):
-            url = self.url + files_hash[i]          
-            download_file(url, dirname, list_bearing_fault_all[i])
+            url = self.url + files_hash[i] 
+            files_name = list_bearing_fault_all[i] + '.mat'       
+            download_file(url, dirname, files_name)
 
 
     def load_acquisitions(self):
@@ -254,7 +268,7 @@ class UORED_VAFCLS():
 
 
 if __name__ == "__main__":
-    dataset = UORED_VAFCLS(config='dbg')
+    dataset = UORED_VAFCLS(config='faulty_healthy')
     # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
