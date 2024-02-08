@@ -229,43 +229,6 @@ class UORED_VAFCLS():
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 
 
-    def groupkfold_load(self):
-        if len(self.signal_data) == 0:
-            self.load_acquisitions()
-        groups = []
-        for i in self.keys:
-            groups = np.append(groups, int(i[-1]) % self.n_folds)
-        kf = GroupShuffleSplit(n_splits=self.n_folds)
-        for train, test in kf.split(self.signal_data, self.labels, groups):
-            yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
-
-
-    def groupkfold_settings(self):
-        if len(self.signal_data) == 0:
-            self.load_acquisitions()
-        groups = []
-        for i in self.keys:
-            load = i[-1]
-            groups = np.append(groups, load)
-        kf = GroupShuffleSplit(n_splits=self.n_folds)
-        for train, test in kf.split(self.signal_data, self.labels, groups):
-            yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
-
-
-    def groupkfold_severity(self):
-        if len(self.signal_data) == 0:
-            self.load_acquisitions()
-        groups = []
-        for i in self.keys:
-            if i[0] == "N":
-                load_severity = str(i[-1])
-            else:
-                load_severity = i[2:5]
-            groups = np.append(groups, load_severity)
-        kf = GroupShuffleSplit(n_splits=self.n_folds)
-        for train, test in kf.split(self.signal_data, self.labels, groups):
-            yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
-
 
 if __name__ == "__main__":
     dataset = UORED_VAFCLS(config='faulty_healthy')
