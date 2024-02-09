@@ -21,8 +21,7 @@ def experimenter(dataset, split='groupkfold_acquisition', clf=CNN1D()):
 
 
 if __name__ == "__main__":
-    # experimenter(CWRU(config='nio'))
+    # experimenter(CWRU(config='mert'))
     # experimenter(MFPT(config='dbg'))
     # experimenter(Paderborn(config='dbg'))
-    experimenter(UORED_VAFCLS(config='faulty_healthy'))
-    
+    experimenter(UORED_VAFCLS(config='mert'))
