@@ -169,7 +169,7 @@ class UORED_VAFCLS():
         
         for i in range(0, len(files_hash)):
             url = self.url + files_hash[i] 
-            files_name = list_bearing_fault_all[i] + '.mat'       
+            files_name = list_of_bearings_all[i] + '.mat'       
             download_file(url, dirname, files_name)
 
 
