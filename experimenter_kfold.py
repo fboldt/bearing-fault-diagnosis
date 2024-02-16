@@ -25,4 +25,3 @@ if __name__ == "__main__":
     # experimenter(MFPT(config='dbg'))
     # experimenter(Paderborn(config='dbg'))
     experimenter(UORED_VAFCLS(config='mert'))
-    

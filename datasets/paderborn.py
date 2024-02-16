@@ -215,7 +215,6 @@ class Paderborn():
         for train, test in kf.split(self.signal_data):
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 
-   
 
     def groupkfold_acquisition(self):
         if len(self.signal_data) == 0:
