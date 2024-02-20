@@ -1,6 +1,7 @@
 from datasets.cwru import CWRU
 from datasets.mfpt import MFPT
 from datasets.uored_vafcls import UORED_VAFCLS
+from datasets.hust import Hust
 from datasets.paderborn import Paderborn
 from estimators.cnn1d import CNN1D
 from sklearn.metrics import accuracy_score, confusion_matrix
@@ -24,4 +25,5 @@ if __name__ == "__main__":
     # experimenter(CWRU(config='mert'))
     # experimenter(MFPT(config='dbg'))
     # experimenter(Paderborn(config='dbg'))
-    experimenter(UORED_VAFCLS(config='mert'))
+    # experimenter(UORED_VAFCLS(config='mert'))
+    experimenter(Hust(config='all'))
