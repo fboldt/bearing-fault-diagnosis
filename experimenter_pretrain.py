@@ -41,7 +41,7 @@ def experimenter(sources, target, clf=CNN1D()):
     clf.fit(Xtr, ytr)
     print("loading target acquisitions...")
     # doing kfold for acquisition    
-    experimenter_kfold(dataset=target, split='groupkfold_acquisition', clf=clf)
+    experimenter_kfold(dataset=target[0][1], split='groupkfold_acquisition', clf=clf)
 
 datasets = [
     # ("Paderborn (dbg)", Paderborn(config='dbg')),
