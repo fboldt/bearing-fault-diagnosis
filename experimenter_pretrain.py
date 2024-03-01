@@ -8,24 +8,35 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 import numpy as np
 
 def get_acquisitions(datasets):
-    first_dataset = False
+    accelerometers = 1
+    sample_size = 8400
+    X = np.empty((0, sample_size, accelerometers))
+    y = np.empty((0,))
     for dataset in datasets:
         print(f"Dataset: {dataset[0]}")
         Xtmp, ytmp = dataset[1].get_acquisitions()
-        if not first_dataset:
-            X, y =  Xtmp, ytmp
-            first_dataset = True
-        else:
-            X = np.concatenate((X, Xtmp))
-            y = np.concatenate((y, ytmp))
+        print(f"Dataset: {datasets[0][0]} -> X={Xtmp.shape}, Y={ytmp.shape}")
+        X = np.concatenate((X, Xtmp))
+        y = np.concatenate((y, ytmp))
+        print(f"Final - X={X.shape}, Y={y.shape}")
     return X, y
 
-def experimenter_kfold(dataset, split='groupkfold_acquisition', clf=None):
+
+def experimenter(sources, target, split='groupkfold_acquisition', clf=CNN1D()):
     accuracies = []
+    
     print(f"Slipt type: {split}")
-    for Xtr, ytr, Xte, yte in getattr(dataset, split)():
+    for Xtr, ytr, Xte, yte in getattr(target[1], split)():
+        # loading sources acquisitions
+        Xtrs, ytrs = get_acquisitions(sources)
+        # loading target acquisitions
         print(Xtr.shape, ytr.shape, Xte.shape, yte.shape)
+        # gathering training data
+        Xtr = np.concatenate((Xtrs, Xtr))
+        ytr = np.concatenate((ytrs, ytr))
+        # training the model 
         clf.fit(Xtr, ytr)
+        # getting the prediction
         ypr = clf.predict(Xte)
         accuracies.append(accuracy_score(yte, ypr))
         print(f"fold {len(accuracies)} accuracy: {accuracies[-1]}")
@@ -34,14 +45,6 @@ def experimenter_kfold(dataset, split='groupkfold_acquisition', clf=None):
         print(confusion_matrix(yte, ypr, labels=labels))
     print(f"mean accuracy: {sum(accuracies)/len(accuracies)}")
 
-def experimenter(sources, target, clf=CNN1D()):
-    print("loading sources acquisitions...")
-    Xtr, ytr = get_acquisitions(sources)
-    print("training estimator...")
-    clf.fit(Xtr, ytr)
-    print("loading target acquisitions...")
-    # doing kfold for acquisition    
-    experimenter_kfold(dataset=target[0][1], split='groupkfold_acquisition', clf=clf)
 
 datasets = [
     # ("Paderborn (dbg)", Paderborn(config='dbg')),
@@ -52,8 +55,8 @@ datasets = [
 ]
 
 if __name__ == "__main__":
-    source = datasets[:2]
-    print(f'source -> {source}')
-    target = list(set(datasets) - set(source))
+    target = datasets[-1]
+    sources = datasets[:-1]
+    print(f'sources -> {sources}')
     print(f'target -> {target}')
-    experimenter(source, target)
+    experimenter(sources, target)
