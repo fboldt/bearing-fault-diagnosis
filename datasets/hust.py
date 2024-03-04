@@ -133,6 +133,19 @@ list_of_bearings_all = [
     "OB800", "OB802", "OB804"
 ]
 
+list_of_bearings_niob = [
+    "B500", "B502", "B504", "B600", "B602", "B604", 
+    "B700", "B702", "B704", "B800", "B802", "B804", 
+    "I400", "I402", "I404", "I500", "I502", "I504", 
+    "I600", "I602", "I604", "I700", "I702", "I704", 
+    "I800", "I802", "I804", "N400", "N402", "N404", 
+    "N500", "N502", "N504", "N600", "N602", "N604", 
+    "N700", "N702", "N704", "N800", "N802", "N804", 
+    "O400", "O402", "O404", "O500", "O502", "O504", 
+    "O600", "O602", "O604", "O700", "O702", "O704", 
+    "O800", "O802", "O804"
+]
+
 # The OB400 was removed. It does not have the run-up feature.
 list_of_bearings_ru = [
     "B500", "B502", "B504", "B600", "B602", "B604", "B700", "B702", "B704", "B800",
@@ -146,6 +159,13 @@ list_of_bearings_ru = [
     "O604", "O700", "O702", "O704", "O800", "O802", "O804", "OB402", "OB404", 
     "OB500", "OB502", "OB504", "OB600", "OB602", "OB604", "OB700", "OB702", "OB704", 
     "OB800", "OB802", "OB804"
+]
+
+list_of_bearings_mert = [
+    'N500', 'N602', 'N704', 'N804',
+    'I500', 'I602', 'I704', 'I804',
+    'O500', 'O602', 'O704', 'O804',
+    'B500', 'B602', 'B704', 'B804'
 ]
 
 
@@ -247,6 +267,7 @@ class Hust():
         Extracts the acquisitions of each file in the dictionary files_names.
         """
         cwd = os.getcwd()
+        print(cwd)
         for x, key in enumerate(self.files):
             matlab_file = scipy.io.loadmat(os.path.join(cwd, self.files[key]))           
             acquisition = []
@@ -295,7 +316,7 @@ class Hust():
 
 
 if __name__ == "__main__":
-    dataset = Hust(config='all')
+    dataset = Hust(config='mert')
     # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
