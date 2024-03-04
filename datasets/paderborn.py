@@ -269,7 +269,7 @@ class Paderborn():
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 
 if __name__ == "__main__":
-    dataset = Paderborn(config='dbg')
+    dataset = Paderborn(config='all')
     # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
