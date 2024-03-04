@@ -1,0 +1,54 @@
+kfold acquisition UORED_VAFCLS(config='mert')
+fold 1 accuracy: 0.795
+ ['H', 'I', 'O', 'B']
+[[50  0  0  0]
+ [ 0 50  0  0]
+ [ 0  0 37 13]
+ [ 0  0 28 22]]
+(650, 8400, 1) (650,) (150, 8400, 1) (150,)
+5/5 [==============================] - 0s 21ms/step
+fold 2 accuracy: 1.0
+ ['H', 'I', 'B']
+[[50  0  0]
+ [ 0 50  0]
+ [ 0  0 50]]
+(650, 8400, 1) (650,) (150, 8400, 1) (150,)
+5/5 [==============================] - 0s 2ms/step
+fold 3 accuracy: 0.62
+ ['H', 'O', 'B']
+[[50  0  0]
+ [ 7 43  0]
+ [ 9 41  0]]
+(650, 8400, 1) (650,) (150, 8400, 1) (150,)
+5/5 [==============================] - 0s 2ms/step
+fold 4 accuracy: 0.9733333333333334
+ ['I', 'O', 'B']
+[[50  0  0]
+ [ 0 46  4]
+ [ 0  0 50]]
+(650, 8400, 1) (650,) (150, 8400, 1) (150,)
+5/5 [==============================] - 0s 2ms/step
+fold 5 accuracy: 0.6866666666666666
+ ['H', 'I', 'O']
+[[48  0  0]
+ [ 0 50  0]
+ [ 0  0  5]]
+mean accuracy: 0.8150000000000001
+
+
+Cross dataset 
+sources     ("CWRU (mert)", CWRU(config='12k')),  ("Hust (mert)", Hust(config='all')),
+target ("UORED (mert)", UORED_VAFCLS(config='mert')),
+25/25 [==============================] - 0s 2ms/step
+Accuracy 0.25
+ ['H', 'I', 'B', 'O']
+[[  0   0 200   0]
+ [  0   0 200   0]
+ [  0   0 200   0]
+ [  0   0 200   0]]
+
+
+pre trained kfold
+sources     ("CWRU (mert)", CWRU(config='12k')),  ("Hust (mert)", Hust(config='all')),
+target = UORED_VAFCLS(config='mert')
+
