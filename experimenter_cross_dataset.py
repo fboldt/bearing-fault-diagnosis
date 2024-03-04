@@ -1,4 +1,6 @@
 from datasets.cwru import CWRU
+from datasets.uored_vafcls import UORED_VAFCLS
+from datasets.hust import Hust
 from datasets.mfpt import MFPT
 from datasets.paderborn import Paderborn
 from estimators.cnn1d import CNN1D
@@ -33,9 +35,11 @@ def experimenter(sources, targets, clf=CNN1D()):
     print(confusion_matrix(yte, ypr, labels=labels))
 
 datasets = [
-    ("Paderborn (dbg)", Paderborn(config='dbg')),
-    ("CWRU (nio)", CWRU(config='nio')),
-    ("MFPT (dbg)", MFPT(config='dbg')),
+    # ("Paderborn (dbg)", Paderborn(config='dbg')),
+    # ("MFPT (dbg)", MFPT(config='dbg')),
+    ("CWRU (mert)", CWRU(config='mert')),
+    ("Hust (mert)", Hust(config='mert')),
+    ("UORED (mert)", UORED_VAFCLS(config='mert')),
 ]
 
 if __name__ == "__main__":
