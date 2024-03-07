@@ -87,6 +87,9 @@ class MFPT():
     load_acquisitions()
       Extract data from files
     """
+    def __str__(self):
+        return f"MFPT ({self.config})"
+
     def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, config='dbg'):
         self.n_channels = n_channels
         self.sample_size = sample_size
@@ -196,7 +199,7 @@ class MFPT():
 
 if __name__ == "__main__":
     dataset = MFPT()
-    # dataset.download()
+    dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))

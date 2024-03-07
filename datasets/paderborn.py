@@ -24,6 +24,12 @@ bearing_names_all = [
     "KI01", "KI03", "KI04", "KI05", "KI07", "KI08", "KI14", "KI16", "KI17", "KI18", "KI21", 
 ]
 
+bearing_names_reduced = [
+    "K002", 
+    "KA03", 
+    "KI03", 
+]
+
 bearing_names_dbg = [
     "K001", "KA01", "KI01",
 ]
@@ -100,6 +106,9 @@ class Paderborn():
         # Get bearings to be considered to be
         bearing_names = eval("bearing_names_"+self.config)
         return bearing_names
+
+    def __str__(self):
+        return f"Paderborn ({self.config})"
 
     def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, config="all"):
         self.n_channels = n_channels
