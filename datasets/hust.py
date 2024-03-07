@@ -117,7 +117,7 @@ files_hash = {
 }
 
 
-list_of_bearings_dbg = []
+list_of_bearings_dbg = ['N500', 'I500', 'O500', 'B500', ]
 
 list_of_bearings_all = [
     "B500", "B502", "B504", "B600", "B602", "B604", "B700", "B702", "B704", "B800",
@@ -228,6 +228,9 @@ class Hust():
         bearing_label = [label for label in bearing_file_names]    
         return np.array(bearing_label), np.array(bearing_file_names)
 
+    def __str__(self):
+        return f"HUST ({self.config})"
+
 
     def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, config="dbg"):
         self.url = "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/"
@@ -267,7 +270,7 @@ class Hust():
         Extracts the acquisitions of each file in the dictionary files_names.
         """
         cwd = os.getcwd()
-        print(cwd)
+        # print(cwd)
         for x, key in enumerate(self.files):
             matlab_file = scipy.io.loadmat(os.path.join(cwd, self.files[key]))           
             acquisition = []
@@ -281,7 +284,7 @@ class Hust():
                 self.signal_data = np.append(self.signal_data, np.array([sample.T]), axis=0)
                 self.labels = np.append(self.labels, key[0])
                 self.keys = np.append(self.keys, key)
-        print()
+        print(f"  ({len(self.labels)} examples)")
 
 
     def get_acquisitions(self):

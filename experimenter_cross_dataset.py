@@ -10,24 +10,25 @@ import numpy as np
 def get_acquisitions(datasets):
     first_dataset = False
     for dataset in datasets:
-        print(f"Dataset: {dataset[0]}")
-        Xtmp, ytmp = dataset[1].get_acquisitions()
+        print(dataset)
+        Xtmp, ytmp = dataset.get_acquisitions()
         if not first_dataset:
             X, y =  Xtmp, ytmp
             first_dataset = True
         else:
             X = np.concatenate((X, Xtmp))
             y = np.concatenate((y, ytmp))
+    y[y=='H'] = 'N'
     return X, y
 
-def experimenter(sources, targets, clf=CNN1D()):
+def cross_dataset(sources, targets, clf=CNN1D()):
     print("loading sources acquisitions...")
     Xtr, ytr = get_acquisitions(sources)
     print("training estimator...")
     clf.fit(Xtr, ytr)
     print("loading target acquisitions...")
     Xte, yte = get_acquisitions(targets)
-    print("inrferencing predictions...")
+    print("inferencing predictions...")
     ypr = clf.predict(Xte)
     print(f"Accuracy {accuracy_score(yte, ypr)}")
     labels = list(set(yte))
@@ -35,14 +36,19 @@ def experimenter(sources, targets, clf=CNN1D()):
     print(confusion_matrix(yte, ypr, labels=labels))
 
 datasets = [
-    # ("Paderborn (dbg)", Paderborn(config='dbg')),
-    # ("MFPT (dbg)", MFPT(config='dbg')),
-    ("CWRU (mert)", CWRU(config='mert')),
-    ("Hust (mert)", Hust(config='mert')),
-    ("UORED (mert)", UORED_VAFCLS(config='mert')),
+    CWRU(config='all'),
+    MFPT(config='all'),
+    Paderborn(config='reduced'),
+    Hust(config='niob'),
+    UORED_VAFCLS(config='mert'),
 ]
 
-if __name__ == "__main__":
-    source = datasets[:2]
+def experimenter():
+    print("cross dataset")
+    source = datasets[:-1]
     target = list(set(datasets) - set(source))
-    experimenter(source, target)
+    cross_dataset(source, target)
+
+if __name__ == "__main__":
+    experimenter()
+    

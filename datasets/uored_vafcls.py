@@ -136,10 +136,10 @@ list_of_bearings_faulty_healthy = [
 ]
 
 list_of_bearings_mert = [
-    "H_1_0",   "H_2_0",   "H_3_0", "H_4_0",
-    "I_1_2",   "I_2_2",   "I_3_2", "I_4_2",   
-    "O_6_2",   "O_7_2",   "O_8_2", "O_9_2",  
-    "B_11_2",  "B_12_1",  "B_13_2",  "B_14_2"  
+    "H_1_0",   "H_2_0",   "H_3_0", "H_4_0", "H_5_0", 
+    "I_1_2",   "I_2_2",   "I_3_2", "I_4_2", "I_5_2", 
+    "O_6_2",   "O_7_2",   "O_8_2", "O_9_2", "O_10_2",
+    "B_11_2",  "B_12_1",  "B_13_2", "B_14_2", "B_15_2",
 ]
 
 def download_file(url, dirname, bearing):
@@ -196,6 +196,9 @@ class UORED_VAFCLS():
         bearing_file_names = [name+'.mat' for name in list_of_bearings]
         bearing_label = [label for label in bearing_file_names]    
         return np.array(bearing_label), np.array(bearing_file_names)
+
+    def __str__(self):
+        return f"UORED_VAFCLS ({self.config})"
 
 
     def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, config="dbg"):
@@ -284,8 +287,8 @@ class UORED_VAFCLS():
 
 
 if __name__ == "__main__":
-    dataset = UORED_VAFCLS(config='mert')
-    # dataset.download()
+    dataset = UORED_VAFCLS(config='all')
+    dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
