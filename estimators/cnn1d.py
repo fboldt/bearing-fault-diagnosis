@@ -13,7 +13,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.model = None
         self.checkpoint = checkpoint
         self.validation_split = 0
-        self.verbose = 1
+        self.verbose = 0
         self.featLayers = Sequential(name="feat_layers")
         self.featLayers.add(layers.Conv1D(32, 64, activation='relu', name="conv1"))
         self.featLayers.add(layers.MaxPooling1D(8))
@@ -21,7 +21,8 @@ class CNN1D(BaseEstimator, ClassifierMixin):
     
     def __del__(self):
         if os.path.isdir(self.checkpoint):
-            print("removing", self.checkpoint)
+            if self.verbose:
+                print("removing", self.checkpoint)
             shutil.rmtree(self.checkpoint)
     
     def callbacks_list(self):
@@ -78,7 +79,8 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.n_steps = X.shape[1]
         self.n_features = X.shape[2]
         if os.path.isdir("prefit.checkpoint"):
-            print("loading", "prefit.checkpoint")
+            if self.verbose:
+                print("loading", "prefit.checkpoint")
             self.model = saving.load_model("prefit.checkpoint")
         if self.model == None:
             self.make_model((self.n_steps, self.n_features))
@@ -99,7 +101,8 @@ class CNN1D(BaseEstimator, ClassifierMixin):
             metrics=["accuracy"]
             )
         if os.path.isdir(self.checkpoint):
-            print("removing", self.checkpoint)
+            if self.verbose:
+                print("removing", self.checkpoint)
             shutil.rmtree(self.checkpoint)
         self.model.fit(X, y_cat, epochs=epochs, verbose=self.verbose,
                         callbacks=self.callbacks_list(),
@@ -107,7 +110,8 @@ class CNN1D(BaseEstimator, ClassifierMixin):
 
     def predict(self, X):
         if os.path.isdir(self.checkpoint):
-            print("loading", self.checkpoint)
+            if self.verbose:
+                print("loading", self.checkpoint)
             model = saving.load_model(self.checkpoint)
         else: 
             model = self.model
