@@ -18,7 +18,6 @@ def get_acquisitions(datasets):
         else:
             X = np.concatenate((X, Xtmp))
             y = np.concatenate((y, ytmp))
-    y[y=='H'] = 'N'
     return X, y
 
 def cross_dataset(sources, targets, clf=CNN1D()):
@@ -38,7 +37,7 @@ def cross_dataset(sources, targets, clf=CNN1D()):
 datasets = [
     CWRU(config='all'),
     MFPT(config='all'),
-    Paderborn(config='reduced'),
+    Paderborn(config='all'),
     Hust(config='niob'),
     UORED_VAFCLS(config='mert'),
 ]
