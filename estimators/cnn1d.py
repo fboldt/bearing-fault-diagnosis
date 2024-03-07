@@ -7,7 +7,7 @@ import os.path
 import shutil
 
 class CNN1D(BaseEstimator, ClassifierMixin):
-    def __init__(self, optimizer='adam', epochs=200, checkpoint="model.checkpoint"):
+    def __init__(self, optimizer='adam', epochs=500, checkpoint="model.checkpoint"):
         self.optimizer = optimizer
         self.epochs = epochs
         self.model = None
