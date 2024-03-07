@@ -19,7 +19,7 @@ datasets = [
 
 sources = datasets[:-1]
 target = list(set(datasets) - set(sources))
-kfold_repetitions = 3
+kfold_repetitions = 10
 
 def experimenter():
     kfold(target, kfold_repetitions)
