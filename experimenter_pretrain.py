@@ -17,7 +17,7 @@ def transfer_learning(sources, target, clf=CNN1D()):
 sources = [
     CWRU(config='all'),
     MFPT(config='all'),
-    Paderborn(config='reduced'),
+    Paderborn(config='all'),
     Hust(config='niob'),
 ]
 target = UORED_VAFCLS(config='mert')

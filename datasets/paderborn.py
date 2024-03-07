@@ -25,9 +25,9 @@ bearing_names_all = [
 ]
 
 bearing_names_reduced = [
-    "K002", 
-    "KA03", 
-    "KI03", 
+    "K001", "K002", "K003", 
+    "KA01", "KA03", "KA04", 
+    "KI01", "KI03", "KI04", 
 ]
 
 bearing_names_dbg = [
