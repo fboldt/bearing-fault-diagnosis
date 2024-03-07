@@ -239,7 +239,7 @@ class Hust():
         self.acquisition_maxsize = acquisition_maxsize
         self.config = config
         self.rawfilesdir = "raw_hust"
-        self.n_folds = 5
+        self.n_folds = 4
         self.bearing_labels, self.bearing_names = self.get_hust_bearings()
         self.accelerometers = ['DE'][:self.n_channels]
         self.signal_data = np.empty((0, self.sample_size, len(self.accelerometers)))
@@ -284,7 +284,7 @@ class Hust():
                 self.signal_data = np.append(self.signal_data, np.array([sample.T]), axis=0)
                 self.labels = np.append(self.labels, key[0])
                 self.keys = np.append(self.keys, key)
-        print(f"  ({len(self.labels)} examples)")
+        print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
 
 
     def get_acquisitions(self):
@@ -319,8 +319,8 @@ class Hust():
 
 
 if __name__ == "__main__":
-    dataset = Hust(config='all')
-    dataset.download()
+    dataset = Hust(config='mert')
+    # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))

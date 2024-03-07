@@ -42,11 +42,12 @@ datasets = [
     UORED_VAFCLS(config='mert'),
 ]
 
-def experimenter():
+sources = datasets[:-1]
+target = list(set(datasets) - set(sources))
+
+def experimenter(sources=sources, target=target):
     print("cross dataset")
-    source = datasets[:-1]
-    target = list(set(datasets) - set(source))
-    cross_dataset(source, target)
+    cross_dataset(sources, target)
 
 if __name__ == "__main__":
     experimenter()

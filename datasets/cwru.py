@@ -152,6 +152,26 @@ list_of_bearings_mert = [
     ("O.021.DE.@6_0","238.mat"),    ("O.021.DE.@6_1","239.mat"),    ("O.021.DE.@6_2","240.mat"),    ("O.021.DE.@6_3","241.mat"),    
 ]
 
+
+list_of_bearings_reduced = [
+    ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
+    ("I.007.DE_0","105.mat"),       ("I.007.DE_1","106.mat"),       ("I.007.DE_2","107.mat"),       ("I.007.DE_3","108.mat"),
+    ("B.007.DE_0","118.mat"),       ("B.007.DE_1","119.mat"),       ("B.007.DE_2","120.mat"),       ("B.007.DE_3","121.mat"),    
+    ("O.007.DE.@6_0","130.mat"),    ("O.007.DE.@6_1","131.mat"),    ("O.007.DE.@6_2","132.mat"),    ("O.007.DE.@6_3","133.mat"),    
+    ("I.014.DE_0","169.mat"),       ("I.014.DE_1","170.mat"),       ("I.014.DE_2","171.mat"),       ("I.014.DE_3","172.mat"),    
+    ("B.014.DE_0","185.mat"),       ("B.014.DE_1","186.mat"),       ("B.014.DE_2","187.mat"),       ("B.014.DE_3","188.mat"),    
+    ("O.014.DE.@6_0","197.mat"),    ("O.014.DE.@6_1","198.mat"),    ("O.014.DE.@6_2","199.mat"),    ("O.014.DE.@6_3","200.mat"),    
+    ("I.021.DE_0","209.mat"),       ("I.021.DE_1","210.mat"),       ("I.021.DE_2","211.mat"),       ("I.021.DE_3","212.mat"),    
+    ("B.021.DE_0","222.mat"),       ("B.021.DE_1","223.mat"),       ("B.021.DE_2","224.mat"),       ("B.021.DE_3","225.mat"),    
+    ("O.021.DE.@6_0","234.mat"),    ("O.021.DE.@6_1","235.mat"),    ("O.021.DE.@6_2","236.mat"),    ("O.021.DE.@6_3","237.mat"),    
+    ("I.007.FE_0","278.mat"),       ("I.007.FE_1","279.mat"),       ("I.007.FE_2","280.mat"),       ("I.007.FE_3","281.mat"),    
+    ("B.007.FE_0","282.mat"),       ("B.007.FE_1","283.mat"),       ("B.007.FE_2","284.mat"),       ("B.007.FE_3","285.mat"),    
+    ("O.007.FE.@6_0","294.mat"),    ("O.007.FE.@6_1","295.mat"),    ("O.007.FE.@6_2","296.mat"),    ("O.007.FE.@6_3","297.mat"),    
+    ("I.014.FE_0","274.mat"),       ("I.014.FE_1","275.mat"),       ("I.014.FE_2","276.mat"),       ("I.014.FE_3","277.mat"),    
+    ("B.014.FE_0","286.mat"),       ("B.014.FE_1","287.mat"),       ("B.014.FE_2","288.mat"),       ("B.014.FE_3","289.mat"),    
+    ("O.021.FE.@6_0","315.mat"),    ("O.021.FE.@3_1","316.mat"),    ("O.021.FE.@3_2","317.mat"),    ("O.021.FE.@3_3","318.mat"),    
+]
+
 def download_file(url, dirname, bearing):
     print("Downloading Bearing Data:", bearing)
     file_name = bearing
@@ -283,7 +303,7 @@ class CWRU():
                 self.signal_data = np.append(self.signal_data, np.array([sample.T]), axis=0)
                 self.labels = np.append(self.labels, key[0])
                 self.keys = np.append(self.keys, key)
-        print(f"  ({len(self.labels)} examples)")
+        print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
     
     def get_acquisitions(self):
         if len(self.labels) == 0:
@@ -344,8 +364,8 @@ class CWRU():
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 
 if __name__ == "__main__":
-    dataset = CWRU(config='all')
-    dataset.download()
+    dataset = CWRU(config='reduced')
+    # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))

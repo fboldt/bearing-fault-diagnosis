@@ -25,9 +25,7 @@ bearing_names_all = [
 ]
 
 bearing_names_reduced = [
-    "K001", "K002", "K003", 
-    "KA01", "KA03", "KA04", 
-    "KI01", "KI03", "KI04", 
+    "K001", "KA01", "KI01",
 ]
 
 bearing_names_dbg = [
@@ -210,7 +208,7 @@ class Paderborn():
                 self.signal_data = np.append(self.signal_data, sample, axis=0)
                 self.labels = np.append(self.labels, key[0])
                 self.keys = np.append(self.keys, key)
-        print(f"  ({len(self.labels)} examples)")
+        print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
 
     def get_acquisitions(self):
         if len(self.labels) == 0:
@@ -278,7 +276,7 @@ class Paderborn():
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 
 if __name__ == "__main__":
-    dataset = Paderborn(config='all')
+    dataset = Paderborn(config='reduced')
     # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)

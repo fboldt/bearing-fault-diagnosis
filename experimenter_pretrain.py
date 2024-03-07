@@ -7,24 +7,27 @@ from estimators.cnn1d import CNN1D
 from experimenter_kfold import kfold
 from experimenter_cross_dataset import get_acquisitions
 
-def transfer_learning(sources, target, clf=CNN1D()):
+def transfer_learning(sources, target, repetitions=3, clf=CNN1D()):
     print("loading sources acquisitions...")
     Xtr, ytr = get_acquisitions(sources)
     print("pretraining estimator...")
     clf.prefit(Xtr, ytr)
-    kfold(target, clf=clf)
+    kfold(target, clf=clf, repetitions=repetitions)
 
-sources = [
-    CWRU(config='all'),
-    MFPT(config='all'),
-    Paderborn(config='all'),
-    Hust(config='niob'),
+datasets = [
+    CWRU(config='dbg'),
+    MFPT(config='dbg'),
+    # Paderborn(config='dbg'),
+    # Hust(config='dbg'),
+    # UORED_VAFCLS(config='dbg'),
 ]
-target = UORED_VAFCLS(config='mert')
 
-def experimenter():
+sources = datasets[:-1]
+target = list(set(datasets) - set(sources))[0]
+
+def experimenter(sources=sources, target=target, repetitions=1):
     print("Transfer learning")
-    transfer_learning(sources, target)
+    transfer_learning(sources, target, repetitions=repetitions)
 
 if __name__ == "__main__":
     experimenter()
