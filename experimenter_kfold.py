@@ -26,14 +26,18 @@ def kfold(dataset, split='groupkfold_acquisition', repetitions=3, clf=CNN1D()):
         total.append(mean_accuracy)
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
+datasets = [
+    # CWRU(config='dbg'),
+    MFPT(config='dbg'),
+    # Paderborn(config='dbg'),
+    # Hust(config='dbg'),
+    # UORED_VAFCLS(config='dbg'),
+]
 
-def experimenter():
+def experimenter(datasets=datasets, repetitions=3):
     print("KFold acquisition")
-    # kfold(CWRU(config='mert'))
-    # kfold(MFPT(config='all'))
-    # kfold(Paderborn(config='reduced'))
-    # kfold(Hust(config='mert'))
-    kfold(UORED_VAFCLS(config='mert'))
+    for dataset in datasets:
+        kfold(dataset, repetitions=repetitions)
 
 if __name__ == "__main__":
-    experimenter()
+    experimenter(repetitions=1)

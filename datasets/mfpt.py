@@ -172,7 +172,7 @@ class MFPT():
                 self.signal_data = np.append(self.signal_data, sample, axis=0)
                 self.labels = np.append(self.labels, key[0])
                 self.keys = np.append(self.keys, key)
-        print(f"  ({len(self.labels)} examples)")
+        print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
         
     def get_acquisitions(self):
         if len(self.labels) == 0:

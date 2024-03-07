@@ -77,14 +77,6 @@ files_hash = {
     "C_20_2": "8e8a485f-6fe9-4439-8f93-743a7ac431ec",
 }
 
-list_of_bearings_dbg = [
-    "H_1_0", "H_2_0", "H_3_0", "H_4_0", 
-    "I_1_1", "I_2_2", "I_3_1", "I_4_2", 
-    "O_6_1", "O_7_2", "O_8_1", "O_9_2",
-    "B_11_1", "B_12_2", "B_13_1", "B_14_2",
-    "C_16_1", "C_17_2", "C_18_1", "C_19_2"
-]
-
 list_of_bearings_all = [
     "H_1_0",   "H_2_0",   "H_3_0",   "H_4_0",   "H_5_0",   
     "H_6_0",   "H_7_0",   "H_8_0",   "H_9_0",   "H_10_0",  
@@ -141,6 +133,8 @@ list_of_bearings_mert = [
     "O_6_2",   "O_7_2",   "O_8_2", "O_9_2", "O_10_2",
     "B_11_2",  "B_12_1",  "B_13_2", "B_14_2", "B_15_2",
 ]
+
+list_of_bearings_dbg = list_of_bearings_mert
 
 def download_file(url, dirname, bearing):
     print("Downloading Bearing Data:", bearing)   
@@ -252,13 +246,13 @@ class UORED_VAFCLS():
                 self.signal_data = np.append(self.signal_data, np.array([sample.T]), axis=0)
                 self.labels = np.append(self.labels, key[0])
                 self.keys = np.append(self.keys, key)
-        print()
+        self.labels[self.labels=='H'] = 'N'
+        print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
 
 
     def get_acquisitions(self):
         if len(self.labels) == 0:
             self.load_acquisitions()
-        self.labels[self.labels=='H'] = 'N'
         return self.signal_data, self.labels
 
 
