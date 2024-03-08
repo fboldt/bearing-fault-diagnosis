@@ -1,0 +1,122 @@
+KFold acquisition
+1/1: CWRU (reduced)
+Slipt type: groupkfold_severity
+  loading acquisitions 100.00 %  (795 examples) | labels: {'B', 'I', 'O', 'N'}
+(633, 8400, 1) (633,) (162, 8400, 1) (162,)
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1709896133.368788   22214 device_compiler.h:186] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+6/6 [==============================] - 0s 34ms/step
+fold 1/4 accuracy: 0.3271604938271605
+ ['B', 'I', 'N']
+[[ 0 28  0]
+ [ 0  3  0]
+ [ 0  0 50]]
+(577, 8400, 1) (577,) (218, 8400, 1) (218,)
+7/7 [==============================] - 0s 41ms/step
+fold 2/4 accuracy: 0.7431192660550459
+ ['B', 'I', 'O', 'N']
+[[56  0  0  0]
+ [ 0 56  0  0]
+ [ 0 56  0  0]
+ [ 0  0  0 50]]
+(577, 8400, 1) (577,) (218, 8400, 1) (218,)
+7/7 [==============================] - 0s 4ms/step
+fold 3/4 accuracy: 0.42201834862385323
+ ['B', 'I', 'O', 'N']
+[[42  0  0 14]
+ [56  0  0  0]
+ [ 0  0  0 56]
+ [ 0  0  0 50]]
+(598, 8400, 1) (598,) (197, 8400, 1) (197,)
+7/7 [==============================] - 0s 30ms/step
+fold 4/4 accuracy: 0.43147208121827413
+ ['B', 'I', 'O', 'N']
+[[ 0 56  0  0]
+ [ 0 56  0  0]
+ [ 0 56  0  0]
+ [ 0  0  0 29]]
+mean accuracy: 0.48094254743108344
+total mean accuracy: 0.48094254743108344
+cross dataset
+loading sources acquisitions...
+UORED_VAFCLS (mert)
+  loading acquisitions 100.00 %  (1000 examples) | labels: {'B', 'I', 'O', 'N'}
+HUST (niob)
+  loading acquisitions 100.00 %  (2793 examples) | labels: {'B', 'I', 'O', 'N'}
+training estimator...
+loading target acquisitions...
+CWRU (reduced)
+inferencing predictions...
+25/25 [==============================] - 0s 13ms/step
+Accuracy 0.31949685534591193
+ ['B', 'I', 'O', 'N']
+[[ 56   0   0 168]
+ [ 75   0 107  42]
+ [ 93   0  19  56]
+ [  0   0   0 179]]
+Transfer learning
+loading sources acquisitions...
+UORED_VAFCLS (mert)
+HUST (niob)
+pretraining estimator...
+Model: "backbone"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ feat_layers (Sequential)    (None, 979, 32)           67648     
+                                                                 
+ max_pooling1d_3 (MaxPoolin  (None, 122, 32)           0         
+ g1D)                                                            
+                                                                 
+ conv3 (Conv1D)              (None, 59, 32)            65568     
+                                                                 
+ G_A_P_1D (GlobalAveragePoo  (None, 32)                0         
+ ling1D)                                                         
+                                                                 
+ dropout (Dropout)           (None, 32)                0         
+                                                                 
+ dense_5 (Dense)             (None, 4)                 132       
+                                                                 
+ activation_5 (Activation)   (None, 4)                 0         
+                                                                 
+=================================================================
+Total params: 133348 (520.89 KB)
+Trainable params: 65700 (256.64 KB)
+Non-trainable params: 67648 (264.25 KB)
+_________________________________________________________________
+None
+1/1: CWRU (reduced)
+Slipt type: groupkfold_severity
+(633, 8400, 1) (633,) (162, 8400, 1) (162,)
+6/6 [==============================] - 0s 5ms/step
+fold 1/4 accuracy: 0.30864197530864196
+ ['B', 'I', 'N']
+[[ 0  0  0]
+ [ 0  0  0]
+ [ 0  0 50]]
+(577, 8400, 1) (577,) (218, 8400, 1) (218,)
+7/7 [==============================] - 0s 4ms/step
+fold 2/4 accuracy: 0.7339449541284404
+ ['B', 'I', 'O', 'N']
+[[56  0  0  0]
+ [ 0 54  0  2]
+ [ 0 56  0  0]
+ [ 0  0  0 50]]
+(577, 8400, 1) (577,) (218, 8400, 1) (218,)
+7/7 [==============================] - 0s 5ms/step
+fold 3/4 accuracy: 0.48623853211009177
+ ['B', 'I', 'O', 'N']
+[[56  0  0  0]
+ [56  0  0  0]
+ [56  0  0  0]
+ [ 0  0  0 50]]
+(598, 8400, 1) (598,) (197, 8400, 1) (197,)
+7/7 [==============================] - 0s 5ms/step
+fold 4/4 accuracy: 0.43147208121827413
+ ['B', 'I', 'O', 'N']
+[[56  0  0  0]
+ [56  0  0  0]
+ [ 0 56  0  0]
+ [ 0  0  0 29]]
+mean accuracy: 0.4900743856913621
+total mean accuracy: 0.4900743856913621

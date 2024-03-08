@@ -6,7 +6,7 @@ import urllib.request
 import scipy.io
 import numpy as np
 import os
-from sklearn.model_selection import KFold, StratifiedShuffleSplit, GroupShuffleSplit, StratifiedGroupKFold
+from sklearn.model_selection import KFold, StratifiedGroupKFold
 import urllib
 import sys
 
@@ -164,6 +164,8 @@ list_of_bearings_reduced = [
     ("I.021.DE_0","209.mat"),       ("I.021.DE_1","210.mat"),       ("I.021.DE_2","211.mat"),       ("I.021.DE_3","212.mat"),    
     ("B.021.DE_0","222.mat"),       ("B.021.DE_1","223.mat"),       ("B.021.DE_2","224.mat"),       ("B.021.DE_3","225.mat"),    
     ("O.021.DE.@6_0","234.mat"),    ("O.021.DE.@6_1","235.mat"),    ("O.021.DE.@6_2","236.mat"),    ("O.021.DE.@6_3","237.mat"),    
+    ("I.028.DE_0","3001.mat"),      ("I.028.DE_1","3002.mat"),      ("I.028.DE_2","3003.mat"),      ("I.028.DE_3","3004.mat"),    
+    ("B.028.DE_0","3005.mat"),      ("B.028.DE_1","3006.mat"),      ("B.028.DE_2","3007.mat"),      ("B.028.DE_3","3008.mat"),
     ("I.007.FE_0","278.mat"),       ("I.007.FE_1","279.mat"),       ("I.007.FE_2","280.mat"),       ("I.007.FE_3","281.mat"),    
     ("B.007.FE_0","282.mat"),       ("B.007.FE_1","283.mat"),       ("B.007.FE_2","284.mat"),       ("B.007.FE_3","285.mat"),    
     ("O.007.FE.@6_0","294.mat"),    ("O.007.FE.@6_1","295.mat"),    ("O.007.FE.@6_2","296.mat"),    ("O.007.FE.@6_3","297.mat"),    
@@ -334,7 +336,7 @@ class CWRU():
         groups = []
         for i in self.keys:
             groups = np.append(groups, int(i[-1]) % self.n_folds)
-        kf = GroupShuffleSplit(n_splits=self.n_folds)
+        kf = StratifiedGroupKFold(n_splits=self.n_folds)
         for train, test in kf.split(self.signal_data, self.labels, groups):
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 
@@ -345,7 +347,7 @@ class CWRU():
         for i in self.keys:
             load = i[-1]
             groups = np.append(groups, load)
-        kf = GroupShuffleSplit(n_splits=self.n_folds)
+        kf = StratifiedGroupKFold(n_splits=self.n_folds)
         for train, test in kf.split(self.signal_data, self.labels, groups):
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 
@@ -359,7 +361,7 @@ class CWRU():
             else:
                 load_severity = i[2:5]
             groups = np.append(groups, load_severity)
-        kf = GroupShuffleSplit(n_splits=self.n_folds)
+        kf = StratifiedGroupKFold(n_splits=self.n_folds)
         for train, test in kf.split(self.signal_data, self.labels, groups):
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 

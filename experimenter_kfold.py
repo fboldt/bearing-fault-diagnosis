@@ -27,17 +27,18 @@ def kfold(dataset, split='groupkfold_acquisition', repetitions=3, clf=CNN1D()):
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
 datasets = [
-    # CWRU(config='dbg'),
-    MFPT(config='dbg'),
+    CWRU(config='reduced'),
+    # MFPT(config='dbg'),
     # Paderborn(config='dbg'),
     # Hust(config='dbg'),
     # UORED_VAFCLS(config='dbg'),
 ]
+split='groupkfold_severity'
 
-def experimenter(datasets=datasets, repetitions=3):
+def experimenter(datasets=datasets, split=split, repetitions=3):
     print("KFold acquisition")
     for dataset in datasets:
-        kfold(dataset, repetitions=repetitions)
+        kfold(dataset, split=split, repetitions=repetitions)
 
 if __name__ == "__main__":
     experimenter(repetitions=1)

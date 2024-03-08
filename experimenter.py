@@ -10,21 +10,22 @@ from experimenter_cross_dataset import experimenter as cross_dataset
 from experimenter_pretrain import experimenter as transfer_learning
 
 datasets = [
-    CWRU(config='mert'),
     # MFPT(config='all'),
     # Paderborn(config='reduced'),
     UORED_VAFCLS(config='mert'),
     Hust(config='niob'),
+    CWRU(config='reduced'),
 ]
 
 sources = datasets[:-1]
 target = list(set(datasets) - set(sources))
-kfold_repetitions = 10
+kfold_repetitions = 1
+split='groupkfold_severity'
 
 def experimenter():
-    kfold(target, kfold_repetitions)
+    kfold(target, split=split, repetitions=kfold_repetitions)
     cross_dataset(sources, target)
-    transfer_learning(sources, target[0], kfold_repetitions)
+    transfer_learning(sources, target[0], split=split, repetitions=kfold_repetitions)
 
 if __name__ == "__main__":
     experimenter()
