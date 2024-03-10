@@ -11,20 +11,20 @@ from experimenter_pretrain import experimenter as transfer_learning
 
 datasets = [
     # MFPT(config='all'),
-    # Paderborn(config='reduced'),
-    UORED_VAFCLS(config='mert'),
-    Hust(config='niob'),
-    CWRU(config='reduced'),
+    # Paderborn(config='all'),
+    UORED_VAFCLS(config='all'),
+    CWRU(config='all'),
+    Hust(config='all'),
 ]
 
 sources = datasets[:-1]
 target = list(set(datasets) - set(sources))
-kfold_repetitions = 1
-split='groupkfold_severity'
+kfold_repetitions = 10
+split= 'groupkfold_severity' if "CWRU" in target.__str__() else 'groupkfold_acquisition'
 
 def experimenter():
     kfold(target, split=split, repetitions=kfold_repetitions)
-    cross_dataset(sources, target)
+    # cross_dataset(sources, target)
     transfer_learning(sources, target[0], split=split, repetitions=kfold_repetitions)
 
 if __name__ == "__main__":

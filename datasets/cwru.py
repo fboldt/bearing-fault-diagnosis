@@ -67,7 +67,7 @@ list_of_bearings_12k = [
 ]
 
 list_of_bearings_48k = [
-    # ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
+    ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
     ("I.007.DE_0","109.mat"),       ("I.007.DE_1","110.mat"),       ("I.007.DE_2","111.mat"),       ("I.007.DE_3","112.mat"),
     ("B.007.DE_0","122.mat"),       ("B.007.DE_1","123.mat"),       ("B.007.DE_2","124.mat"),       ("B.007.DE_3","125.mat"),    
     ("O.007.DE.@6_0","135.mat"),    ("O.007.DE.@6_1","136.mat"),    ("O.007.DE.@6_2","137.mat"),    ("O.007.DE.@6_3","138.mat"),    
@@ -164,14 +164,14 @@ list_of_bearings_reduced = [
     ("I.021.DE_0","209.mat"),       ("I.021.DE_1","210.mat"),       ("I.021.DE_2","211.mat"),       ("I.021.DE_3","212.mat"),    
     ("B.021.DE_0","222.mat"),       ("B.021.DE_1","223.mat"),       ("B.021.DE_2","224.mat"),       ("B.021.DE_3","225.mat"),    
     ("O.021.DE.@6_0","234.mat"),    ("O.021.DE.@6_1","235.mat"),    ("O.021.DE.@6_2","236.mat"),    ("O.021.DE.@6_3","237.mat"),    
-    ("I.028.DE_0","3001.mat"),      ("I.028.DE_1","3002.mat"),      ("I.028.DE_2","3003.mat"),      ("I.028.DE_3","3004.mat"),    
-    ("B.028.DE_0","3005.mat"),      ("B.028.DE_1","3006.mat"),      ("B.028.DE_2","3007.mat"),      ("B.028.DE_3","3008.mat"),
-    ("I.007.FE_0","278.mat"),       ("I.007.FE_1","279.mat"),       ("I.007.FE_2","280.mat"),       ("I.007.FE_3","281.mat"),    
-    ("B.007.FE_0","282.mat"),       ("B.007.FE_1","283.mat"),       ("B.007.FE_2","284.mat"),       ("B.007.FE_3","285.mat"),    
-    ("O.007.FE.@6_0","294.mat"),    ("O.007.FE.@6_1","295.mat"),    ("O.007.FE.@6_2","296.mat"),    ("O.007.FE.@6_3","297.mat"),    
-    ("I.014.FE_0","274.mat"),       ("I.014.FE_1","275.mat"),       ("I.014.FE_2","276.mat"),       ("I.014.FE_3","277.mat"),    
-    ("B.014.FE_0","286.mat"),       ("B.014.FE_1","287.mat"),       ("B.014.FE_2","288.mat"),       ("B.014.FE_3","289.mat"),    
-    ("O.021.FE.@6_0","315.mat"),    ("O.021.FE.@3_1","316.mat"),    ("O.021.FE.@3_2","317.mat"),    ("O.021.FE.@3_3","318.mat"),    
+    # ("I.028.DE_0","3001.mat"),      ("I.028.DE_1","3002.mat"),      ("I.028.DE_2","3003.mat"),      ("I.028.DE_3","3004.mat"),    
+    # ("B.028.DE_0","3005.mat"),      ("B.028.DE_1","3006.mat"),      ("B.028.DE_2","3007.mat"),      ("B.028.DE_3","3008.mat"),
+    # ("I.007.FE_0","278.mat"),       ("I.007.FE_1","279.mat"),       ("I.007.FE_2","280.mat"),       ("I.007.FE_3","281.mat"),    
+    # ("B.007.FE_0","282.mat"),       ("B.007.FE_1","283.mat"),       ("B.007.FE_2","284.mat"),       ("B.007.FE_3","285.mat"),    
+    # ("O.007.FE.@6_0","294.mat"),    ("O.007.FE.@6_1","295.mat"),    ("O.007.FE.@6_2","296.mat"),    ("O.007.FE.@6_3","297.mat"),    
+    # ("I.014.FE_0","274.mat"),       ("I.014.FE_1","275.mat"),       ("I.014.FE_2","276.mat"),       ("I.014.FE_3","277.mat"),    
+    # ("B.014.FE_0","286.mat"),       ("B.014.FE_1","287.mat"),       ("B.014.FE_2","288.mat"),       ("B.014.FE_3","289.mat"),    
+    # ("O.021.FE.@6_0","315.mat"),    ("O.021.FE.@3_1","316.mat"),    ("O.021.FE.@3_2","317.mat"),    ("O.021.FE.@3_3","318.mat"),    
 ]
 
 def download_file(url, dirname, bearing):
@@ -235,7 +235,7 @@ class CWRU():
         self.config = config
         self.rawfilesdir = "raw_cwru"
         self.url = "https://engineering.case.edu/sites/default/files/"
-        self.n_folds = 4
+        self.n_folds = 3
         self.bearing_labels, self.bearing_names = self.get_cwru_bearings()
         self.accelerometers = ['DE', 'FE', 'BA'][:self.n_channels]
         self.signal_data = np.empty((0, self.sample_size, len(self.accelerometers)))

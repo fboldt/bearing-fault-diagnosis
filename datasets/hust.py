@@ -319,7 +319,7 @@ class Hust():
 
 
 if __name__ == "__main__":
-    dataset = Hust(config='niob')
+    dataset = Hust(config='all')
     dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)

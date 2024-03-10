@@ -7,12 +7,13 @@ import os.path
 import shutil
 
 class CNN1D(BaseEstimator, ClassifierMixin):
-    def __init__(self, optimizer='adam', epochs=500, checkpoint="model.checkpoint"):
+    def __init__(self, optimizer='adam', epochs=1000, checkpoint="model.checkpoint"):
         self.optimizer = optimizer
         self.epochs = epochs
         self.model = None
         self.checkpoint = checkpoint
-        self.validation_split = 0
+        self.prefitckp = "prefit.checkpoint"
+        self.validation_split = 0.15
         self.verbose = 0
         self.featLayers = Sequential(name="feat_layers")
         self.featLayers.add(layers.Conv1D(32, 64, activation='relu', name="conv1"))
@@ -24,12 +25,18 @@ class CNN1D(BaseEstimator, ClassifierMixin):
             if self.verbose:
                 print("removing", self.checkpoint)
             shutil.rmtree(self.checkpoint)
+        if os.path.isdir(self.prefitckp):
+            if self.verbose:
+                print("removing", self.prefitckp)
+            shutil.rmtree(self.prefitckp)
     
-    def callbacks_list(self):
+    def callbacks_list(self, checkpoint=None):
+        checkpoint = checkpoint if checkpoint else self.checkpoint
+        monitor = "val_loss" if self.validation_split else "loss"
         return [
             callbacks.ModelCheckpoint(
-                filepath=self.checkpoint,
-                monitor="loss",
+                filepath=checkpoint,
+                monitor=monitor,
                 save_best_only=True,
             )
         ]
@@ -40,7 +47,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.model.add(self.featLayers)
         self.model.add(layers.MaxPooling1D(8))
         self.model.add(layers.Conv1D(32, 64, activation='relu', name="conv3"))
-        self.model.add(layers.GlobalAveragePooling1D(name='G_A_P_1D'))
+        self.model.add(layers.GlobalAveragePooling1D(name='gap1d'))
         self.model.add(layers.Dropout(0.5))
 
     def prefit(self, X, y):
@@ -64,24 +71,23 @@ class CNN1D(BaseEstimator, ClassifierMixin):
             metrics=["accuracy"]
             )
         self.model.fit(X, y_cat, epochs=epochs, verbose=self.verbose,
-                        callbacks=[
-                            callbacks.ModelCheckpoint(
-                                filepath="prefit.checkpoint",
-                                monitor="loss",
-                                save_best_only=True,
-                            )
-                        ],
+                        callbacks=self.callbacks_list(self.prefitckp),
                         validation_split=self.validation_split)
         self.featLayers.trainable = False
         print(self.model.summary())
+        if os.path.isdir(self.prefitckp):
+            if self.verbose:
+                print("loading", self.prefitckp)
+            model = saving.load_model(self.prefitckp)
+        print(model.evaluate(X, y_cat))
 
     def fit(self, X, y=None):
         self.n_steps = X.shape[1]
         self.n_features = X.shape[2]
-        if os.path.isdir("prefit.checkpoint"):
+        if os.path.isdir(self.prefitckp):
             if self.verbose:
-                print("loading", "prefit.checkpoint")
-            self.model = saving.load_model("prefit.checkpoint")
+                print("loading", self.prefitckp)
+            self.model = saving.load_model(self.prefitckp)
         if self.model == None:
             self.make_model((self.n_steps, self.n_features))
         else:
@@ -107,6 +113,12 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.model.fit(X, y_cat, epochs=epochs, verbose=self.verbose,
                         callbacks=self.callbacks_list(),
                         validation_split=self.validation_split)
+        if os.path.isdir(self.checkpoint):
+            if self.verbose:
+                print("loading", self.checkpoint)
+            model = saving.load_model(self.checkpoint)
+        print(model.evaluate(X, y_cat))
+
 
     def predict(self, X):
         if os.path.isdir(self.checkpoint):
