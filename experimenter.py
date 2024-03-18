@@ -11,7 +11,7 @@ from experimenter_pretrain import experimenter as transfer_learning
 
 datasets = [
     # MFPT(config='all'),
-    # Paderborn(config='all'),
+    Paderborn(config='all'),
     UORED_VAFCLS(config='all'),
     CWRU(config='all'),
     Hust(config='all'),
