@@ -10,7 +10,8 @@ from experimenter_cross_dataset import experimenter as cross_dataset
 from experimenter_pretrain import experimenter as transfer_learning
 
 datasets = [
-    # MFPT(config='all'),
+    # MFPT(config='dbg'),
+    # CWRU(config='nio'),
     Paderborn(config='all'),
     UORED_VAFCLS(config='all'),
     CWRU(config='all'),
@@ -24,7 +25,7 @@ split= 'groupkfold_severity' if "CWRU" in target.__str__() else 'groupkfold_acqu
 
 def experimenter():
     kfold(target, split=split, repetitions=kfold_repetitions)
-    # cross_dataset(sources, target)
+    cross_dataset(sources, target)
     transfer_learning(sources, target[0], split=split, repetitions=kfold_repetitions)
 
 if __name__ == "__main__":

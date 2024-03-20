@@ -16,11 +16,11 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.validation_split = 0.15
         self.verbose = 0
         self.featLayers = Sequential(name="feat_layers")
-        self.featLayers.add(layers.Conv1D(32, 32, activation='relu', name="conv1"))
+        self.featLayers.add(layers.Conv1D(64, 64, activation='relu', name="conv1"))
         self.featLayers.add(layers.MaxPooling1D(4))
         self.featLayers.add(layers.Conv1D(32, 32, activation='relu', name="conv2"))
         self.featLayers.add(layers.MaxPooling1D(4))
-        self.featLayers.add(layers.Conv1D(32, 32, activation='relu', name="conv3"))
+        self.featLayers.add(layers.Conv1D(16, 16, activation='relu', name="conv3"))
     
     def __del__(self):
         if os.path.isdir(self.checkpoint):
@@ -48,14 +48,11 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.model.add(layers.InputLayer(input_shape=input_shape))
         self.model.add(self.featLayers)
         self.model.add(layers.MaxPooling1D(4))
-        self.model.add(layers.Conv1D(32, 32, activation='relu', name="conv_backbone"))
+        self.model.add(layers.Conv1D(8, 8, activation='relu', name="conv_backbone"))
         self.model.add(layers.GlobalAveragePooling1D(name='gap1d'))
         self.model.add(layers.Dropout(0.5))
-
-    def prefit(self, X, y):
-        optimizer = self.optimizer
-        epochs = self.epochs
-
+    
+    def training(self, X, y, checkpoint):
         self.n_steps = X.shape[1]
         self.n_features = X.shape[2]
 
@@ -68,59 +65,28 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.model.add(layers.Activation('softmax'))
 
         self.model.compile(
-            optimizer=optimizer,
+            optimizer=self.optimizer,
             loss="categorical_crossentropy",
             metrics=["accuracy"]
             )
-        self.model.fit(X, y_cat, epochs=epochs, verbose=self.verbose,
-                        callbacks=self.callbacks_list(self.prefitckp),
-                        validation_split=self.validation_split)
+        self.model.fit(X, y_cat, 
+                       epochs=self.epochs, 
+                       verbose=self.verbose,
+                       callbacks=self.callbacks_list(checkpoint),
+                       validation_split=self.validation_split)
+        if os.path.isdir(checkpoint):
+            if self.verbose:
+                print("loading", checkpoint)
+            model = saving.load_model(checkpoint)
+            print(model.evaluate(X, y_cat))
+
+    def prefit(self, X, y):
+        self.training(X, y, self.checkpoint)
         self.featLayers.trainable = False
         print(self.model.summary())
-        if os.path.isdir(self.prefitckp):
-            if self.verbose:
-                print("loading", self.prefitckp)
-            model = saving.load_model(self.prefitckp)
-        print(model.evaluate(X, y_cat))
 
     def fit(self, X, y=None):
-        self.n_steps = X.shape[1]
-        self.n_features = X.shape[2]
-        if os.path.isdir(self.prefitckp):
-            if self.verbose:
-                print("loading", self.prefitckp)
-            self.model = saving.load_model(self.prefitckp)
-        if self.model == None:
-            self.make_model((self.n_steps, self.n_features))
-        else:
-            self.model.pop()
-            self.model.pop()
-        self.labels, ids = np.unique(y, return_inverse=True)
-        y_cat = to_categorical(ids)
-        num_classes = y_cat.shape[1]
-        self.model.add(layers.Dense(num_classes))
-        self.model.add(layers.Activation('softmax'))
-        optimizer = self.optimizer
-        epochs = self.epochs
-
-        self.model.compile(
-            optimizer=optimizer,
-            loss="categorical_crossentropy",
-            metrics=["accuracy"]
-            )
-        if os.path.isdir(self.checkpoint):
-            if self.verbose:
-                print("removing", self.checkpoint)
-            shutil.rmtree(self.checkpoint)
-        self.model.fit(X, y_cat, epochs=epochs, verbose=self.verbose,
-                        callbacks=self.callbacks_list(),
-                        validation_split=self.validation_split)
-        if os.path.isdir(self.checkpoint):
-            if self.verbose:
-                print("loading", self.checkpoint)
-            model = saving.load_model(self.checkpoint)
-        print(model.evaluate(X, y_cat))
-
+        self.training(X, y, self.checkpoint)
 
     def predict(self, X):
         if os.path.isdir(self.checkpoint):
