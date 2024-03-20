@@ -13,7 +13,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.model = None
         self.checkpoint = checkpoint
         self.prefitckp = "prefit.checkpoint"
-        self.validation_split = 0.2
+        self.validation_split = 0.1
         self.verbose = 2
         self.featLayers = Sequential(name="feat_layers")
         for i, size in enumerate([64, 32, 16]):
