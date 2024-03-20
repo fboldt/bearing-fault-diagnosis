@@ -14,8 +14,8 @@ datasets = [
     # CWRU(config='nio'),
     Paderborn(config='all'),
     UORED_VAFCLS(config='all'),
-    CWRU(config='all'),
     Hust(config='all'),
+    CWRU(config='all'),
 ]
 
 sources = datasets[:-1]
