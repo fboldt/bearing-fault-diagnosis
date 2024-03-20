@@ -15,8 +15,8 @@ def transfer_learning(sources, target, split='groupkfold_acquisition', repetitio
     kfold(target, clf=clf, split=split, repetitions=repetitions)
 
 datasets = [
-    CWRU(config='dbg'),
     MFPT(config='dbg'),
+    CWRU(config='nio'),
     # Paderborn(config='dbg'),
     # Hust(config='dbg'),
     # UORED_VAFCLS(config='dbg'),

@@ -7,20 +7,22 @@ import os.path
 import shutil
 
 class CNN1D(BaseEstimator, ClassifierMixin):
-    def __init__(self, optimizer='adam', epochs=1000, checkpoint="model.checkpoint"):
+    def __init__(self, optimizer='adam', epochs=100, checkpoint="model.checkpoint"):
         self.optimizer = optimizer
         self.epochs = epochs
         self.model = None
         self.checkpoint = checkpoint
         self.prefitckp = "prefit.checkpoint"
-        self.validation_split = 0.15
-        self.verbose = 0
+        self.validation_split = 0.2
+        self.verbose = 2
         self.featLayers = Sequential(name="feat_layers")
-        self.featLayers.add(layers.Conv1D(64, 64, activation='relu', name="conv1"))
-        self.featLayers.add(layers.MaxPooling1D(4))
-        self.featLayers.add(layers.Conv1D(32, 32, activation='relu', name="conv2"))
-        self.featLayers.add(layers.MaxPooling1D(4))
-        self.featLayers.add(layers.Conv1D(16, 16, activation='relu', name="conv3"))
+        for i, size in enumerate([64, 32, 16]):
+            self.featLayers.add(layers.Conv1D(size, size, 
+                                              activation='relu', 
+                                              name=f"conv{i+1}",
+                                              ))
+            self.featLayers.add(layers.MaxPooling1D(4))
+        self.featLayers.add(layers.GlobalAveragePooling1D(name='gap1d'))
     
     def __del__(self):
         if os.path.isdir(self.checkpoint):
@@ -47,9 +49,6 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.model = Sequential(name="backbone")
         self.model.add(layers.InputLayer(input_shape=input_shape))
         self.model.add(self.featLayers)
-        self.model.add(layers.MaxPooling1D(4))
-        self.model.add(layers.Conv1D(8, 8, activation='relu', name="conv_backbone"))
-        self.model.add(layers.GlobalAveragePooling1D(name='gap1d'))
         self.model.add(layers.Dropout(0.5))
     
     def training(self, X, y, checkpoint):

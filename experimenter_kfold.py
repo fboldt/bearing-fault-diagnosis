@@ -33,7 +33,7 @@ datasets = [
     # Hust(config='dbg'),
     # UORED_VAFCLS(config='dbg'),
 ]
-split='groupkfold_severity'
+split='groupkfold_acquisition'
 
 def experimenter(datasets=datasets, split=split, repetitions=3):
     print(split)
