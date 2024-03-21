@@ -35,10 +35,10 @@ datasets = [
 ]
 split='groupkfold_acquisition'
 
-def experimenter(datasets=datasets, split=split, repetitions=3):
+def experimenter(datasets=datasets, split=split, repetitions=3, clf=CNN1D()):
     print(split)
     for dataset in datasets:
-        kfold(dataset, split=split, repetitions=repetitions)
+        kfold(dataset, split=split, repetitions=repetitions, clf=clf)
 
 if __name__ == "__main__":
-    experimenter(repetitions=1)
+    experimenter(repetitions=1, clf=CNN1D(epochs=20))

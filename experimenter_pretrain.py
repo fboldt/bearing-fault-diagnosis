@@ -25,10 +25,10 @@ datasets = [
 sources = datasets[:-1]
 target = list(set(datasets) - set(sources))[0]
 
-def experimenter(sources=sources, target=target, split='groupkfold_acquisition', repetitions=1):
+def experimenter(sources=sources, target=target, split='groupkfold_acquisition', repetitions=1, clf=CNN1D()):
     print("Transfer learning")
-    transfer_learning(sources, target, split=split, repetitions=repetitions)
+    transfer_learning(sources, target, split=split, repetitions=repetitions, clf=clf)
 
 if __name__ == "__main__":
-    experimenter()
+    experimenter(clf=CNN1D(epochs=20))
     

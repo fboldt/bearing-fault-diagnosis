@@ -22,7 +22,6 @@ class CNN1D(BaseEstimator, ClassifierMixin):
                                               name=f"conv{i+1}",
                                               ))
             self.featLayers.add(layers.MaxPooling1D(4))
-        self.featLayers.add(layers.GlobalAveragePooling1D(name='gap1d'))
     
     def __del__(self):
         if os.path.isdir(self.checkpoint):
@@ -49,6 +48,8 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.model = Sequential(name="backbone")
         self.model.add(layers.InputLayer(input_shape=input_shape))
         self.model.add(self.featLayers)
+        self.model.add(layers.Conv1D(8, 8, activation='relu', name=f"conv_backbone"))
+        self.model.add(layers.GlobalAveragePooling1D(name='gap1d'))
         self.model.add(layers.Dropout(0.5))
     
     def training(self, X, y, checkpoint):
