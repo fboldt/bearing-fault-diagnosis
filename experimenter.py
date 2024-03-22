@@ -14,6 +14,7 @@ import time
 from util.show_info import show_title
 from util.save_output import ConsoleOutputToFile
 
+
 datasets = [
     # MFPT(config='dbg'),
     # CWRU(config='nio'),
@@ -28,11 +29,15 @@ target = list(set(datasets) - set(sources))
 kfold_repetitions = 10
 split= 'groupkfold_severity' if "CWRU" in target.__str__() else 'groupkfold_acquisition'
 
+
 def experimenter():
+
     show_title("Kfold")
     kfold(target, split=split, repetitions=kfold_repetitions)
+    
     show_title("Cross Dataset")
     cross_dataset(sources, target)
+    
     show_title("Transfer Learning")
     transfer_learning(sources, target[0], split=split, repetitions=kfold_repetitions)
 
