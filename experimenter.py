@@ -15,10 +15,12 @@ import time
 from utils.show_info import show_title
 from utils.save_output import ConsoleOutputToFile
 
+debug = False
 
 datasets = [
-    # MFPT(config='dbg'),
-    # CWRU(config='nio'),
+    MFPT(config='all'),
+    CWRU(config='nio'),
+] if debug else [
     Paderborn(config='all'),
     UORED_VAFCLS(config='all'),
     Hust(config='all'),
@@ -27,9 +29,10 @@ datasets = [
 
 sources = datasets[:-1]
 target = list(set(datasets) - set(sources))
-kfold_repetitions = 10
+kfold_repetitions = 1 if debug else 10
 split= 'groupkfold_severity' if "CWRU" in target.__str__() else 'groupkfold_acquisition'
-clf = CNN1D(epochs=1000)
+epochs = 10 if debug else 1000
+clf = CNN1D(epochs=epochs)
 
 def experimenter():
 
@@ -47,7 +50,7 @@ if __name__ == "__main__":
     
     now = datetime.now()
     date_time = now.strftime("%Y.%m.%d_%H.%M.%S")
-    filename = date_time + ".txt"
+    filename = "experiments/" + date_time + ".txt"
 
     with ConsoleOutputToFile(filename):        
         it = time.time()    
