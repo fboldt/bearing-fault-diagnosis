@@ -6,7 +6,7 @@ from datasets.paderborn import Paderborn
 from estimators.cnn1d import CNN1D
 from sklearn.metrics import accuracy_score, confusion_matrix
 
-def kfold(dataset, split='groupkfold_acquisition', repetitions=3, clf=CNN1D(epochs=50)):
+def kfold(dataset, split='groupkfold_acquisition', repetitions=3, clf=CNN1D()):
     total = []
     for i in range(repetitions):
         print(f"{i+1}/{repetitions}: {dataset}")
@@ -27,18 +27,18 @@ def kfold(dataset, split='groupkfold_acquisition', repetitions=3, clf=CNN1D(epoc
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
 datasets = [
-    CWRU(config='12k'),
+    CWRU(config='nio'),
     # MFPT(config='dbg'),
     # Paderborn(config='dbg'),
     # Hust(config='dbg'),
     # UORED_VAFCLS(config='dbg'),
 ]
-split='groupkfold_severity'
+split='groupkfold_acquisition'
 
-def experimenter(datasets=datasets, split=split, repetitions=3):
+def experimenter(datasets=datasets, split=split, repetitions=3, clf=CNN1D()):
     print(split)
     for dataset in datasets:
-        kfold(dataset, split=split, repetitions=repetitions)
+        kfold(dataset, split=split, repetitions=repetitions, clf=clf)
 
 if __name__ == "__main__":
-    experimenter(repetitions=1)
+    experimenter(repetitions=1, clf=CNN1D(epochs=20))
