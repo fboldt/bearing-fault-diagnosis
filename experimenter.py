@@ -17,19 +17,19 @@ from utils.save_output import ConsoleOutputToFile
 
 
 datasets = [
-    MFPT(config='dbg'),
-    CWRU(config='nio'),
-    # # Paderborn(config='all'),
-    # UORED_VAFCLS(config='all'),
-    # Hust(config='all'),
-    # CWRU(config='balanced'),
+    # MFPT(config='dbg'),
+    # CWRU(config='nio'),
+    Paderborn(config='all'),
+    UORED_VAFCLS(config='all'),
+    Hust(config='all'),
+    CWRU(config='balanced'),
 ]
 
 sources = datasets[:-1]
 target = list(set(datasets) - set(sources))
-kfold_repetitions = 1
+kfold_repetitions = 10
 split= 'groupkfold_severity' if "CWRU" in target.__str__() else 'groupkfold_acquisition'
-clf = CNN1D(epochs=10)
+clf = CNN1D(epochs=1000)
 
 def experimenter():
 
