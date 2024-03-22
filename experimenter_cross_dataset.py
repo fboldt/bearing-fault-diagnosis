@@ -6,7 +6,6 @@ from datasets.paderborn import Paderborn
 from estimators.cnn1d import CNN1D
 from sklearn.metrics import accuracy_score, confusion_matrix
 import numpy as np
-import time
 
 def get_acquisitions(datasets):
     first_dataset = False
@@ -36,23 +35,22 @@ def cross_dataset(sources, targets, clf=CNN1D()):
     print(confusion_matrix(yte, ypr, labels=labels))
 
 datasets = [
-    CWRU(config='all'),
-    MFPT(config='all'),
-    Paderborn(config='all'),
-    Hust(config='niob'),
-    UORED_VAFCLS(config='mert'),
+    # CWRU(config='all'),
+    # MFPT(config='all'),
+    # Paderborn(config='all'),
+    # Hust(config='niob'),
+    # UORED_VAFCLS(config='mert'),
+    MFPT(config='dbg'),
+    CWRU(config='nio'),
 ]
 
 sources = datasets[:-1]
 target = list(set(datasets) - set(sources))
 
-def experimenter(sources=sources, target=target):
-    tm_init = time.time()
+def experimenter(sources=sources, target=target, clf=CNN1D()):
     print("cross dataset")
-    cross_dataset(sources, target)
-    tm_final = time.time()
-    print(f"Processing time: {round(tm_final-tm_init, 2)} seconds")
+    cross_dataset(sources, target, clf=clf)
 
 if __name__ == "__main__":
-    experimenter()
+    experimenter(clf=CNN1D(epochs=20))
     
