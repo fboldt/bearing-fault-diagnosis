@@ -4,3 +4,281 @@
 groupkfold_severity
 1/1: CWRU (nio)
 Slipt type: groupkfold_severity
+                              loading acquisitions 100.00 %  (529 examples) | labels: {'O', 'I', 'N'}
+(353, 8400, 1) (353,) (176, 8400, 1) (176,)
+Epoch 1/10
+10/10 - 3s - loss: 1.0070 - accuracy: 0.3091 - val_loss: 0.7234 - val_accuracy: 1.0000 - 3s/epoch - 346ms/step
+Epoch 2/10
+10/10 - 1s - loss: 0.9058 - accuracy: 0.6183 - val_loss: 0.6896 - val_accuracy: 1.0000 - 617ms/epoch - 62ms/step
+Epoch 3/10
+10/10 - 1s - loss: 0.8514 - accuracy: 0.7508 - val_loss: 0.4499 - val_accuracy: 1.0000 - 618ms/epoch - 62ms/step
+Epoch 4/10
+10/10 - 1s - loss: 0.6695 - accuracy: 0.9054 - val_loss: 0.2223 - val_accuracy: 1.0000 - 629ms/epoch - 63ms/step
+Epoch 5/10
+10/10 - 1s - loss: 0.5268 - accuracy: 0.9779 - val_loss: 0.0255 - val_accuracy: 1.0000 - 724ms/epoch - 72ms/step
+Epoch 6/10
+10/10 - 1s - loss: 0.4269 - accuracy: 0.9874 - val_loss: 4.9030e-04 - val_accuracy: 1.0000 - 619ms/epoch - 62ms/step
+Epoch 7/10
+10/10 - 0s - loss: 0.3645 - accuracy: 0.9842 - val_loss: 0.0027 - val_accuracy: 1.0000 - 87ms/epoch - 9ms/step
+Epoch 8/10
+10/10 - 1s - loss: 0.2618 - accuracy: 0.9874 - val_loss: 8.4604e-06 - val_accuracy: 1.0000 - 615ms/epoch - 61ms/step
+Epoch 9/10
+10/10 - 0s - loss: 0.1030 - accuracy: 0.9842 - val_loss: 4.5109e-05 - val_accuracy: 1.0000 - 85ms/epoch - 8ms/step
+Epoch 10/10
+10/10 - 1s - loss: 0.0447 - accuracy: 0.9842 - val_loss: 7.6161e-08 - val_accuracy: 1.0000 - 631ms/epoch - 63ms/step
+loading model.checkpoint
+[0.0005684575880877674, 1.0]
+loading model.checkpoint
+fold 1/3 accuracy: 0.8238636363636364
+ ['O', 'I', 'N']
+[[63  7  0]
+ [24 32  0]
+ [ 0  0 50]]
+(338, 8400, 1) (338,) (191, 8400, 1) (191,)
+Epoch 1/10
+10/10 - 2s - loss: 0.7688 - accuracy: 0.7171 - val_loss: 0.0089 - val_accuracy: 1.0000 - 2s/epoch - 181ms/step
+Epoch 2/10
+10/10 - 1s - loss: 0.3454 - accuracy: 0.8914 - val_loss: 1.1591e-04 - val_accuracy: 1.0000 - 712ms/epoch - 71ms/step
+Epoch 3/10
+10/10 - 1s - loss: 0.1744 - accuracy: 0.9507 - val_loss: 5.6846e-05 - val_accuracy: 1.0000 - 614ms/epoch - 61ms/step
+Epoch 4/10
+10/10 - 1s - loss: 0.1058 - accuracy: 0.9671 - val_loss: 2.6927e-06 - val_accuracy: 1.0000 - 615ms/epoch - 62ms/step
+Epoch 5/10
+10/10 - 0s - loss: 0.0848 - accuracy: 0.9803 - val_loss: 1.0709e-04 - val_accuracy: 1.0000 - 82ms/epoch - 8ms/step
+Epoch 6/10
+10/10 - 1s - loss: 0.0658 - accuracy: 0.9803 - val_loss: 1.0343e-06 - val_accuracy: 1.0000 - 610ms/epoch - 61ms/step
+Epoch 7/10
+10/10 - 1s - loss: 0.0459 - accuracy: 0.9901 - val_loss: 7.3629e-08 - val_accuracy: 1.0000 - 728ms/epoch - 73ms/step
+Epoch 8/10
+10/10 - 1s - loss: 0.0413 - accuracy: 0.9934 - val_loss: 1.0518e-08 - val_accuracy: 1.0000 - 612ms/epoch - 61ms/step
+Epoch 9/10
+10/10 - 0s - loss: 0.0505 - accuracy: 0.9836 - val_loss: 0.0401 - val_accuracy: 0.9706 - 82ms/epoch - 8ms/step
+Epoch 10/10
+10/10 - 1s - loss: 0.1894 - accuracy: 0.9474 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 601ms/epoch - 60ms/step
+loading model.checkpoint
+[0.04882335662841797, 0.9822485446929932]
+loading model.checkpoint
+fold 2/3 accuracy: 1.0
+ ['O', 'I', 'N']
+[[56  0  0]
+ [ 0 56  0]
+ [ 0  0 79]]
+(367, 8400, 1) (367,) (162, 8400, 1) (162,)
+Epoch 1/10
+11/11 - 2s - loss: 0.5061 - accuracy: 0.8485 - val_loss: 0.3017 - val_accuracy: 0.8649 - 2s/epoch - 179ms/step
+Epoch 2/10
+11/11 - 1s - loss: 0.0394 - accuracy: 1.0000 - val_loss: 0.0764 - val_accuracy: 1.0000 - 608ms/epoch - 55ms/step
+Epoch 3/10
+11/11 - 0s - loss: 0.0128 - accuracy: 0.9970 - val_loss: 0.2931 - val_accuracy: 0.8378 - 90ms/epoch - 8ms/step
+Epoch 4/10
+11/11 - 1s - loss: 0.0076 - accuracy: 1.0000 - val_loss: 0.0261 - val_accuracy: 1.0000 - 611ms/epoch - 56ms/step
+Epoch 5/10
+11/11 - 1s - loss: 0.0284 - accuracy: 0.9939 - val_loss: 0.0058 - val_accuracy: 1.0000 - 723ms/epoch - 66ms/step
+Epoch 6/10
+11/11 - 0s - loss: 0.0100 - accuracy: 0.9970 - val_loss: 0.0286 - val_accuracy: 1.0000 - 89ms/epoch - 8ms/step
+Epoch 7/10
+11/11 - 0s - loss: 0.0064 - accuracy: 1.0000 - val_loss: 0.0313 - val_accuracy: 1.0000 - 87ms/epoch - 8ms/step
+Epoch 8/10
+11/11 - 0s - loss: 0.0032 - accuracy: 1.0000 - val_loss: 0.0282 - val_accuracy: 1.0000 - 86ms/epoch - 8ms/step
+Epoch 9/10
+11/11 - 0s - loss: 0.0058 - accuracy: 1.0000 - val_loss: 0.0101 - val_accuracy: 1.0000 - 87ms/epoch - 8ms/step
+Epoch 10/10
+11/11 - 1s - loss: 0.0016 - accuracy: 1.0000 - val_loss: 0.0044 - val_accuracy: 1.0000 - 640ms/epoch - 58ms/step
+loading model.checkpoint
+[0.00046213692985475063, 1.0]
+loading model.checkpoint
+fold 3/3 accuracy: 0.9197530864197531
+ ['O', 'I', 'N']
+[[43 13  0]
+ [ 0 56  0]
+ [ 0  0 50]]
+mean accuracy: 0.9145389075944631
+total mean accuracy: 0.9145389075944631
+  ---------------
+|  Cross Dataset  |
+  ---------------
+cross dataset
+loading sources acquisitions...
+CWRU (nio)
+                              loading acquisitions 100.00 %  (529 examples) | labels: {'O', 'I', 'N'}
+training estimator...
+Epoch 1/10
+15/15 - 2s - loss: 0.4618 - accuracy: 0.8782 - val_loss: 9.2732e-06 - val_accuracy: 1.0000 - 2s/epoch - 144ms/step
+Epoch 2/10
+15/15 - 1s - loss: 0.0549 - accuracy: 0.9853 - val_loss: 2.0783e-06 - val_accuracy: 1.0000 - 656ms/epoch - 44ms/step
+Epoch 3/10
+15/15 - 0s - loss: 0.0413 - accuracy: 0.9895 - val_loss: 1.3729e-04 - val_accuracy: 1.0000 - 116ms/epoch - 8ms/step
+Epoch 4/10
+15/15 - 1s - loss: 0.0168 - accuracy: 0.9937 - val_loss: 3.7562e-07 - val_accuracy: 1.0000 - 651ms/epoch - 43ms/step
+Epoch 5/10
+15/15 - 1s - loss: 0.0279 - accuracy: 0.9937 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 641ms/epoch - 43ms/step
+Epoch 6/10
+15/15 - 0s - loss: 0.0309 - accuracy: 0.9874 - val_loss: 2.1367e-06 - val_accuracy: 1.0000 - 116ms/epoch - 8ms/step
+Epoch 7/10
+15/15 - 0s - loss: 0.0209 - accuracy: 0.9916 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 117ms/epoch - 8ms/step
+Epoch 8/10
+15/15 - 0s - loss: 0.0095 - accuracy: 0.9979 - val_loss: 1.1246e-08 - val_accuracy: 1.0000 - 115ms/epoch - 8ms/step
+Epoch 9/10
+15/15 - 0s - loss: 0.0140 - accuracy: 1.0000 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 120ms/epoch - 8ms/step
+Epoch 10/10
+15/15 - 0s - loss: 0.0082 - accuracy: 0.9979 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 134ms/epoch - 9ms/step
+loading model.checkpoint
+[0.00835166685283184, 0.9981096386909485]
+loading target acquisitions...
+CWRU (nio)
+inferencing predictions...
+loading model.checkpoint
+Accuracy 0.998109640831758
+ ['O', 'I', 'N']
+[[182   0   0]
+ [  1 167   0]
+ [  0   0 179]]
+  -------------------
+|  Transfer Learning  |
+  -------------------
+Transfer learning
+loading sources acquisitions...
+CWRU (nio)
+pretraining estimator...
+Epoch 1/10
+15/15 - 2s - loss: 0.2550 - accuracy: 0.9034 - val_loss: 2.3008e-04 - val_accuracy: 1.0000 - 2s/epoch - 106ms/step
+Epoch 2/10
+15/15 - 1s - loss: 0.0306 - accuracy: 0.9916 - val_loss: 4.1267e-05 - val_accuracy: 1.0000 - 653ms/epoch - 44ms/step
+Epoch 3/10
+15/15 - 1s - loss: 0.0459 - accuracy: 0.9853 - val_loss: 2.5144e-05 - val_accuracy: 1.0000 - 642ms/epoch - 43ms/step
+Epoch 4/10
+15/15 - 1s - loss: 0.0103 - accuracy: 0.9958 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 797ms/epoch - 53ms/step
+Epoch 5/10
+15/15 - 0s - loss: 0.0123 - accuracy: 0.9979 - val_loss: 4.8583e-07 - val_accuracy: 1.0000 - 119ms/epoch - 8ms/step
+Epoch 6/10
+15/15 - 0s - loss: 0.0046 - accuracy: 1.0000 - val_loss: 2.9915e-07 - val_accuracy: 1.0000 - 122ms/epoch - 8ms/step
+Epoch 7/10
+15/15 - 0s - loss: 0.0104 - accuracy: 0.9958 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 124ms/epoch - 8ms/step
+Epoch 8/10
+15/15 - 0s - loss: 0.0044 - accuracy: 1.0000 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 116ms/epoch - 8ms/step
+Epoch 9/10
+15/15 - 0s - loss: 0.0033 - accuracy: 1.0000 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 123ms/epoch - 8ms/step
+Epoch 10/10
+15/15 - 0s - loss: 0.0045 - accuracy: 1.0000 - val_loss: 1.1921e-07 - val_accuracy: 1.0000 - 118ms/epoch - 8ms/step
+loading prefit.checkpoint
+[0.0010938255582004786, 1.0]
+Model: "backbone"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ feat_layers (Sequential)    (None, 505, 32)           67648     
+                                                                 
+ conv_backbone (Conv1D)      (None, 474, 32)           32800     
+                                                                 
+ gap1d (GlobalAveragePoolin  (None, 32)                0         
+ g1D)                                                            
+                                                                 
+ dropout_19 (Dropout)        (None, 32)                0         
+                                                                 
+ dense_8 (Dense)             (None, 3)                 99        
+                                                                 
+ activation_8 (Activation)   (None, 3)                 0         
+                                                                 
+=================================================================
+Total params: 100547 (392.76 KB)
+Trainable params: 32899 (128.51 KB)
+Non-trainable params: 67648 (264.25 KB)
+_________________________________________________________________
+None
+1/1: CWRU (nio)
+Slipt type: groupkfold_severity
+(353, 8400, 1) (353,) (176, 8400, 1) (176,)
+loading prefit.checkpoint
+Epoch 1/10
+10/10 - 1s - loss: 0.2695 - accuracy: 0.8959 - val_loss: 9.6701e-04 - val_accuracy: 1.0000 - 1s/epoch - 123ms/step
+Epoch 2/10
+10/10 - 1s - loss: 0.0181 - accuracy: 0.9968 - val_loss: 9.2053e-06 - val_accuracy: 1.0000 - 687ms/epoch - 69ms/step
+Epoch 3/10
+10/10 - 1s - loss: 0.0074 - accuracy: 0.9968 - val_loss: 1.5994e-06 - val_accuracy: 1.0000 - 576ms/epoch - 58ms/step
+Epoch 4/10
+10/10 - 1s - loss: 0.0097 - accuracy: 0.9968 - val_loss: 9.9341e-07 - val_accuracy: 1.0000 - 557ms/epoch - 56ms/step
+Epoch 5/10
+10/10 - 1s - loss: 0.0155 - accuracy: 0.9905 - val_loss: 1.4570e-07 - val_accuracy: 1.0000 - 586ms/epoch - 59ms/step
+Epoch 6/10
+10/10 - 1s - loss: 0.0023 - accuracy: 1.0000 - val_loss: 2.6491e-08 - val_accuracy: 1.0000 - 596ms/epoch - 60ms/step
+Epoch 7/10
+10/10 - 1s - loss: 0.0051 - accuracy: 1.0000 - val_loss: 1.6557e-08 - val_accuracy: 1.0000 - 733ms/epoch - 73ms/step
+Epoch 8/10
+10/10 - 1s - loss: 0.0021 - accuracy: 1.0000 - val_loss: 6.6227e-09 - val_accuracy: 1.0000 - 590ms/epoch - 59ms/step
+Epoch 9/10
+10/10 - 0s - loss: 0.0037 - accuracy: 1.0000 - val_loss: 6.6227e-09 - val_accuracy: 1.0000 - 56ms/epoch - 6ms/step
+Epoch 10/10
+10/10 - 0s - loss: 0.0059 - accuracy: 1.0000 - val_loss: 6.6227e-09 - val_accuracy: 1.0000 - 58ms/epoch - 6ms/step
+loading model.checkpoint
+[4.3428624962871254e-07, 1.0]
+loading model.checkpoint
+fold 1/3 accuracy: 1.0
+ ['O', 'I', 'N']
+[[70  0  0]
+ [ 0 56  0]
+ [ 0  0 50]]
+(338, 8400, 1) (338,) (191, 8400, 1) (191,)
+loading prefit.checkpoint
+Epoch 1/10
+10/10 - 1s - loss: 0.3212 - accuracy: 0.9013 - val_loss: 1.7531e-08 - val_accuracy: 1.0000 - 1s/epoch - 135ms/step
+Epoch 2/10
+10/10 - 1s - loss: 0.0308 - accuracy: 0.9967 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 530ms/epoch - 53ms/step
+Epoch 3/10
+10/10 - 0s - loss: 0.0129 - accuracy: 0.9967 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 58ms/epoch - 6ms/step
+Epoch 4/10
+10/10 - 0s - loss: 0.0331 - accuracy: 0.9901 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 57ms/epoch - 6ms/step
+Epoch 5/10
+10/10 - 0s - loss: 0.0184 - accuracy: 0.9934 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 54ms/epoch - 5ms/step
+Epoch 6/10
+10/10 - 0s - loss: 0.0041 - accuracy: 1.0000 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 54ms/epoch - 5ms/step
+Epoch 7/10
+10/10 - 0s - loss: 0.0067 - accuracy: 1.0000 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 55ms/epoch - 5ms/step
+Epoch 8/10
+10/10 - 0s - loss: 0.0058 - accuracy: 1.0000 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 54ms/epoch - 5ms/step
+Epoch 9/10
+10/10 - 0s - loss: 0.0143 - accuracy: 0.9934 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 55ms/epoch - 5ms/step
+Epoch 10/10
+10/10 - 0s - loss: 0.0048 - accuracy: 1.0000 - val_loss: 0.0000e+00 - val_accuracy: 1.0000 - 53ms/epoch - 5ms/step
+loading model.checkpoint
+[0.0007682793657295406, 1.0]
+loading model.checkpoint
+fold 2/3 accuracy: 1.0
+ ['O', 'I', 'N']
+[[56  0  0]
+ [ 0 56  0]
+ [ 0  0 79]]
+(367, 8400, 1) (367,) (162, 8400, 1) (162,)
+loading prefit.checkpoint
+Epoch 1/10
+11/11 - 1s - loss: 0.5582 - accuracy: 0.8394 - val_loss: 0.0932 - val_accuracy: 1.0000 - 1s/epoch - 126ms/step
+Epoch 2/10
+11/11 - 1s - loss: 0.0493 - accuracy: 0.9788 - val_loss: 0.0558 - val_accuracy: 1.0000 - 575ms/epoch - 52ms/step
+Epoch 3/10
+11/11 - 1s - loss: 0.0134 - accuracy: 0.9970 - val_loss: 0.0488 - val_accuracy: 1.0000 - 574ms/epoch - 52ms/step
+Epoch 4/10
+11/11 - 1s - loss: 0.0102 - accuracy: 1.0000 - val_loss: 0.0436 - val_accuracy: 1.0000 - 584ms/epoch - 53ms/step
+Epoch 5/10
+11/11 - 1s - loss: 0.0111 - accuracy: 0.9970 - val_loss: 0.0366 - val_accuracy: 1.0000 - 715ms/epoch - 65ms/step
+Epoch 6/10
+11/11 - 1s - loss: 0.0106 - accuracy: 0.9939 - val_loss: 0.0285 - val_accuracy: 1.0000 - 586ms/epoch - 53ms/step
+Epoch 7/10
+11/11 - 1s - loss: 0.0078 - accuracy: 1.0000 - val_loss: 0.0237 - val_accuracy: 1.0000 - 594ms/epoch - 54ms/step
+Epoch 8/10
+11/11 - 1s - loss: 0.0119 - accuracy: 0.9939 - val_loss: 0.0231 - val_accuracy: 1.0000 - 605ms/epoch - 55ms/step
+Epoch 9/10
+11/11 - 1s - loss: 0.0063 - accuracy: 1.0000 - val_loss: 0.0212 - val_accuracy: 1.0000 - 611ms/epoch - 56ms/step
+Epoch 10/10
+11/11 - 1s - loss: 0.0103 - accuracy: 1.0000 - val_loss: 0.0187 - val_accuracy: 1.0000 - 736ms/epoch - 67ms/step
+loading model.checkpoint
+[0.0019399609882384539, 1.0]
+loading model.checkpoint
+fold 3/3 accuracy: 1.0
+ ['O', 'I', 'N']
+[[56  0  0]
+ [ 0 56  0]
+ [ 0  0 50]]
+mean accuracy: 1.0
+total mean accuracy: 1.0
+Total processing time: 54.2
+removing model.checkpoint
+removing prefit.checkpoint
