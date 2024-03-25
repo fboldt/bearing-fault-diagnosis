@@ -1,6 +1,7 @@
 from tensorflow.keras import layers, callbacks, saving
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.utils import to_categorical
+from sklearn.model_selection import train_test_split
 from sklearn.base import BaseEstimator, ClassifierMixin
 import numpy as np
 import os.path
@@ -49,7 +50,6 @@ class CNN1D(BaseEstimator, ClassifierMixin):
                 patience=100,
             )
         ]
-
     def make_model(self, input_shape):
         self.model = Sequential(name="backbone")
         self.model.add(layers.InputLayer(input_shape=input_shape))
@@ -75,11 +75,15 @@ class CNN1D(BaseEstimator, ClassifierMixin):
             loss="categorical_crossentropy",
             metrics=["accuracy"]
             )
-        self.model.fit(X, y_cat, 
+        
+        Xtr, Xva, ytr, yva = train_test_split(X, y_cat, 
+                                              test_size=self.validation_split,
+                                              stratify=y)
+        self.model.fit(Xtr, ytr, 
                        epochs=self.epochs, 
                        verbose=self.verbose,
                        callbacks=self.callbacks_list(checkpoint),
-                       validation_split=self.validation_split)
+                       validation_data=(Xva, yva))
         if os.path.isdir(checkpoint):
             if self.verbose:
                 print("loading", checkpoint)
