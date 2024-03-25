@@ -16,14 +16,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.prefitckp = "prefit.checkpoint"
         self.validation_split = 0.1
         self.verbose = 2
-        self.featLayers = Sequential(name="feat_layers")
-        for i, (filters, kernel) in enumerate(zip([32, 32],[64, 64])):
-            self.featLayers.add(layers.Conv1D(filters, kernel, 
-                                              activation='relu', 
-                                              name=f"conv{i+1}",
-                                              ))
-            self.featLayers.add(layers.MaxPooling1D(4))
-            self.featLayers.add(layers.Dropout(0.2))
+
 
     
     def __del__(self):
@@ -50,13 +43,27 @@ class CNN1D(BaseEstimator, ClassifierMixin):
                 patience=100,
             )
         ]
-    def make_model(self, input_shape):
+    
+    def make_feature_layers(self):
+        self.featLayers = Sequential(name="feat_layers")
+        for i, (filters, kernel) in enumerate(zip([32, 32],[64, 64])):
+            self.featLayers.add(layers.Conv1D(filters, kernel, 
+                                              activation='relu', 
+                                              name=f"conv{i+1}",
+                                              ))
+            self.featLayers.add(layers.MaxPooling1D(4))
+            self.featLayers.add(layers.Dropout(0.2))
+        return self.featLayers
+
+    def make_model(self, input_shape, num_classes):
         self.model = Sequential(name="backbone")
         self.model.add(layers.InputLayer(input_shape=input_shape))
-        self.model.add(self.featLayers)
+        self.model.add(self.make_feature_layers())
         self.model.add(layers.Conv1D(32, 32, activation='relu', name=f"conv_backbone"))
         self.model.add(layers.GlobalAveragePooling1D(name='gap1d'))
         self.model.add(layers.Dropout(0.5))
+        self.model.add(layers.Dense(num_classes))
+        self.model.add(layers.Activation('softmax'))
     
     def training(self, X, y, checkpoint):
         self.n_steps = X.shape[1]
@@ -66,9 +73,17 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         y_cat = to_categorical(ids)
         num_classes = y_cat.shape[1]
 
-        self.make_model((self.n_steps, self.n_features))
-        self.model.add(layers.Dense(num_classes))
-        self.model.add(layers.Activation('softmax'))
+        if os.path.isdir(self.prefitckp):
+            print("loading", self.prefitckp)
+            self.model = saving.load_model(self.prefitckp)
+        
+        if self.model == None:
+            self.make_model((self.n_steps, self.n_features), num_classes)
+        else:
+            self.model.pop()
+            self.model.pop() 
+            self.model.add(layers.Dense(num_classes))
+            self.model.add(layers.Activation('softmax'))
 
         self.model.compile(
             optimizer=self.optimizer,
@@ -84,11 +99,14 @@ class CNN1D(BaseEstimator, ClassifierMixin):
                        verbose=self.verbose,
                        callbacks=self.callbacks_list(checkpoint),
                        validation_data=(Xva, yva))
+        
         if os.path.isdir(checkpoint):
             if self.verbose:
                 print("loading", checkpoint)
             model = saving.load_model(checkpoint)
-            print(model.evaluate(X, y_cat))
+            print("(Xtr, ytr)", model.evaluate(Xtr, ytr))
+            print("(Xva, yva)", model.evaluate(Xva, yva))
+            print("(X, y_cat)", model.evaluate(X, y_cat))
 
     def prefit(self, X, y):
         self.training(X, y, self.prefitckp)
@@ -96,21 +114,6 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         print(self.model.summary())
 
     def fit(self, X, y=None):
-        if os.path.isdir(self.prefitckp):
-            print("loading", self.prefitckp)
-            self.model = saving.load_model(self.prefitckp)
-        if self.model == None:
-            self.n_steps = X.shape[1]
-            self.n_features = X.shape[2]
-            self.make_model((self.n_steps, self.n_features))
-        else:
-            self.model.pop()
-            self.model.pop() 
-        self.labels, ids = np.unique(y, return_inverse=True)
-        y_cat = to_categorical(ids)
-        num_classes = y_cat.shape[1]
-        self.model.add(layers.Dense(num_classes))
-        self.model.add(layers.Activation('softmax'))
         self.training(X, y, self.checkpoint)
 
     def predict(self, X):
@@ -123,3 +126,4 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         X = X.reshape((X.shape[0], X.shape[1], self.n_features))
         predictions = model.predict(X)
         return self.labels[np.argmax(predictions, axis=1)]
+    
