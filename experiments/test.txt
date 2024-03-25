@@ -1,0 +1,6 @@
+  -------
+|  Kfold  |
+  -------
+groupkfold_severity
+1/1: CWRU (nio)
+Slipt type: groupkfold_severity
