@@ -14,7 +14,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.model = None
         self.checkpoint = checkpoint
         self.prefitckp = "prefit.checkpoint"
-        self.validation_split = 0.1
+        self.validation_split = 0.2
         self.verbose = 2
     
     def __del__(self):
