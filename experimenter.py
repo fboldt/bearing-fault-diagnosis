@@ -39,8 +39,8 @@ def experimenter():
     show_title("Kfold")
     kfold(target, split=split, repetitions=kfold_repetitions, clf=clf)
     
-    show_title("Cross Dataset")
-    cross_dataset(sources, target, clf=clf)
+    # show_title("Cross Dataset")
+    # cross_dataset(sources, target, clf=clf)
     
     show_title("Transfer Learning")
     transfer_learning(sources, target[0], split=split, repetitions=kfold_repetitions, clf=clf)
