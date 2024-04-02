@@ -15,7 +15,7 @@ import time
 from utils.show_info import show_title
 from utils.save_output import ConsoleOutputToFile
 
-debug = True
+debug = False
 
 datasets = [
     MFPT(config='all'),
