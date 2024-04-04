@@ -10,6 +10,7 @@ from sklearn.model_selection import KFold, StratifiedGroupKFold
 import urllib
 import sys
 
+
 # Code to avoid incomplete array results
 np.set_printoptions(threshold=sys.maxsize)
 
@@ -231,6 +232,15 @@ def download_file(url, dirname, bearing):
         download_file(url, dirname, bearing)
 
 
+def downsample(data, original_freq, post_freq):
+    if original_freq < post_freq:
+        print('Downsample is not required')
+        return    
+    step = 1 / abs(original_freq - post_freq)
+    indices_to_delete = [i for i in range(0, np.size(data), round(step*original_freq))]
+    return np.delete(data, indices_to_delete)
+
+
 class CWRU():
     """
     CWRU class wrapper for database download and acquisition.
@@ -261,11 +271,13 @@ class CWRU():
     def __str__(self):
         return f"CWRU ({self.config})"
 
-    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, config="dbg"):
+    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, 
+                 config="dbg", resampled_rate=42_000):
         self.sample_size = sample_size
         self.n_channels = n_channels
         self.acquisition_maxsize = acquisition_maxsize
         self.config = config
+        self.resampled_rate = resampled_rate
         self.rawfilesdir = "raw_cwru"
         self.url = "https://engineering.case.edu/sites/default/files/"
         self.n_folds = 3
@@ -320,24 +332,34 @@ class CWRU():
         cwd = os.getcwd()
         for x, key in enumerate(self.files):
             matlab_file = scipy.io.loadmat(os.path.join(cwd, self.files[key]))
+            
             acquisition = []
+            
             print('\r', f" loading acquisitions {100*(x+1)/len(self.files):.2f} %", end='')
             for position in self.accelerometers:
                 file_number = self.files[key][len(self.rawfilesdir)+1:-4]
                 signal_key = [key for key in matlab_file if key.endswith(file_number+ "_" + position + "_time")]
+                
                 if len(signal_key) == 0:
                     signal_key = [key for key in matlab_file if key.endswith("_" + position + "_time")]
+                
                 if len(signal_key) > 0:
-                    # print(f"  {key}: {matlab_file[signal_key[0]].reshape(1, -1)[0].shape}")
                     acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0][:self.acquisition_maxsize])
-            acquisition = np.array(acquisition)
+            
+            acquisition = np.array(acquisition)            
             if len(acquisition.shape)<2 or acquisition.shape[0]<self.n_channels:
                 continue
+            
+            # downsample to 42,000Hz
+            acquisition = downsample(acquisition, 48_000, self.resampled_rate).reshape(1, -1)
+            
             for i in range(acquisition.shape[1]//self.sample_size):
                 sample = acquisition[:,(i * self.sample_size):((i + 1) * self.sample_size)]
+                
                 self.signal_data = np.append(self.signal_data, np.array([sample.T]), axis=0)
                 self.labels = np.append(self.labels, key[0])
                 self.keys = np.append(self.keys, key)
+        
         print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
     
     def get_acquisitions(self):
@@ -399,8 +421,8 @@ class CWRU():
             yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
 
 if __name__ == "__main__":
-    dataset = CWRU(config='all')
-    dataset.download()
+    dataset = CWRU(config='48k')
+    # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))

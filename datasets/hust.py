@@ -192,7 +192,24 @@ def download_file(url, dirname, bearing):
         print("Error occurs when downloading file: " + str(e))
         print("Trying do download again")
         download_file(url, dirname, bearing)
-   
+
+
+def downsample(data, original_freq, post_freq):
+    if original_freq < post_freq:
+        print('Downsample is not required')
+        return    
+    step = 1 / abs(original_freq - post_freq)
+    indices_to_delete = [i for i in range(0, np.size(data), round(step*original_freq))]
+    return np.delete(data, indices_to_delete)
+
+
+def downsample(data, original_freq, post_freq):
+    if original_freq < post_freq:
+        print('Downsample is not required')
+        return    
+    step = 1 / abs(original_freq - post_freq)
+    indices_to_delete = [i for i in range(0, np.size(data), round(step*original_freq))]
+    return np.delete(data, indices_to_delete)
 
 
 class Hust():
@@ -232,12 +249,14 @@ class Hust():
         return f"HUST ({self.config})"
 
 
-    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, config="dbg"):
+    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, 
+                 config="dbg", resampled_rate=42_000):
         self.url = "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/"
         self.sample_size = sample_size
         self.n_channels = n_channels
         self.acquisition_maxsize = acquisition_maxsize
         self.config = config
+        self.resampled_rate = resampled_rate
         self.rawfilesdir = "raw_hust"
         self.n_folds = 4
         self.bearing_labels, self.bearing_names = self.get_hust_bearings()
@@ -279,7 +298,8 @@ class Hust():
             acquisition = np.array(acquisition)
             if len(acquisition.shape)<2 or acquisition.shape[0]<self.n_channels:
                 continue
-            for i in range(acquisition.shape[1]//self.sample_size):
+            acquisition = downsample(acquisition, 51200, self.resampled_rate).reshape(1, -1)
+            for i in range(acquisition.shape[1]//self.sample_size):                
                 sample = acquisition[:,(i * self.sample_size):((i + 1) * self.sample_size)]
                 self.signal_data = np.append(self.signal_data, np.array([sample.T]), axis=0)
                 self.labels = np.append(self.labels, key[0])
@@ -320,7 +340,7 @@ class Hust():
 
 if __name__ == "__main__":
     dataset = Hust(config='all')
-    dataset.download()
+    # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
