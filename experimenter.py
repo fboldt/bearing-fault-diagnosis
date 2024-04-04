@@ -4,6 +4,7 @@ from datasets.cwru import CWRU
 from datasets.uored_vafcls import UORED_VAFCLS
 from datasets.hust import Hust
 from datasets.mfpt import MFPT
+from datasets.mafaulda import Mafaulda
 from datasets.paderborn import Paderborn
 from estimators.cnn1d import CNN1D
 from experimenter_kfold import experimenter as kfold
@@ -20,10 +21,12 @@ debug = True
 datasets = [
     MFPT(config='all'),
     CWRU(config='nio'),
+    Mafaulda(config='dbg'),
 ] if debug else [
-    Paderborn(config='all'),
+    # Paderborn(config='all'),
     UORED_VAFCLS(config='all'),
     Hust(config='all'),
+    Mafaulda(config='dbg'),
     CWRU(config='balanced'),
 ]
 
