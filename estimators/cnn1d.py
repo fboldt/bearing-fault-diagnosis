@@ -1,4 +1,4 @@
-from tensorflow.keras import layers, callbacks, saving
+from tensorflow.keras import layers, callbacks, saving, regularizers
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
@@ -47,18 +47,18 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         for i, (filters, kernel) in enumerate(zip([32, 32],[64, 64])):
             self.featLayers.add(layers.Conv1D(filters, kernel, 
                                               activation='relu', 
-                                              name=f"conv{i+1}",
+                                              name=f"conv_kernel{kernel}_{i+1}",
+                                              kernel_regularizer=regularizers.L1L2(l1=1e-5, l2=1e-4),
+                                              bias_regularizer=regularizers.L1L2(l1=1e-5, l2=1e-4),
                                               ))
-            self.featLayers.add(layers.MaxPooling1D(4))
-            self.featLayers.add(layers.Dropout(0.2))
+            self.featLayers.add(layers.MaxPooling1D(4, name=f"maxpool_{i+1}"))
         return self.featLayers
 
     def make_model(self, input_shape, num_classes):
         self.model = Sequential(name="backbone")
         self.model.add(layers.InputLayer(input_shape=input_shape))
         self.model.add(self.make_feature_layers())
-        self.model.add(layers.Conv1D(32, 32, activation='relu', name=f"conv_backbone"))
-        self.model.add(layers.GlobalAveragePooling1D(name='gap1d'))
+        self.model.add(layers.GlobalMaxPooling1D(name='flat'))
         self.model.add(layers.Dropout(0.5))
         self.model.add(layers.Dense(num_classes))
         self.model.add(layers.Activation('softmax'))
@@ -109,7 +109,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
     def prefit(self, X, y):
         self.training(X, y, self.prefitckp)
         self.featLayers.trainable = False
-        print(self.model.summary())
+        print(self.model.summary(expand_nested=True))
 
     def fit(self, X, y=None):
         self.training(X, y, self.checkpoint)
