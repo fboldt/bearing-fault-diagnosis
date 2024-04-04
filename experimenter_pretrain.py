@@ -4,25 +4,24 @@ from datasets.hust import Hust
 from datasets.mfpt import MFPT
 from datasets.paderborn import Paderborn
 from estimators.cnn1d import CNN1D
-from experimenter_kfold import kfold
+from experimenter_kfold import kfold, train_estimator
 from experimenter_cross_dataset import get_acquisitions
 
 def transfer_learning(sources, target, repetitions=3, clf=CNN1D()):
     print("loading sources acquisitions...")
-    Xtr, ytr = get_acquisitions(sources)
+    Xtr, ytr, groups = get_acquisitions(sources)
     print("pretraining estimator...")
-    clf.prefit(Xtr, ytr)
+    train_estimator(clf.prefit, Xtr, ytr, groups) #clf.prefit(Xtr, ytr)
     print(clf)
     kfold(target, clf=clf, repetitions=repetitions)
 
 datasets = [
-    CWRU(config='nio'),
     MFPT(config='dbg'),
     # Paderborn(config='dbg'),
     # Hust(config='dbg'),
     # UORED_VAFCLS(config='dbg'),
+    CWRU(config='nio'),
 ]
-
 sources = datasets[:-1]
 target = list(set(datasets) - set(sources))[0]
 

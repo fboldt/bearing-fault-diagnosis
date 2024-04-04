@@ -33,7 +33,7 @@ list_of_bearings_nio = [
     ("O.021.DE.@6_0","234.mat"),    ("O.021.DE.@6_1","235.mat"),    ("O.021.DE.@6_2","236.mat"),    ("O.021.DE.@6_3","237.mat"),    
     # ("O.021.DE.@3_0","246.mat"),    ("O.021.DE.@3_1","247.mat"),    ("O.021.DE.@3_2","248.mat"),    ("O.021.DE.@3_3","249.mat"),    
     # ("O.021.DE.@12_0","258.mat"),   ("O.021.DE.@12_1","259.mat"),   ("O.021.DE.@12_2","260.mat"),   ("O.021.DE.@12_3","261.mat"),    
-    ("O.014.FE.@6_0","313.mat"),    
+    # ("O.014.FE.@6_0","313.mat"),    
 ]
 
 list_of_bearings_12k = [
@@ -365,12 +365,16 @@ class CWRU():
     def get_acquisitions(self):
         if len(self.labels) == 0:
             self.load_acquisitions()
-        return self.signal_data, self.labels
+        groups = self.groups()
+        return self.signal_data, self.labels, groups
     
     def group_acquisition(self):
         groups = []
+        hash = dict()
         for i in self.keys:
-            groups = np.append(groups, i)
+            if i not in hash:
+                hash[i] = len(hash)
+            groups = np.append(groups, hash[i])
         return groups
 
     def group_load(self):    
@@ -381,19 +385,25 @@ class CWRU():
 
     def group_settings(self):
         groups = []
+        hash = dict()
         for i in self.keys:
             load = i[-1]
-            groups = np.append(groups, load)
+            if load not in hash:
+                hash[load] = len(hash)
+            groups = np.append(groups, hash[load])
         return groups
 
     def group_severity(self):
         groups = []
+        hash = dict()
         for i in self.keys:
             if i[0] == "N":
                 load_severity = str(i[-1])
             else:
                 load_severity = i[2:5]
-            groups = np.append(groups, load_severity)
+            if load_severity not in hash:
+                hash[load_severity] = len(hash)
+            groups = np.append(groups, hash[load_severity])
         return groups
         
     def groups(self):

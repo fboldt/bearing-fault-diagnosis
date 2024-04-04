@@ -7,28 +7,29 @@ from estimators.cnn1d import CNN1D
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import StratifiedGroupKFold
 
+def train_estimator(estimator_training_function, Xtr, ytr, groups=None):
+    if groups is not None:
+        group_kfold = StratifiedGroupKFold(n_splits=len(set(groups)))
+        for (train_partial_index, val_index) in group_kfold.split(Xtr, ytr, groups):
+            Xtr_partial, ytr_partial = Xtr[train_partial_index], ytr[train_partial_index]
+            Xva, yva = Xtr[val_index], ytr[val_index]
+            break
+        estimator_training_function(Xtr_partial, ytr_partial, Xva, yva)
+    else:
+        estimator_training_function(Xtr, ytr)
 
 def kfold(dataset, repetitions=3, clf=CNN1D()):
     total = []
-    X, y = dataset.get_acquisitions()
+    X, y, groups = dataset.get_acquisitions()
     for i in range(repetitions):
         print(f"{i+1}/{repetitions}: {dataset}")
         accuracies = []
         kf = StratifiedGroupKFold(n_splits=dataset.n_folds)
-        groups = dataset.groups()
         for train_index, test_index in kf.split(dataset.signal_data, dataset.labels, groups):
             Xtr, ytr = X[train_index], y[train_index]
             Xte, yte = X[test_index], y[test_index]
             print(Xtr.shape, ytr.shape, Xte.shape, yte.shape)
-            if groups is not None:
-                group_kfold = StratifiedGroupKFold(n_splits=len(set(groups[train_index])))
-                for (train_partial_index, val_index) in group_kfold.split(Xtr, ytr, groups[train_index]):
-                    Xtr_partial, ytr_partial = Xtr[train_partial_index], ytr[train_partial_index]
-                    Xva, yva = Xtr[val_index], ytr[val_index]
-                    break
-                clf.fit(Xtr_partial, ytr_partial, Xva, yva)
-            else:
-                clf.fit(Xtr, ytr)
+            train_estimator(clf.fit, Xtr, ytr, groups[train_index])
             ypr = clf.predict(Xte)
             accuracies.append(accuracy_score(yte, ypr))
             print(f"fold {len(accuracies)}/{dataset.n_folds} accuracy: {accuracies[-1]}")
@@ -41,11 +42,11 @@ def kfold(dataset, repetitions=3, clf=CNN1D()):
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
 datasets = [
-    CWRU(config='nio'),
     # MFPT(config='dbg'),
     # Paderborn(config='dbg'),
     # Hust(config='dbg'),
     # UORED_VAFCLS(config='dbg'),
+    CWRU(config='nio'),
 ]
 
 def experimenter(datasets=datasets, repetitions=3, clf=CNN1D()):

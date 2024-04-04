@@ -24,10 +24,16 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         return "CNN1D"
     
     def __del__(self):
+        self.remove_chepoint_file()
+        self.remove_prefitckp_file()
+
+    def remove_chepoint_file(self):
         if os.path.isdir(self.checkpoint):
             if self.verbose:
                 print("removing", self.checkpoint)
             shutil.rmtree(self.checkpoint)
+
+    def remove_prefitckp_file(self):
         if os.path.isdir(self.prefitckp):
             if self.verbose:
                 print("removing", self.prefitckp)
@@ -120,6 +126,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
             # print("(X, y)", model.evaluate(X, y_cat))
 
     def prefit(self, Xtr, ytr, Xva=None, yva=None):
+        self.remove_prefitckp_file()
         self.training(Xtr, ytr, Xva, yva, self.prefitckp)
         self.model.layers[0].trainable = False
 

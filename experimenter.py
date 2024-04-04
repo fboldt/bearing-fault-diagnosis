@@ -16,31 +16,33 @@ import time
 from utils.show_info import show_title
 from utils.save_output import ConsoleOutputToFile
 
-debug = True
+debug = False
 
 datasets = [
     MFPT(config='all'),
+    # Mafaulda(config='dbg'),
     CWRU(config='nio'),
-    Mafaulda(config='dbg'),
 ] if debug else [
-    # Paderborn(config='all'),
+    Paderborn(config='all'),
     UORED_VAFCLS(config='all'),
     Hust(config='all'),
-    Mafaulda(config='dbg'),
     CWRU(config='balanced'),
+    # UORED_VAFCLS(config='mert'),
+    # Hust(config='mert'),
+    # CWRU(config='balanced'),
 ]
 
 sources = datasets[:-1]
 target = list(set(datasets) - set(sources))
-kfold_repetitions = 1 if debug else 10
+kfold_repetitions = 1 if debug else 5
 epochs = 10 if debug else 1000
 clf = CNN1D(epochs=epochs)
 
 def experimenter():
     show_title("Kfold")
     kfold(target, repetitions=kfold_repetitions, clf=clf)    
-    show_title("Cross Dataset")
-    cross_dataset(sources, target, clf=clf)
+    # show_title("Cross Dataset")
+    # cross_dataset(sources, target, clf=clf)
     show_title("Transfer Learning")
     transfer_learning(sources, target[0], repetitions=kfold_repetitions, clf=clf)
 

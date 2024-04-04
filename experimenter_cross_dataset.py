@@ -6,27 +6,30 @@ from datasets.paderborn import Paderborn
 from estimators.cnn1d import CNN1D
 from sklearn.metrics import accuracy_score, confusion_matrix
 import numpy as np
+from experimenter_kfold import train_estimator
 
 def get_acquisitions(datasets):
-    first_dataset = False
+    first_dataset = True
     for dataset in datasets:
         print(dataset)
-        Xtmp, ytmp = dataset.get_acquisitions()
-        if not first_dataset:
-            X, y =  Xtmp, ytmp
-            first_dataset = True
+        Xtmp, ytmp, gtmp = dataset.get_acquisitions()
+        if first_dataset:
+            X, y, g =  Xtmp, ytmp, gtmp
+            first_dataset = False
         else:
+            gtmp += np.max(gtmp)
             X = np.concatenate((X, Xtmp))
             y = np.concatenate((y, ytmp))
-    return X, y
+            g = np.concatenate((g, gtmp))
+    return X, y, g
 
 def cross_dataset(sources, targets, clf=CNN1D()):
     print("loading sources acquisitions...")
-    Xtr, ytr = get_acquisitions(sources)
+    Xtr, ytr, groups = get_acquisitions(sources)
     print("training estimator...")
-    clf.fit(Xtr, ytr)
+    train_estimator(clf.fit, Xtr, ytr, groups)
     print("loading target acquisitions...")
-    Xte, yte = get_acquisitions(targets)
+    Xte, yte, _ = get_acquisitions(targets)
     print("inferencing predictions...")
     ypr = clf.predict(Xte)
     print(f"Accuracy {accuracy_score(yte, ypr)}")
@@ -35,12 +38,10 @@ def cross_dataset(sources, targets, clf=CNN1D()):
     print(confusion_matrix(yte, ypr, labels=labels))
 
 datasets = [
-    # CWRU(config='all'),
-    # MFPT(config='all'),
-    # Paderborn(config='all'),
-    # Hust(config='niob'),
-    # UORED_VAFCLS(config='mert'),
     MFPT(config='dbg'),
+    Paderborn(config='dbg'),
+    Hust(config='dbg'),
+    UORED_VAFCLS(config='dbg'),
     CWRU(config='nio'),
 ]
 

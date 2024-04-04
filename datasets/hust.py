@@ -307,12 +307,16 @@ class Hust():
     def get_acquisitions(self):
         if len(self.labels) == 0:
             self.load_acquisitions()
-        return self.signal_data, self.labels
-        
+        groups = self.groups()
+        return self.signal_data, self.labels, groups
+            
     def group_acquisition(self):
         groups = []
+        hash = dict()
         for i in self.keys:
-            groups = np.append(groups, i)
+            if i not in hash:
+                hash[i] = len(hash)
+            groups = np.append(groups, hash[i])
         return groups
 
     def groups(self):
