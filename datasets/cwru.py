@@ -344,49 +344,27 @@ class CWRU():
         if len(self.labels) == 0:
             self.load_acquisitions()
         return self.signal_data, self.labels
-
-    def kfold(self):
-        if len(self.signal_data) == 0:
-            self.load_acquisitions()
-        kf = KFold(n_splits=self.n_folds, shuffle=True, random_state=42)
-        for train, test in kf.split(self.signal_data):
-            yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
-
-
-    def groupkfold_acquisition(self):
-        if len(self.signal_data) == 0:
-            self.load_acquisitions()
+    
+    def group_acquisition(self):
         groups = []
         for i in self.keys:
             groups = np.append(groups, i)
-        kf = StratifiedGroupKFold(n_splits=self.n_folds)
-        for train, test in kf.split(self.signal_data, self.labels, groups):
-            yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
+        return groups
 
-    def groupkfold_load(self):
-        if len(self.signal_data) == 0:
-            self.load_acquisitions()
+    def group_load(self):    
         groups = []
         for i in self.keys:
             groups = np.append(groups, int(i[-1]) % self.n_folds)
-        kf = StratifiedGroupKFold(n_splits=self.n_folds)
-        for train, test in kf.split(self.signal_data, self.labels, groups):
-            yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
+        return groups
 
-    def groupkfold_settings(self):
-        if len(self.signal_data) == 0:
-            self.load_acquisitions()
+    def group_settings(self):
         groups = []
         for i in self.keys:
             load = i[-1]
             groups = np.append(groups, load)
-        kf = StratifiedGroupKFold(n_splits=self.n_folds)
-        for train, test in kf.split(self.signal_data, self.labels, groups):
-            yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
+        return groups
 
-    def groupkfold_severity(self):
-        if len(self.signal_data) == 0:
-            self.load_acquisitions()
+    def group_severity(self):
         groups = []
         for i in self.keys:
             if i[0] == "N":
@@ -394,13 +372,14 @@ class CWRU():
             else:
                 load_severity = i[2:5]
             groups = np.append(groups, load_severity)
-        kf = StratifiedGroupKFold(n_splits=self.n_folds)
-        for train, test in kf.split(self.signal_data, self.labels, groups):
-            yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
+        return groups
+        
+    def groups(self):
+        return self.group_severity()
 
 if __name__ == "__main__":
     dataset = CWRU(config='all')
-    dataset.download()
+    # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))

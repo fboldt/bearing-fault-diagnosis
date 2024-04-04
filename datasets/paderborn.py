@@ -214,38 +214,25 @@ class Paderborn():
         if len(self.labels) == 0:
             self.load_acquisitions()
         return self.signal_data, self.labels
-
-    def kfold(self):
-        if len(self.signal_data) == 0:
-            self.load_acquisitions()
-        kf = KFold(n_splits=self.n_folds, shuffle=True, random_state=42)
-        for train, test in kf.split(self.signal_data):
-            yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
-
-
-    def groupkfold_acquisition(self):
-        if len(self.signal_data) == 0:
-            self.load_acquisitions()
+        
+    def group_acquisition(self):
         groups = []
         for i in self.keys:
             groups = np.append(groups, i)
-        kf = StratifiedGroupKFold(n_splits=self.n_folds)
-        for train, test in kf.split(self.signal_data, self.labels, groups):
-            yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
+        return groups
 
-    def groupkfold_settings(self):
-        if len(self.signal_data) == 0:
-            self.load_acquisitions()
+    def groups(self):
+        return self.group_acquisition()
+
+    def group_settings(self):
         groups = []
         for i in range(len(self.bearing_names)):
             for k in range(4): # Number of Settings - 4
                 for j in range(self.n_samples_acquisition*self.n_acquisitions):
                     groups = np.append(groups, k)
-        kf = GroupShuffleSplit(n_splits=self.n_folds)
-        for train, test in kf.split(self.signal_data, self.labels, groups):
-            yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
+        return groups
 
-    def groupkfold_bearings(self):
+    def group_bearings(self):
         if len(self.signal_data) == 0:
             self.load_acquisitions()
         groups = []
@@ -271,9 +258,8 @@ class Paderborn():
             elif key[0] == 'I':
                 n_inner = n_inner + 1
                 n_keys_bearings = 1
-        kf = GroupShuffleSplit(n_splits=self.n_folds)
-        for train, test in kf.split(self.signal_data, self.labels, groups):
-            yield self.signal_data[train], self.labels[train], self.signal_data[test], self.labels[test]
+        return groups
+
 
 if __name__ == "__main__":
     dataset = Paderborn(config='all')

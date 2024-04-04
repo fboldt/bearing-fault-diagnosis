@@ -15,7 +15,7 @@ import time
 from utils.show_info import show_title
 from utils.save_output import ConsoleOutputToFile
 
-debug = False
+debug = True
 
 datasets = [
     MFPT(config='all'),
@@ -30,28 +30,22 @@ datasets = [
 sources = datasets[:-1]
 target = list(set(datasets) - set(sources))
 kfold_repetitions = 1 if debug else 10
-split= 'groupkfold_severity' if "CWRU" in target.__str__() else 'groupkfold_acquisition'
 epochs = 10 if debug else 1000
 clf = CNN1D(epochs=epochs)
 
 def experimenter():
-
     show_title("Kfold")
-    kfold(target, split=split, repetitions=kfold_repetitions, clf=clf)
-    
-    # show_title("Cross Dataset")
-    # cross_dataset(sources, target, clf=clf)
-    
+    kfold(target, repetitions=kfold_repetitions, clf=clf)    
+    show_title("Cross Dataset")
+    cross_dataset(sources, target, clf=clf)
     show_title("Transfer Learning")
-    transfer_learning(sources, target[0], split=split, repetitions=kfold_repetitions, clf=clf)
+    transfer_learning(sources, target[0], repetitions=kfold_repetitions, clf=clf)
 
 
 if __name__ == "__main__":
-    
     now = datetime.now()
     date_time = now.strftime("%Y.%m.%d_%H.%M.%S")
     filename = "experiments/" + date_time + ".txt"
-
     with ConsoleOutputToFile(filename):        
         it = time.time()    
         experimenter()

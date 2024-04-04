@@ -5,16 +5,30 @@ from datasets.hust import Hust
 from datasets.paderborn import Paderborn
 from estimators.cnn1d import CNN1D
 from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.model_selection import StratifiedGroupKFold
 
-def kfold(dataset, split='groupkfold_acquisition', repetitions=3, clf=CNN1D()):
+
+def kfold(dataset, repetitions=3, clf=CNN1D()):
     total = []
+    X, y = dataset.get_acquisitions()
     for i in range(repetitions):
         print(f"{i+1}/{repetitions}: {dataset}")
         accuracies = []
-        print(f"Slipt type: {split}")
-        for Xtr, ytr, Xte, yte in getattr(dataset, split)():
+        kf = StratifiedGroupKFold(n_splits=dataset.n_folds)
+        groups = dataset.groups()
+        for train_index, test_index in kf.split(dataset.signal_data, dataset.labels, groups):
+            Xtr, ytr = X[train_index], y[train_index]
+            Xte, yte = X[test_index], y[test_index]
             print(Xtr.shape, ytr.shape, Xte.shape, yte.shape)
-            clf.fit(Xtr, ytr)
+            if groups is not None:
+                group_kfold = StratifiedGroupKFold(n_splits=len(set(groups[train_index])))
+                for (train_partial_index, val_index) in group_kfold.split(Xtr, ytr, groups[train_index]):
+                    Xtr_partial, ytr_partial = Xtr[train_partial_index], ytr[train_partial_index]
+                    Xva, yva = Xtr[val_index], ytr[val_index]
+                    break
+                clf.fit(Xtr_partial, ytr_partial, Xva, yva)
+            else:
+                clf.fit(Xtr, ytr)
             ypr = clf.predict(Xte)
             accuracies.append(accuracy_score(yte, ypr))
             print(f"fold {len(accuracies)}/{dataset.n_folds} accuracy: {accuracies[-1]}")
@@ -33,12 +47,10 @@ datasets = [
     # Hust(config='dbg'),
     # UORED_VAFCLS(config='dbg'),
 ]
-split='groupkfold_acquisition'
 
-def experimenter(datasets=datasets, split=split, repetitions=3, clf=CNN1D()):
-    print(split)
+def experimenter(datasets=datasets, repetitions=3, clf=CNN1D()):
     for dataset in datasets:
-        kfold(dataset, split=split, repetitions=repetitions, clf=clf)
+        kfold(dataset, repetitions=repetitions, clf=clf)
 
 if __name__ == "__main__":
-    experimenter(repetitions=1, clf=CNN1D(epochs=20))
+    experimenter(repetitions=1, clf=CNN1D(epochs=20,verbose=0))
