@@ -61,10 +61,11 @@ class CNN1D(BaseEstimator, ClassifierMixin):
                                               activation='relu', 
                                               name=f"conv_kernel{kernel}_{i+1}",
                                               kernel_regularizer=regularizers.L1L2(l1=1e-5, l2=1e-4),
-                                              bias_regularizer=regularizers.L1L2(l1=1e-5, l2=1e-4),
+                                            #   bias_regularizer=regularizers.L1L2(l1=1e-5, l2=1e-4),
                                               ))
             self.featLayers.add(layers.MaxPooling1D(4, name=f"maxpool_{i+1}"))
         self.featLayers.add(layers.GlobalMaxPooling1D(name='flat'))
+        self.featLayers.add(layers.LayerNormalization())
         return self.featLayers
 
     def make_model(self, input_shape, num_classes):

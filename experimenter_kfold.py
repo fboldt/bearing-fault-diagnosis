@@ -42,10 +42,10 @@ def kfold(dataset, repetitions=3, clf=CNN1D()):
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
 datasets = [
-    # MFPT(config='dbg'),
+    MFPT(config='dbg'),
     # Paderborn(config='dbg'),
-    # Hust(config='dbg'),
-    # UORED_VAFCLS(config='dbg'),
+    Hust(config='dbg'),
+    UORED_VAFCLS(config='dbg'),
     CWRU(config='nio'),
 ]
 

@@ -32,19 +32,20 @@ datasets = [
     # CWRU(config='balanced'),
 ]
 
-sources = datasets[:-1]
-target = list(set(datasets) - set(sources))
 kfold_repetitions = 1 if debug else 5
 epochs = 10 if debug else 1000
 clf = CNN1D(epochs=epochs)
 
 def experimenter():
-    show_title("Kfold")
-    kfold(target, repetitions=kfold_repetitions, clf=clf)    
-    # show_title("Cross Dataset")
-    # cross_dataset(sources, target, clf=clf)
-    show_title("Transfer Learning")
-    transfer_learning(sources, target[0], repetitions=kfold_repetitions, clf=clf)
+    for i in range(len(datasets)):
+        sources = datasets[i:i+1]
+        target = list(set(datasets) - set(sources))
+        show_title("Kfold")
+        kfold(target, repetitions=kfold_repetitions, clf=clf)    
+        show_title("Cross Dataset")
+        cross_dataset(sources, target[0], clf=clf)
+        show_title("Transfer Learning")
+        transfer_learning(sources, target[0], repetitions=kfold_repetitions, clf=clf)
 
 
 if __name__ == "__main__":
