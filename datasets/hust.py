@@ -165,8 +165,6 @@ list_of_bearings_mert = [
     'B500', 'B602', 'B704', 'B804'
 ]
 
-list_of_bearings_dbg = list_of_bearings_mert
-
 def download_file(url, dirname, bearing):
     print("Downloading Bearing Data:", bearing)   
     file_name = bearing
@@ -323,8 +321,8 @@ class Hust():
         return self.group_acquisition()
 
 if __name__ == "__main__":
-    dataset = Hust(config='all')
-    # dataset.download()
+    dataset = Hust(config='niob')
+    dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))

@@ -79,9 +79,13 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.n_steps = X.shape[1]
         self.n_features = X.shape[2]
 
+        self.make_model((self.n_steps, self.n_features))
         self.labels, ids = np.unique(y, return_inverse=True)
+
         y_cat = to_categorical(ids)
         num_classes = y_cat.shape[1]
+        self.model.add(layers.Dense(num_classes))
+        self.model.add(layers.Activation('softmax'))
 
         if os.path.isdir(self.prefitckp):
             print("loading", self.prefitckp)

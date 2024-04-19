@@ -31,4 +31,5 @@ def experimenter(sources=sources, target=target, repetitions=1, clf=CNN1D()):
 
 if __name__ == "__main__":
     experimenter(clf=CNN1D(epochs=20))
+
     

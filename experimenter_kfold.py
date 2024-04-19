@@ -55,3 +55,4 @@ def experimenter(datasets=datasets, repetitions=3, clf=CNN1D()):
 
 if __name__ == "__main__":
     experimenter(repetitions=1, clf=CNN1D(epochs=20,verbose=0))
+
