@@ -161,3 +161,7 @@ cython_debug/
 
 raw_*/
 *.zip
+
+MAFAULDA_spectrogram_datasets/
+
+Data_Pre Stage/

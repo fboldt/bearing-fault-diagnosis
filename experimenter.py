@@ -2,6 +2,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from datasets.cwru import CWRU
 from datasets.uored_vafcls import UORED_VAFCLS
+from datasets.phm import PHM
 from datasets.hust import Hust
 from datasets.mfpt import MFPT
 from datasets.mafaulda import Mafaulda
@@ -19,17 +20,16 @@ from utils.save_output import ConsoleOutputToFile
 debug = False
 
 datasets = [
-    MFPT(config='all'),
+    # MFPT(config='all'),
     # Mafaulda(config='dbg'),
-    CWRU(config='nio'),
+    PHM(config='reduced'),
+    # CWRU(config='nio'),
 ] if debug else [
-    Paderborn(config='all'),
-    UORED_VAFCLS(config='all'),
-    Hust(config='all'),
-    CWRU(config='balanced'),
-    # UORED_VAFCLS(config='mert'),
-    # Hust(config='mert'),
+    # Paderborn(config='all'),
+    # UORED_VAFCLS(config='all'),
+    # Hust(config='all'),
     # CWRU(config='balanced'),
+    PHM(config='reduced'),
 ]
 
 sources = datasets[:-1]
@@ -43,8 +43,8 @@ def experimenter():
     kfold(target, repetitions=kfold_repetitions, clf=clf)    
     # show_title("Cross Dataset")
     # cross_dataset(sources, target, clf=clf)
-    show_title("Transfer Learning")
-    transfer_learning(sources, target[0], repetitions=kfold_repetitions, clf=clf)
+    # show_title("Transfer Learning")
+    # transfer_learning(sources, target[0], repetitions=kfold_repetitions, clf=clf)
 
 
 if __name__ == "__main__":

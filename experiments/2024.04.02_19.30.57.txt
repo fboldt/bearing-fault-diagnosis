@@ -1,0 +1,6 @@
+  -------
+|  Kfold  |
+  -------
+groupkfold_acquisition
+1/1: Mafaulda (reduced)
+Slipt type: groupkfold_acquisition

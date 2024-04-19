@@ -1,0 +1,6 @@
+  -------
+|  Kfold  |
+  -------
+groupkfold_severity
+1/10: CWRU (balanced)
+Slipt type: groupkfold_severity

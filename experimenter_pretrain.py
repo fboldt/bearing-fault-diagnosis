@@ -6,6 +6,8 @@ from datasets.paderborn import Paderborn
 from estimators.cnn1d import CNN1D
 from experimenter_kfold import kfold, train_estimator
 from experimenter_cross_dataset import get_acquisitions
+import tensorflow as tf
+
 
 def transfer_learning(sources, target, repetitions=3, clf=CNN1D()):
     print("loading sources acquisitions...")
