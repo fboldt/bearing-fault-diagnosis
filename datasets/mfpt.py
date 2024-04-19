@@ -6,7 +6,6 @@ import urllib.request
 import scipy.io
 import numpy as np
 import os
-from sklearn.model_selection import KFold, StratifiedShuffleSplit, StratifiedGroupKFold
 import shutil
 import zipfile
 import sys
