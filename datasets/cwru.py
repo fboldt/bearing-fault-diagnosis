@@ -230,16 +230,6 @@ def download_file(url, dirname, bearing):
         print("Trying do download again")
         download_file(url, dirname, bearing)
 
-
-def downsample(data, original_freq, post_freq):
-    if original_freq < post_freq:
-        print('Downsample is not required')
-        return    
-    step = 1 / abs(original_freq - post_freq)
-    indices_to_delete = [i for i in range(0, np.size(data), round(step*original_freq))]
-    return np.delete(data, indices_to_delete)
-
-
 class CWRU():
     """
     CWRU class wrapper for database download and acquisition.
@@ -271,12 +261,11 @@ class CWRU():
         return f"CWRU ({self.config})"
 
     def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, 
-                 config="dbg", resampled_rate=42_000):
+                 config="dbg"):
         self.sample_size = sample_size
         self.n_channels = n_channels
         self.acquisition_maxsize = acquisition_maxsize
         self.config = config
-        self.resampled_rate = resampled_rate
         self.rawfilesdir = "raw_cwru"
         self.url = "https://engineering.case.edu/sites/default/files/"
         self.n_folds = 3
@@ -348,10 +337,7 @@ class CWRU():
             acquisition = np.array(acquisition)            
             if len(acquisition.shape)<2 or acquisition.shape[0]<self.n_channels:
                 continue
-            
-            # downsample to 42,000Hz
-            acquisition = downsample(acquisition, 48_000, self.resampled_rate).reshape(1, -1)
-            
+                        
             for i in range(acquisition.shape[1]//self.sample_size):
                 sample = acquisition[:,(i * self.sample_size):((i + 1) * self.sample_size)]
                 
