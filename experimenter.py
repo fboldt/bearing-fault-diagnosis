@@ -17,15 +17,15 @@ import time
 from utils.show_info import show_title
 from utils.save_output import ConsoleOutputToFile
 
-debug = True
+debug = False
 
 datasets = [
-    CWRU(config='balanced'),
-    Hust(config='mert'),
-    MFPT(config='dbg'),
-    Ottawa(config='dbg'),
-    Paderborn(config='dbg'),
-    UORED_VAFCLS(config='mert'),
+    CWRU(config='nio', acquisition_maxsize=84_000),
+    Hust(config='dbg', acquisition_maxsize=84_000),
+    MFPT(config='dbg', acquisition_maxsize=84_000),
+    Ottawa(config='dbg', acquisition_maxsize=84_000),
+    Paderborn(config='dbg', acquisition_maxsize=84_000),
+    UORED_VAFCLS(config='dbg', acquisition_maxsize=84_000),
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),
@@ -37,7 +37,8 @@ datasets = [
 
 kfold_repetitions = 1 if debug else 10
 epochs = 10 if debug else 1000
-clf = CNN1D(epochs=epochs)
+verbose = 2 if debug else 0
+clf = CNN1D(epochs=epochs, verbose=verbose)
 
 def experimenter():
     for target in datasets:
