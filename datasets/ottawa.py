@@ -177,9 +177,10 @@ class Ottawa():
         for x, key in enumerate(self.files):
             print('\r', f" loading acquisitions {100*(x+1)/len(self.files):.2f} %", end='')
             matlab_file = scipy.io.loadmat(self.files[key])
-            vibration_data = np.array([elem for singleList in matlab_file['Channel_1'] for elem in singleList])
             if self.acquisition_maxsize:
-                vibration_data = vibration_data[:self.acquisition_maxsize]
+                vibration_data = np.array([elem for singleList in matlab_file['Channel_1'] for elem in singleList][:self.acquisition_maxsize])
+            else:
+                vibration_data = np.array([elem for singleList in matlab_file['Channel_1'] for elem in singleList])
             for i in range(len(vibration_data)//self.sample_size):
                 sample = vibration_data[(i * self.sample_size):((i + 1) * self.sample_size)]
                 sample = np.array([sample]).reshape(1, -1, self.n_channels)
@@ -208,7 +209,7 @@ class Ottawa():
         return self.group_acquisition()
  
 if __name__ == "__main__":
-    dataset = Ottawa(config='dbg')
+    dataset = Ottawa(config='dbg', acquisition_maxsize=84_000)
     # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)

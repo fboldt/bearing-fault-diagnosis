@@ -269,10 +269,11 @@ class Hust():
             matlab_file = scipy.io.loadmat(os.path.join(cwd, self.files[key]))           
             acquisition = []
             print('\r', f" loading acquisitions {100*(x+1)/len(self.files):.2f} %", end='')
-            acquisition.append(matlab_file["data"].reshape(1, -1)[0])
-            acquisition = np.array(acquisition)
             if self.acquisition_maxsize:
-                acquisition = acquisition[:self.acquisition_maxsize]   
+                acquisition.append(matlab_file["data"].reshape(1, -1)[0][:self.acquisition_maxsize])
+            else:
+                acquisition.append(matlab_file["data"].reshape(1, -1)[0])
+            acquisition = np.array(acquisition)
             if len(acquisition.shape)<2 or acquisition.shape[0]<self.n_channels:
                 continue
             for i in range(acquisition.shape[1]//self.sample_size):                
@@ -301,7 +302,7 @@ class Hust():
         return self.group_acquisition()
 
 if __name__ == "__main__":
-    dataset = Hust(config='all')
+    dataset = Hust(config='dbg', acquisition_maxsize=84_000)
     # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)

@@ -236,10 +236,11 @@ class UORED_VAFCLS():
             acquisition = []
             print('\r', f" loading acquisitions {100*(x+1)/len(self.files):.2f} %", end='')
             label = self.files[key][len(self.rawfilesdir)+1:-4]
-            acquisition.append(matlab_file[label].reshape(1, -1)[0])
-            acquisition = np.array(acquisition)
             if self.acquisition_maxsize:
-                acquisition = acquisition[:self.acquisition_maxsize]   
+                acquisition.append(matlab_file[label].reshape(1, -1)[0][:self.acquisition_maxsize] )
+            else: 
+                acquisition.append(matlab_file[label].reshape(1, -1)[0])
+            acquisition = np.array(acquisition)
             if len(acquisition.shape)<2 or acquisition.shape[0]<self.n_channels:
                 continue
             for i in range(acquisition.shape[1]//self.sample_size):
@@ -269,7 +270,7 @@ class UORED_VAFCLS():
         return self.group_acquisition()
 
 if __name__ == "__main__":
-    dataset = UORED_VAFCLS(config='dbg')
+    dataset = UORED_VAFCLS(config='dbg', acquisition_maxsize=84_000)
     # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)

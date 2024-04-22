@@ -332,11 +332,12 @@ class CWRU():
                     signal_key = [key for key in matlab_file if key.endswith("_" + position + "_time")]
                 
                 if len(signal_key) > 0:
-                    acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0])
+                    if self.acquisition_maxsize:
+                        acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0][:self.acquisition_maxsize])
+                    else:
+                        acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0])
             
             acquisition = np.array(acquisition)
-            if self.acquisition_maxsize:
-                acquisition = acquisition[:self.acquisition_maxsize]    
             if len(acquisition.shape)<2 or acquisition.shape[0]<self.n_channels:
                 continue
                         
@@ -397,7 +398,7 @@ class CWRU():
         return self.group_severity()
 
 if __name__ == "__main__":
-    dataset = CWRU(config='all')
+    dataset = CWRU(config='dbg', acquisition_maxsize=84_000)
     # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)

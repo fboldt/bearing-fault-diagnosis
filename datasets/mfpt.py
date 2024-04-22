@@ -162,9 +162,11 @@ class MFPT():
                 vibration_data_raw = matlab_file['bearing'][0][0][1]
             else:
                 vibration_data_raw = matlab_file['bearing'][0][0][2]
-            vibration_data = np.array([elem for singleList in vibration_data_raw for elem in singleList])
+            
             if self.acquisition_maxsize:
-                vibration_data = vibration_data[:self.acquisition_maxsize]   
+                vibration_data = np.array([elem for singleList in vibration_data_raw for elem in singleList][:self.acquisition_maxsize])
+            else:
+                vibration_data = np.array([elem for singleList in vibration_data_raw for elem in singleList])
             for i in range(len(vibration_data)//self.sample_size):
                 sample = np.empty((self.sample_size, self.n_channels))
                 for j in range(self.n_channels):
@@ -194,7 +196,7 @@ class MFPT():
         return self.group_acquisition()
 
 if __name__ == "__main__":
-    dataset = MFPT()
+    dataset = MFPT(config='dbg',acquisition_maxsize=84_000)
     dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
