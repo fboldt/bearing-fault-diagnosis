@@ -4,6 +4,7 @@ from datasets.mfpt import MFPT
 from datasets.ottawa import Ottawa
 from datasets.paderborn import Paderborn
 from datasets.uored_vafcls import UORED_VAFCLS
+from datasets.phm import PHM
 from estimators.cnn1d import CNN1D
 from utils.get_acquisitions import get_acquisitions
 from sklearn.metrics import accuracy_score, confusion_matrix
@@ -11,7 +12,7 @@ from sklearn.model_selection import StratifiedGroupKFold
 
 def train_estimator(estimator_training_function, Xtr, ytr, groups=None):
     if groups is not None:
-        group_kfold = StratifiedGroupKFold(n_splits=len(set(groups)))
+        group_kfold = StratifiedGroupKFold(n_splits=2)
         for (train_partial_index, val_index) in group_kfold.split(Xtr, ytr, groups):
             Xtr_partial, ytr_partial = Xtr[train_partial_index], ytr[train_partial_index]
             Xva, yva = Xtr[val_index], ytr[val_index]
@@ -52,12 +53,13 @@ def kfold(datasets, repetitions=3, clf=CNN1D()):
 debug = True
 
 datasets = [
-    CWRU(config='nio', acquisition_maxsize=84_000),
-    Hust(config='dbg', acquisition_maxsize=84_000),
-    MFPT(config='dbg', acquisition_maxsize=84_000),
-    Ottawa(config='dbg', acquisition_maxsize=84_000),
-    Paderborn(config='dbg', acquisition_maxsize=84_000),
-    UORED_VAFCLS(config='dbg', acquisition_maxsize=84_000),
+    PHM(config="motor_tr", acquisition_maxsize=64_000)
+    # CWRU(config='nio', acquisition_maxsize=84_000),
+    # Hust(config='dbg', acquisition_maxsize=84_000),
+    # MFPT(config='dbg', acquisition_maxsize=84_000),
+    # Ottawa(config='dbg', acquisition_maxsize=84_000),
+    # Paderborn(config='dbg', acquisition_maxsize=84_000),
+    # UORED_VAFCLS(config='dbg', acquisition_maxsize=84_000),
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),
