@@ -56,7 +56,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
     
     def make_feature_layers(self):
         self.featLayers = Sequential(name="feat_layers")
-        for i, (filters, kernel) in enumerate(zip([32, 32],[64, 64])):
+        for i, (filters, kernel) in enumerate(zip([32, 32, 32],[64, 64, 64])):
             self.featLayers.add(layers.Conv1D(filters, kernel, 
                                               activation='relu', 
                                               name=f"conv_kernel{kernel}_{i+1}",

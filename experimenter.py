@@ -20,30 +20,27 @@ debug = False
 
 datasets = [
     MFPT(config='all'),
-    # Mafaulda(config='dbg'),
+    Hust(config='mert'),
     CWRU(config='nio'),
 ] if debug else [
-    Paderborn(config='all'),
-    UORED_VAFCLS(config='all'),
+    CWRU(config='all'),
     Hust(config='all'),
-    CWRU(config='balanced'),
-    # UORED_VAFCLS(config='mert'),
-    # Hust(config='mert'),
-    # CWRU(config='balanced'),
+    UORED_VAFCLS(config='all'),
+    Paderborn(config='all'),
 ]
 
-kfold_repetitions = 1 if debug else 5
+kfold_repetitions = 1 if debug else 10
 epochs = 10 if debug else 1000
 clf = CNN1D(epochs=epochs)
 
 def experimenter():
     for i in range(len(datasets)):
-        sources = datasets[i:i+1]
-        target = list(set(datasets) - set(sources))
+        target = datasets[i:i+1]
+        sources = list(set(datasets) - set(target))
         show_title("Kfold")
         kfold(target, repetitions=kfold_repetitions, clf=clf)    
-        show_title("Cross Dataset")
-        cross_dataset(sources, target[0], clf=clf)
+        # show_title("Cross Dataset")
+        # cross_dataset(sources, target, clf=clf)
         show_title("Transfer Learning")
         transfer_learning(sources, target[0], repetitions=kfold_repetitions, clf=clf)
 
@@ -51,7 +48,10 @@ def experimenter():
 if __name__ == "__main__":
     now = datetime.now()
     date_time = now.strftime("%Y.%m.%d_%H.%M.%S")
-    filename = "experiments/" + date_time + ".txt"
+    direxp = "experiments"
+    if not os.path.exists(direxp):
+        os.makedirs(direxp)
+    filename = direxp + "/" + date_time + ".txt"
     with ConsoleOutputToFile(filename):        
         it = time.time()    
         experimenter()
