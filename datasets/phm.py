@@ -2,18 +2,21 @@ import numpy as np
 import pathlib
 import os
 
-sources = {
-    "data_motor": [f"TYPE{i}" for i in range(1, 5)], 
-    "data_gearbox": [f"TYPE{i}" for i in range(5, 13)], 
-    "data_leftaxlebox": [f"TYPE{i}" for i in range(13, 17)], 
-    "data_rightaxlebox": []
-}
-for k in sources.keys():
-    sources[k].insert(0,"TYPE0")
+def get_sources():
+    sources = {
+        "data_motor": [f"TYPE{i}" for i in range(1, 5)], 
+        "data_gearbox": [f"TYPE{i}" for i in range(5, 13)], 
+        "data_leftaxlebox": [f"TYPE{i}" for i in range(13, 17)], 
+        "data_rightaxlebox": []
+    }
+    for k in sources.keys():
+        sources[k].insert(0,"TYPE0")
+    return sources
 
 def pre_stage_tr(data_sources = ["data_motor", "data_gearbox", "data_leftaxlebox", "data_rightaxlebox"]):    
     data_dir = "raw_phm/Data_Pre Stage/Training data"
     data_files = []
+    sources = get_sources()
     for fault in pathlib.Path(data_dir).iterdir():
         if fault.is_dir():
             for sample in pathlib.Path(fault).iterdir(): 
