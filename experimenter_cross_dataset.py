@@ -1,27 +1,14 @@
 from datasets.cwru import CWRU
-from datasets.uored_vafcls import UORED_VAFCLS
 from datasets.hust import Hust
 from datasets.mfpt import MFPT
+from datasets.ottawa import Ottawa
 from datasets.paderborn import Paderborn
+from datasets.uored_vafcls import UORED_VAFCLS
 from estimators.cnn1d import CNN1D
 from sklearn.metrics import accuracy_score, confusion_matrix
 import numpy as np
 from experimenter_kfold import train_estimator
-
-def get_acquisitions(datasets):
-    first_dataset = True
-    for dataset in datasets:
-        print(dataset)
-        Xtmp, ytmp, gtmp = dataset.get_acquisitions()
-        if first_dataset:
-            X, y, g =  Xtmp, ytmp, gtmp
-            first_dataset = False
-        else:
-            gtmp += np.max(gtmp)
-            X = np.concatenate((X, Xtmp))
-            y = np.concatenate((y, ytmp))
-            g = np.concatenate((g, gtmp))
-    return X, y, g
+from utils.get_acquisitions import get_acquisitions
 
 def cross_dataset(sources, targets, clf=CNN1D()):
     print("loading sources acquisitions...")
@@ -38,11 +25,12 @@ def cross_dataset(sources, targets, clf=CNN1D()):
     print(confusion_matrix(yte, ypr, labels=labels))
 
 datasets = [
-    MFPT(config='dbg'),
-    Paderborn(config='dbg'),
-    Hust(config='dbg'),
-    UORED_VAFCLS(config='dbg'),
-    CWRU(config='nio'),
+    CWRU(config='nio', acquisition_maxsize=84_000),
+    Hust(config='dbg', acquisition_maxsize=84_000),
+    MFPT(config='dbg', acquisition_maxsize=84_000),
+    Ottawa(config='dbg', acquisition_maxsize=84_000),
+    Paderborn(config='dbg', acquisition_maxsize=84_000),
+    UORED_VAFCLS(config='dbg', acquisition_maxsize=84_000),
 ]
 
 sources = datasets[:-1]

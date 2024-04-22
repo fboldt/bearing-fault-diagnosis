@@ -5,6 +5,7 @@ from datasets.ottawa import Ottawa
 from datasets.paderborn import Paderborn
 from datasets.uored_vafcls import UORED_VAFCLS
 from estimators.cnn1d import CNN1D
+from utils.get_acquisitions import get_acquisitions
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import StratifiedGroupKFold
 
@@ -19,21 +20,27 @@ def train_estimator(estimator_training_function, Xtr, ytr, groups=None):
     else:
         estimator_training_function(Xtr, ytr)
 
-def kfold(dataset, repetitions=3, clf=CNN1D()):
+def kfold(datasets, repetitions=3, clf=CNN1D()):
     total = []
-    X, y, groups = dataset.get_acquisitions()
+    X, y, groups = get_acquisitions(datasets)
+    n_folds = 10
+    for dataset in datasets:
+        n_folds = min(n_folds, dataset.n_folds)
     for i in range(repetitions):
-        print(f"{i+1}/{repetitions}: {dataset}")
+        print(f"{i+1}/{repetitions}: ")
+        for dataset in datasets:
+            print(dataset)
         accuracies = []
-        kf = StratifiedGroupKFold(n_splits=dataset.n_folds)
-        for train_index, test_index in kf.split(dataset.signal_data, dataset.labels, groups):
+        kf = StratifiedGroupKFold(n_splits=n_folds)
+        for train_index, test_index in kf.split(X, y, groups):
             Xtr, ytr = X[train_index], y[train_index]
             Xte, yte = X[test_index], y[test_index]
             print(Xtr.shape, ytr.shape, Xte.shape, yte.shape)
             train_estimator(clf.fit, Xtr, ytr, groups[train_index])
+            print(clf)
             ypr = clf.predict(Xte)
             accuracies.append(accuracy_score(yte, ypr))
-            print(f"fold {len(accuracies)}/{dataset.n_folds} accuracy: {accuracies[-1]}")
+            print(f"fold {len(accuracies)}/{n_folds} accuracy: {accuracies[-1]}")
             labels = list(set(yte))
             print(f" {labels}")
             print(confusion_matrix(yte, ypr, labels=labels))
@@ -42,18 +49,29 @@ def kfold(dataset, repetitions=3, clf=CNN1D()):
         total.append(mean_accuracy)
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
+debug = True
+
 datasets = [
-    # CWRU(config='nio', acquisition_maxsize=84_000),
-    # Hust(config='dbg', acquisition_maxsize=84_000),
+    CWRU(config='nio', acquisition_maxsize=84_000),
+    Hust(config='dbg', acquisition_maxsize=84_000),
     MFPT(config='dbg', acquisition_maxsize=84_000),
-    # Ottawa(config='dbg', acquisition_maxsize=84_000),
-    # Paderborn(config='dbg', acquisition_maxsize=None),
-    # UORED_VAFCLS(config='dbg', acquisition_maxsize=84_000),
+    Ottawa(config='dbg', acquisition_maxsize=84_000),
+    Paderborn(config='dbg', acquisition_maxsize=84_000),
+    UORED_VAFCLS(config='dbg', acquisition_maxsize=84_000),
+] if debug else [
+    CWRU(config='all'),
+    Hust(config='all'),
+    MFPT(config='all'),
+    Ottawa(config='all'),
+    Paderborn(config='all'),
+    UORED_VAFCLS(config='all'),
 ]
 
 def experimenter(datasets=datasets, repetitions=3, clf=CNN1D()):
-    for dataset in datasets:
-        kfold(dataset, repetitions=repetitions, clf=clf)
+    kfold(datasets, repetitions=repetitions, clf=clf)
+
+epochs = 50
+verbose = 2
 
 if __name__ == "__main__":
-    experimenter(repetitions=1, clf=CNN1D(epochs=20,verbose=0))
+    experimenter(repetitions=1, clf=CNN1D(epochs=epochs,verbose=verbose))
