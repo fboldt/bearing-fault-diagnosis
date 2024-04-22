@@ -89,7 +89,7 @@ class MFPT():
     def __str__(self):
         return f"MFPT ({self.config})"
 
-    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, config='dbg'):
+    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, config='dbg'):
         self.n_channels = n_channels
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize
@@ -162,7 +162,9 @@ class MFPT():
                 vibration_data_raw = matlab_file['bearing'][0][0][1]
             else:
                 vibration_data_raw = matlab_file['bearing'][0][0][2]
-            vibration_data = np.array([elem for singleList in vibration_data_raw for elem in singleList])[:self.acquisition_maxsize]
+            vibration_data = np.array([elem for singleList in vibration_data_raw for elem in singleList])
+            if self.acquisition_maxsize:
+                vibration_data = vibration_data[:self.acquisition_maxsize]   
             for i in range(len(vibration_data)//self.sample_size):
                 sample = np.empty((self.sample_size, self.n_channels))
                 for j in range(self.n_channels):

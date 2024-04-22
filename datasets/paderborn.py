@@ -107,7 +107,7 @@ class Paderborn():
     def __str__(self):
         return f"Paderborn ({self.config})"
 
-    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, config="all"):
+    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, config="all"):
         self.n_channels = n_channels
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize
@@ -196,8 +196,9 @@ class Paderborn():
                 vibration_data_raw = matlab_file[self.files[key][19:38]]['Y'][0][0][0][6][2]
             else:
                 vibration_data_raw = matlab_file[self.files[key][19:37]]['Y'][0][0][0][6][2]
-
-            vibration_data = vibration_data_raw[0][:self.acquisition_maxsize]
+            vibration_data = vibration_data_raw[0]
+            if self.acquisition_maxsize:
+                vibration_data = vibration_data_raw[:self.acquisition_maxsize]
             self.n_samples_acquisition = len(vibration_data)//self.sample_size
             for i in range(self.n_samples_acquisition):
                 sample = np.empty((self.sample_size, self.n_channels))
@@ -265,8 +266,8 @@ class Paderborn():
 
 
 if __name__ == "__main__":
-    dataset = Paderborn(config='all')
-    dataset.download()
+    dataset = Paderborn(config='dbg')
+    # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))

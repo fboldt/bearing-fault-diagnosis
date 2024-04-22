@@ -260,7 +260,7 @@ class CWRU():
     def __str__(self):
         return f"CWRU ({self.config})"
 
-    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, 
+    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, 
                  config="dbg"):
         self.sample_size = sample_size
         self.n_channels = n_channels
@@ -332,9 +332,11 @@ class CWRU():
                     signal_key = [key for key in matlab_file if key.endswith("_" + position + "_time")]
                 
                 if len(signal_key) > 0:
-                    acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0][:self.acquisition_maxsize])
+                    acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0])
             
-            acquisition = np.array(acquisition)            
+            acquisition = np.array(acquisition)
+            if self.acquisition_maxsize:
+                acquisition = acquisition[:self.acquisition_maxsize]    
             if len(acquisition.shape)<2 or acquisition.shape[0]<self.n_channels:
                 continue
                         

@@ -194,7 +194,7 @@ class UORED_VAFCLS():
         return f"UORED_VAFCLS ({self.config})"
 
 
-    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=420_000, config="dbg"):
+    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, config="dbg"):
         self.url = "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/"
         self.sample_size = sample_size
         self.n_channels = n_channels
@@ -236,8 +236,10 @@ class UORED_VAFCLS():
             acquisition = []
             print('\r', f" loading acquisitions {100*(x+1)/len(self.files):.2f} %", end='')
             label = self.files[key][len(self.rawfilesdir)+1:-4]
-            acquisition.append(matlab_file[label].reshape(1, -1)[0][:self.acquisition_maxsize])
+            acquisition.append(matlab_file[label].reshape(1, -1)[0])
             acquisition = np.array(acquisition)
+            if self.acquisition_maxsize:
+                acquisition = acquisition[:self.acquisition_maxsize]   
             if len(acquisition.shape)<2 or acquisition.shape[0]<self.n_channels:
                 continue
             for i in range(acquisition.shape[1]//self.sample_size):
@@ -267,8 +269,8 @@ class UORED_VAFCLS():
         return self.group_acquisition()
 
 if __name__ == "__main__":
-    dataset = UORED_VAFCLS(config='all')
-    dataset.download()
+    dataset = UORED_VAFCLS(config='dbg')
+    # dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
