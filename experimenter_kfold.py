@@ -3,6 +3,7 @@ from datasets.mfpt import MFPT
 from datasets.uored_vafcls import UORED_VAFCLS
 from datasets.hust import Hust
 from datasets.paderborn import Paderborn
+from datasets.ottawa import Ottawa
 from estimators.cnn1d import CNN1D
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import StratifiedGroupKFold
@@ -42,11 +43,12 @@ def kfold(dataset, repetitions=3, clf=CNN1D()):
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
 datasets = [
-    MFPT(config='dbg'),
-    # Paderborn(config='dbg'),
-    Hust(config='dbg'),
-    UORED_VAFCLS(config='dbg'),
-    CWRU(config='nio'),
+    Ottawa(config='dbg')
+    # MFPT(config='dbg'),
+    # # Paderborn(config='dbg'),
+    # Hust(config='dbg'),
+    # UORED_VAFCLS(config='dbg'),
+    # CWRU(config='nio'),
 ]
 
 def experimenter(datasets=datasets, repetitions=3, clf=CNN1D()):

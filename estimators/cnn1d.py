@@ -15,12 +15,11 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.model = None
         self.checkpoint = checkpoint
         self.prefitckp = "prefit.checkpoint"
-        self.validation_split = 0.2
         self.verbose = verbose
     
     def __str__(self):
         if self.model:
-            return f"{self.model.summary(expand_nested=True)}"
+               return f"{self.model.summary(expand_nested=True)}"
         return "CNN1D"
     
     def __del__(self):
@@ -41,7 +40,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
     
     def callbacks_list(self, checkpoint=None):
         checkpoint = checkpoint if checkpoint else self.checkpoint
-        monitor = "val_loss" if self.validation_split else "loss"
+        monitor = "val_loss"
         return [
             callbacks.ModelCheckpoint(
                 filepath=checkpoint,
@@ -122,9 +121,6 @@ class CNN1D(BaseEstimator, ClassifierMixin):
             if self.verbose:
                 print("loading", checkpoint)
             self.model = saving.load_model(checkpoint)
-            # print("(Xtr, ytr)", model.evaluate(Xtr, ytr))
-            # print("(Xva, yva)", model.evaluate(Xva, yva_cat))
-            # print("(X, y)", model.evaluate(X, y_cat))
 
     def prefit(self, Xtr, ytr, Xva=None, yva=None):
         self.remove_prefitckp_file()
