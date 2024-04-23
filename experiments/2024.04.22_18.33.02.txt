@@ -1,0 +1,179 @@
+  -------
+|  Kfold  |
+  -------
+CWRU (all)
+  loading acquisitions 100.00 %  (3464 examples) | labels: {'I', 'B', 'O', 'N'}
+1/10: 
+CWRU (all)
+(2154, 8400, 1) (2154,) (1310, 8400, 1) (1310,)
+Model: "backbone"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ feat_layers (Sequential)    (None, 32)                790752    
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| conv_kernel32_1 (Conv1D)   (None, 8369, 128)         4224     |
+|                                                               |
+| dropout (Dropout)          (None, 8369, 128)         0        |
+|                                                               |
+| maxpool_1 (MaxPooling1D)   (None, 2092, 128)         0        |
+|                                                               |
+| conv_kernel64_2 (Conv1D)   (None, 2029, 64)          524352   |
+|                                                               |
+| dropout_1 (Dropout)        (None, 2029, 64)          0        |
+|                                                               |
+| maxpool_2 (MaxPooling1D)   (None, 507, 64)           0        |
+|                                                               |
+| conv_kernel128_3 (Conv1D)  (None, 380, 32)           262176   |
+|                                                               |
+| dropout_2 (Dropout)        (None, 380, 32)           0        |
+|                                                               |
+| maxpool_3 (MaxPooling1D)   (None, 95, 32)            0        |
+|                                                               |
+| flat (GlobalMaxPooling1D)  (None, 32)                0        |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ dropout_3 (Dropout)         (None, 32)                0         
+ dense (Dense)               (None, 4)                 132       
+ activation (Activation)     (None, 4)                 0         
+=================================================================
+Total params: 790884 (3.02 MB)
+Trainable params: 790884 (3.02 MB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+None
+fold 1/3 accuracy: 0.5473282442748092
+ ['I', 'B', 'O', 'N']
+[[ 57   4 140  55]
+ [  0   1 208  49]
+ [ 11  15 602 111]
+ [  0   0   0  57]]
+(2259, 8400, 1) (2259,) (1205, 8400, 1) (1205,)
+Model: "backbone"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ feat_layers (Sequential)    (None, 32)                790752    
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| conv_kernel32_1 (Conv1D)   (None, 8369, 128)         4224     |
+|                                                               |
+| dropout (Dropout)          (None, 8369, 128)         0        |
+|                                                               |
+| maxpool_1 (MaxPooling1D)   (None, 2092, 128)         0        |
+|                                                               |
+| conv_kernel64_2 (Conv1D)   (None, 2029, 64)          524352   |
+|                                                               |
+| dropout_1 (Dropout)        (None, 2029, 64)          0        |
+|                                                               |
+| maxpool_2 (MaxPooling1D)   (None, 507, 64)           0        |
+|                                                               |
+| conv_kernel128_3 (Conv1D)  (None, 380, 32)           262176   |
+|                                                               |
+| dropout_2 (Dropout)        (None, 380, 32)           0        |
+|                                                               |
+| maxpool_3 (MaxPooling1D)   (None, 95, 32)            0        |
+|                                                               |
+| flat (GlobalMaxPooling1D)  (None, 32)                0        |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ dropout_3 (Dropout)         (None, 32)                0         
+ dense_1 (Dense)             (None, 4)                 132       
+ activation_1 (Activation)   (None, 4)                 0         
+=================================================================
+Total params: 790884 (3.02 MB)
+Trainable params: 790884 (3.02 MB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+None
+fold 2/3 accuracy: 0.34190871369294606
+ ['I', 'B', 'O', 'N']
+[[202   0  56   0]
+ [155  97   5   0]
+ [  0 577  56   0]
+ [  0   0   0  57]]
+(2515, 8400, 1) (2515,) (949, 8400, 1) (949,)
+Model: "backbone"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ feat_layers (Sequential)    (None, 32)                790752    
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| conv_kernel32_1 (Conv1D)   (None, 8369, 128)         4224     |
+|                                                               |
+| dropout (Dropout)          (None, 8369, 128)         0        |
+|                                                               |
+| maxpool_1 (MaxPooling1D)   (None, 2092, 128)         0        |
+|                                                               |
+| conv_kernel64_2 (Conv1D)   (None, 2029, 64)          524352   |
+|                                                               |
+| dropout_1 (Dropout)        (None, 2029, 64)          0        |
+|                                                               |
+| maxpool_2 (MaxPooling1D)   (None, 507, 64)           0        |
+|                                                               |
+| conv_kernel128_3 (Conv1D)  (None, 380, 32)           262176   |
+|                                                               |
+| dropout_2 (Dropout)        (None, 380, 32)           0        |
+|                                                               |
+| maxpool_3 (MaxPooling1D)   (None, 95, 32)            0        |
+|                                                               |
+| flat (GlobalMaxPooling1D)  (None, 32)                0        |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ dropout_3 (Dropout)         (None, 32)                0         
+ dense_2 (Dense)             (None, 4)                 132       
+ activation_2 (Activation)   (None, 4)                 0         
+=================================================================
+Total params: 790884 (3.02 MB)
+Trainable params: 790884 (3.02 MB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+None
+fold 3/3 accuracy: 0.5342465753424658
+ ['I', 'B', 'O', 'N']
+[[215  60   4   0]
+ [  0  34 279   0]
+ [  0  99 172   0]
+ [  0   0   0  86]]
+mean accuracy: 0.47449451110340696
+2/10: 
+CWRU (all)
+(2154, 8400, 1) (2154,) (1310, 8400, 1) (1310,)
+Model: "backbone"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ feat_layers (Sequential)    (None, 32)                790752    
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| conv_kernel32_1 (Conv1D)   (None, 8369, 128)         4224     |
+|                                                               |
+| dropout (Dropout)          (None, 8369, 128)         0        |
+|                                                               |
+| maxpool_1 (MaxPooling1D)   (None, 2092, 128)         0        |
+|                                                               |
+| conv_kernel64_2 (Conv1D)   (None, 2029, 64)          524352   |
+|                                                               |
+| dropout_1 (Dropout)        (None, 2029, 64)          0        |
+|                                                               |
+| maxpool_2 (MaxPooling1D)   (None, 507, 64)           0        |
+|                                                               |
+| conv_kernel128_3 (Conv1D)  (None, 380, 32)           262176   |
+|                                                               |
+| dropout_2 (Dropout)        (None, 380, 32)           0        |
+|                                                               |
+| maxpool_3 (MaxPooling1D)   (None, 95, 32)            0        |
+|                                                               |
+| flat (GlobalMaxPooling1D)  (None, 32)                0        |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ dropout_3 (Dropout)         (None, 32)                0         
+ dense_3 (Dense)             (None, 4)                 132       
+ activation_3 (Activation)   (None, 4)                 0         
+=================================================================
+Total params: 790884 (3.02 MB)
+Trainable params: 790884 (3.02 MB)
+Non-trainable params: 0 (0.00 Byte)
+_________________________________________________________________
+None
+fold 1/3 accuracy: 0.4587786259541985
+ ['I', 'B', 'O', 'N']
+[[ 51   0 205   0]
+ [  1   1 230  26]
+ [160  10 492  77]
+ [  0   0   0  57]]
+(2259, 8400, 1) (2259,) (1205, 8400, 1) (1205,)

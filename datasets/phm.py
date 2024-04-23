@@ -11,6 +11,12 @@ def get_sources():
     }
     for k in sources.keys():
         sources[k].insert(0,"TYPE0")
+    return {
+        "data_motor": [f"TYPE{i}" for i in range(0, 17)], 
+        "data_gearbox": [f"TYPE{i}" for i in range(0, 17)], 
+        "data_leftaxlebox": [f"TYPE{i}" for i in range(0, 17)], 
+        "data_rightaxlebox": [f"TYPE{i}" for i in range(0, 17)], 
+    }
     return sources
 
 def pre_stage_tr(data_sources = ["data_motor", "data_gearbox", "data_leftaxlebox", "data_rightaxlebox"]):    
