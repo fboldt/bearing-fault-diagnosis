@@ -15,14 +15,11 @@ import requests
 # Unpack Tools
 from pyunpack import Archive
 
-# Code to avoid incomplete array results
-np.set_printoptions(threshold=sys.maxsize)
-
 def download_file(url, dirname, zip_name):
     print("Downloading Bearings Data.")
     try:
         req = urllib.request.Request(url, headers={'User-Agent': 'XYZ/3.0'})
-        gcontext = ssl.SSLContext()
+        gcontext = ssl.SSLContext(ssl.PROTOCOL_TLS)
         f = urllib.request.urlopen(req, timeout=10, context=gcontext)
         file_size = int(f.headers['Content-Length'])
         dir_path = os.path.join(dirname, zip_name)
@@ -90,6 +87,8 @@ class MFPT():
         return f"MFPT ({self.config})"
 
     def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, config='dbg'):
+        # Code to avoid incomplete array results
+        np.set_printoptions(threshold=sys.maxsize)
         self.n_channels = n_channels
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize
@@ -196,7 +195,7 @@ class MFPT():
         return self.group_acquisition()
 
 if __name__ == "__main__":
-    dataset = MFPT(config='dbg',acquisition_maxsize=84_000)
+    dataset = MFPT(config='dbg',acquisition_maxsize=21_000)
     dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)

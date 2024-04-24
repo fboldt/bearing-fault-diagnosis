@@ -14,20 +14,20 @@ import sys
 # Unpack Tools
 from pyunpack import Archive
 
-# Code to avoid incomplete array results
-np.set_printoptions(threshold=sys.maxsize)
-
-bearing_names_all = [
+def bearing_names_all():
+    return [
     "K001", "K002", "K003", "K004", "K005", "K006", 
     "KA01", "KA03", "KA04", "KA05", "KA06", "KA07", "KA09", "KA15", "KA16", "KA22", "KA30", 
     "KI01", "KI03", "KI04", "KI05", "KI07", "KI08", "KI14", "KI16", "KI17", "KI18", "KI21", 
 ]
 
-bearing_names_reduced = [
+def bearing_names_reduced():
+    return [
     "K002", "KA03", "KI03",
 ]
 
-bearing_names_dbg = [
+def bearing_names_dbg():
+    return [
     "K001", "KA01", "KI01",
 ]
 
@@ -38,7 +38,6 @@ def download_file(url, dirname, dir_rar, bearing):
         req = urllib.request.Request(url + file_name, method='HEAD')
         f = urllib.request.urlopen(req)
         file_size = int(f.headers['Content-Length'])
-
         dir_path = os.path.join(dirname, dir_rar, file_name)
         if not os.path.exists(dir_path):
             urllib.request.urlretrieve(url + file_name, dir_path)
@@ -101,7 +100,7 @@ class Paderborn():
 
     def get_paderborn_bearings(self):
         # Get bearings to be considered to be
-        bearing_names = eval("bearing_names_"+self.config)
+        bearing_names = eval("bearing_names_"+self.config+"()")
         return bearing_names
 
     def __str__(self):
@@ -179,7 +178,7 @@ class Paderborn():
             os.mkdir(os.path.join(dirname, dir_rar))
         print("Downloading and Extracting RAR files:")
         for bearing in self.bearing_names:
-            download_file(url, dirname, dir_rar, bearing)
+            # download_file(url, dirname, dir_rar, bearing)
             extract_rar(dirname, dir_rar, bearing)
         print("Dataset Loaded.")
 
@@ -267,8 +266,8 @@ class Paderborn():
 
 
 if __name__ == "__main__":
-    dataset = Paderborn(config='dbg', acquisition_maxsize=84_000)
-    # dataset.download()
+    dataset = Paderborn(config='dbg', acquisition_maxsize=21_000)
+    dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))

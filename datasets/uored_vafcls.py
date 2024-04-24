@@ -13,7 +13,8 @@ import csv
 # Code to avoid incomplete array results
 np.set_printoptions(threshold=sys.maxsize)
 
-files_hash = {
+def files_hash():
+    return {
     "H_1_0": "31863372-55f7-4c9c-91a5-4f3c907a85af",
     "H_2_0": "7615c4b8-7c8f-41fd-8034-5b6e8438eb16",
     "H_3_0": "e5abb9af-727e-4fd5-8238-0d007f4be6d6",
@@ -76,7 +77,8 @@ files_hash = {
     "C_20_2": "8e8a485f-6fe9-4439-8f93-743a7ac431ec",
 }
 
-list_of_bearings_all = [
+def list_of_bearings_all():
+    return [
     "H_1_0",   "H_2_0",   "H_3_0",   "H_4_0",   "H_5_0",   
     "H_6_0",   "H_7_0",   "H_8_0",   "H_9_0",   "H_10_0",  
     "H_11_0",  "H_12_0",  "H_13_0",  "H_14_0",  "H_15_0", 
@@ -91,7 +93,8 @@ list_of_bearings_all = [
     "C_18_2",  "C_19_1",  "C_19_2",  "C_20_1",  "C_20_2"
 ]
 
-list_of_bearings_nio = [
+def list_of_bearings_nio():
+    return [
     "H_1_0",   "H_2_0",   "H_3_0",   "H_4_0",   "H_5_0",   
     "H_6_0",   "H_7_0",   "H_8_0",   "H_9_0",   "H_10_0",  
     "H_11_0",  "H_12_0",  "H_13_0",  "H_14_0",  "H_15_0", 
@@ -102,7 +105,8 @@ list_of_bearings_nio = [
     "O_8_2",   "O_9_1",   "O_9_2",   "O_10_1",  "O_10_2"   
 ]
 
-list_of_bearings_niob = [
+def list_of_bearings_niob():
+    return [
     "H_1_0",   "H_2_0",   "H_3_0",   "H_4_0",   "H_5_0",   
     "H_6_0",   "H_7_0",   "H_8_0",   "H_9_0",   "H_10_0",  
     "H_11_0",  "H_12_0",  "H_13_0",  "H_14_0",  "H_15_0", 
@@ -115,7 +119,8 @@ list_of_bearings_niob = [
     "B_13_2",  "B_14_1",  "B_14_2",  "B_15_1",  "B_15_2",
 ]
 
-list_of_bearings_faulty_healthy = [
+def list_of_bearings_faulty_healthy():
+    return [
     "H_1_0",   "H_2_0",   "H_3_0",   "H_4_0",   "H_5_0",   
     "H_6_0",   "H_7_0",   "H_8_0",   "H_9_0",   "H_10_0",  
     "H_11_0",  "H_12_0",  "H_13_0",  "H_14_0",  "H_15_0", 
@@ -126,25 +131,25 @@ list_of_bearings_faulty_healthy = [
     "C_16_2",  "C_17_2",  "C_18_2",  "C_19_2",  "C_20_2"
 ]
 
-list_of_bearings_mert = [
+def list_of_bearings_mert():
+    return [
     "H_1_0",   "H_2_0",   "H_3_0", "H_4_0", "H_5_0", 
     "I_1_2",   "I_2_2",   "I_3_2", "I_4_2", "I_5_2", 
     "O_6_2",   "O_7_2",   "O_8_2", "O_9_2", "O_10_2",
     "B_11_2",  "B_12_1",  "B_13_2", "B_14_2", "B_15_2",
 ]
 
-list_of_bearings_dbg = list_of_bearings_mert
+def list_of_bearings_dbg():
+    return list_of_bearings_mert()
 
 def download_file(url, dirname, bearing):
     print("Downloading Bearing Data:", bearing)   
     file_name = bearing
-
     try:
         req = urllib.request.Request(url, method='HEAD')
         f = urllib.request.urlopen(req)
         file_size = int(f.headers['Content-Length'])
         dir_path = os.path.join(dirname, file_name)                
-        
         if not os.path.exists(dir_path):
             urllib.request.urlretrieve(url, dir_path)
             downloaded_file_size = os.stat(dir_path).st_size
@@ -153,13 +158,11 @@ def download_file(url, dirname, bearing):
                 download_file(url, dirname, bearing)
         else:
             return
-        
     except Exception as e:
         print("Error occurs when downloading file: " + str(e))
         print("Trying do download again")
         download_file(url, dirname, bearing)
    
-
 
 class UORED_VAFCLS():
     """
@@ -185,7 +188,7 @@ class UORED_VAFCLS():
 
 
     def get_uored_vafcls_bearings(self):
-        list_of_bearings = eval("list_of_bearings_"+self.config)
+        list_of_bearings = eval("list_of_bearings_"+self.config+"()")
         bearing_file_names = [name+'.mat' for name in list_of_bearings]
         bearing_label = [label for label in bearing_file_names]    
         return np.array(bearing_label), np.array(bearing_file_names)
@@ -207,24 +210,21 @@ class UORED_VAFCLS():
         self.signal_data = np.empty((0, self.sample_size, len(self.accelerometers)))
         self.labels = []
         self.keys = []
-
         # Files Paths ordered by bearings
         files_path = {}
         for key, bearing in zip(self.bearing_labels, self.bearing_names):
             files_path[key] = os.path.join(self.rawfilesdir, bearing)
         self.files = files_path
 
-
     def download(self):
-        list_of_bearings = eval("list_of_bearings_"+self.config)
+        list_of_bearings = eval("list_of_bearings_"+self.config+"()")
         dirname = self.rawfilesdir
         if not os.path.exists(dirname):
             os.mkdir(dirname)
         for acquisition in list_of_bearings:
-            url = self.url + files_hash[acquisition] 
+            url = self.url + files_hash()[acquisition] 
             files_name = acquisition + '.mat'       
             download_file(url, dirname, files_name)
-
 
     def load_acquisitions(self):
         """
@@ -270,8 +270,8 @@ class UORED_VAFCLS():
         return self.group_acquisition()
 
 if __name__ == "__main__":
-    dataset = UORED_VAFCLS(config='dbg', acquisition_maxsize=84_000)
-    # dataset.download()
+    dataset = UORED_VAFCLS(config='dbg', acquisition_maxsize=21_000)
+    dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))

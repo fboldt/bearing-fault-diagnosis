@@ -1,18 +1,14 @@
 """
 Class definition of Hust Bearing dataset download and acquisitions extraction.
 """
-
 import urllib.request
 import scipy.io
 import numpy as np
 import os
 import urllib
-import sys
 
-# Code to avoid incomplete array results
-np.set_printoptions(threshold=sys.maxsize)
-
-files_hash = {
+def files_hash():
+    return {
     "B500": "9c521e5a-2554-48f9-b5f4-ea844efd0da3",
     "B502": "cc3c302e-eabd-4629-879c-65a23744fb9f",
     "B504": "76e85f66-d2ed-4ca7-a652-9bd63a22eef9",
@@ -114,7 +110,8 @@ files_hash = {
     "OB804": "c1d007a6-80ba-423a-ae9b-b1b63f4d7419"
 }
 
-list_of_bearings_all = [
+def list_of_bearings_all():
+    return [
     "B500", "B502", "B504", "B600", "B602", "B604", "B700", "B702", "B704", "B800",
     "B802", "B804", "I400", "I402", "I404", "I500", "I502", "I504", "I600", "I602",
     "I604", "I700", "I702", "I704", "I800", "I802", "I804", "IB500", "IB502", "IB504", 
@@ -128,7 +125,8 @@ list_of_bearings_all = [
     "OB800", "OB802", "OB804"
 ]
 
-list_of_bearings_niob = [
+def list_of_bearings_niob():
+    return [
     "B500", "B502", "B504", "B600", "B602", "B604", 
     "B700", "B702", "B704", "B800", "B802", "B804", 
     "I400", "I402", "I404", "I500", "I502", "I504", 
@@ -142,7 +140,8 @@ list_of_bearings_niob = [
 ]
 
 # The OB400 was removed. It does not have the run-up feature.
-list_of_bearings_ru = [
+def list_of_bearings_ru():
+    return [
     "B500", "B502", "B504", "B600", "B602", "B604", "B700", "B702", "B704", "B800",
     "B802", "B804", "I400", "I402", "I404", "I500", "I502", "I504", "I600", "I602",
     "I604", "I700", "I702", "I704", "I800", "I802", "I804", "IB500", "IB502", "IB504", 
@@ -156,25 +155,25 @@ list_of_bearings_ru = [
     "OB800", "OB802", "OB804"
 ]
 
-list_of_bearings_mert = [
+def list_of_bearings_mert():
+    return [
     'N500', 'N602', 'N704', 'N804',
     'I500', 'I602', 'I704', 'I804',
     'O500', 'O602', 'O704', 'O804',
     'B500', 'B602', 'B704', 'B804'
 ]
 
-list_of_bearings_dbg = list_of_bearings_mert
+def list_of_bearings_dbg():
+    return list_of_bearings_mert()
 
 def download_file(url, dirname, bearing):
     print("Downloading Bearing Data:", bearing)   
     file_name = bearing
-
     try:
         req = urllib.request.Request(url, method='HEAD')
         f = urllib.request.urlopen(req)
         file_size = int(f.headers['Content-Length'])
-        dir_path = os.path.join(dirname, file_name)                
-        
+        dir_path = os.path.join(dirname, file_name)              
         if not os.path.exists(dir_path):
             urllib.request.urlretrieve(url, dir_path)
             downloaded_file_size = os.stat(dir_path).st_size
@@ -182,8 +181,7 @@ def download_file(url, dirname, bearing):
                 os.remove(dir_path)
                 download_file(url, dirname, bearing)
         else:
-            return
-        
+            return        
     except Exception as e:
         print("Error occurs when downloading file: " + str(e))
         print("Trying do download again")
@@ -217,7 +215,7 @@ class Hust():
 
 
     def get_hust_bearings(self):
-        list_of_bearings = eval("list_of_bearings_"+self.config)
+        list_of_bearings = eval("list_of_bearings_"+self.config+"()")
         bearing_file_names = [name+'.mat' for name in list_of_bearings]
         bearing_label = [label for label in bearing_file_names]    
         return np.array(bearing_label), np.array(bearing_file_names)
@@ -240,7 +238,6 @@ class Hust():
         self.labels = []
         self.keys = [] 
 
-
         # Files Paths ordered by bearings
         files_path = {}
         for key, bearing in zip(self.bearing_labels, self.bearing_names):
@@ -249,12 +246,12 @@ class Hust():
 
 
     def download(self):
-        list_of_bearings = eval("list_of_bearings_"+self.config)
+        list_of_bearings = eval("list_of_bearings_"+self.config+"()")
         dirname = self.rawfilesdir
         if not os.path.exists(dirname):
             os.mkdir(dirname)
         for acquisition in list_of_bearings:
-            url = self.url + files_hash[acquisition] 
+            url = self.url + files_hash()[acquisition] 
             files_name = acquisition + '.mat'       
             download_file(url, dirname, files_name)
 
@@ -302,8 +299,8 @@ class Hust():
         return self.group_acquisition()
 
 if __name__ == "__main__":
-    dataset = Hust(config='dbg', acquisition_maxsize=84_000)
-    # dataset.download()
+    dataset = Hust(config='dbg', acquisition_maxsize=21_000)
+    dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))

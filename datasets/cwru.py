@@ -9,18 +9,19 @@ import os
 import urllib
 import sys
 
-
 # Code to avoid incomplete array results
 np.set_printoptions(threshold=sys.maxsize)
 
-list_of_bearings_dbg = [
+def list_of_bearings_dbg():
+    return [
     ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
     ("I.021.DE_0","209.mat"),       ("I.021.DE_1","210.mat"),       ("I.021.DE_2","211.mat"),       ("I.021.DE_3","212.mat"),    
     ("B.021.DE_0","222.mat"),       ("B.021.DE_1","223.mat"),       ("B.021.DE_2","224.mat"),       ("B.021.DE_3","225.mat"),    
     ("O.021.DE.@6_0","234.mat"),    ("O.021.DE.@6_1","235.mat"),    ("O.021.DE.@6_2","236.mat"),    ("O.021.DE.@6_3","237.mat"),    
 ]
 
-list_of_bearings_nio = [
+def list_of_bearings_nio():
+    return [
     ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
     ("I.007.DE_0","105.mat"),       ("I.007.DE_1","106.mat"),       ("I.007.DE_2","107.mat"),       ("I.007.DE_3","108.mat"),
     ("O.007.DE.@6_0","130.mat"),    ("O.007.DE.@6_1","131.mat"),    ("O.007.DE.@6_2","132.mat"),    ("O.007.DE.@6_3","133.mat"),    
@@ -35,7 +36,8 @@ list_of_bearings_nio = [
     # ("O.014.FE.@6_0","313.mat"),    
 ]
 
-list_of_bearings_12k = [
+def list_of_bearings_12k():
+    return [
     ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
     ("I.007.DE_0","105.mat"),       ("I.007.DE_1","106.mat"),       ("I.007.DE_2","107.mat"),       ("I.007.DE_3","108.mat"),
     ("B.007.DE_0","118.mat"),       ("B.007.DE_1","119.mat"),       ("B.007.DE_2","120.mat"),       ("B.007.DE_3","121.mat"),    
@@ -66,7 +68,8 @@ list_of_bearings_12k = [
     ("O.021.FE.@6_0","315.mat"),    ("O.021.FE.@3_1","316.mat"),    ("O.021.FE.@3_2","317.mat"),    ("O.021.FE.@3_3","318.mat"),    
 ]
 
-list_of_bearings_48k = [
+def list_of_bearings_48k():
+    return [
     ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
     ("I.007.DE_0","109.mat"),       ("I.007.DE_1","110.mat"),       ("I.007.DE_2","111.mat"),       ("I.007.DE_3","112.mat"),
     ("B.007.DE_0","122.mat"),       ("B.007.DE_1","123.mat"),       ("B.007.DE_2","124.mat"),       ("B.007.DE_3","125.mat"),    
@@ -84,7 +87,8 @@ list_of_bearings_48k = [
 ]
 
 
-list_of_bearings_balanced = [
+def list_of_bearings_balanced():
+    return [
     ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
     ("I.007.DE_0","105.mat"),       ("I.007.DE_1","106.mat"),       ("I.007.DE_2","107.mat"),       ("I.007.DE_3","108.mat"),
     ("B.007.DE_0","118.mat"),       ("B.007.DE_1","119.mat"),       ("B.007.DE_2","120.mat"),       ("B.007.DE_3","121.mat"),    
@@ -117,7 +121,8 @@ list_of_bearings_balanced = [
     ("O.021.DE.@6_0","238.mat"),    ("O.021.DE.@6_1","239.mat"),    ("O.021.DE.@6_2","240.mat"),    ("O.021.DE.@6_3","241.mat"),    
     ]
 
-list_of_bearings_all = [
+def list_of_bearings_all():
+    return [
     ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
     ("I.007.DE_0","105.mat"),       ("I.007.DE_1","106.mat"),       ("I.007.DE_2","107.mat"),       ("I.007.DE_3","108.mat"),
     ("B.007.DE_0","118.mat"),       ("B.007.DE_1","119.mat"),       ("B.007.DE_2","120.mat"),       ("B.007.DE_3","121.mat"),    
@@ -161,7 +166,8 @@ list_of_bearings_all = [
     ("O.021.DE.@12_0","262.mat"),   ("O.021.DE.@12_1","263.mat"),   ("O.021.DE.@12_2","264.mat"),   ("O.021.DE.@12_3","265.mat"),    
 ]
 
-list_of_bearings_cmert = [
+def list_of_bearings_cmert():
+    return [
     # ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
     ("I.007.DE_0","109.mat"),       ("I.007.DE_1","110.mat"),       ("I.007.DE_2","111.mat"),       ("I.007.DE_3","112.mat"),
     ("B.007.DE_0","122.mat"),       ("B.007.DE_1","123.mat"),       ("B.007.DE_2","124.mat"),       ("B.007.DE_3","125.mat"),    
@@ -178,7 +184,8 @@ list_of_bearings_cmert = [
     ("O.021.DE.@12_0","262.mat"),   ("O.021.DE.@12_1","263.mat"),   ("O.021.DE.@12_2","264.mat"),   ("O.021.DE.@12_3","265.mat"),    
 ]
 
-list_of_bearings_mert = [
+def list_of_bearings_mert():
+    return [
     ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
     ("I.021.DE_0","213.mat"),       ("I.021.DE_1","214.mat"),       ("I.021.DE_2","215.mat"),       ("I.021.DE_3","217.mat"),    
     ("B.021.DE_0","226.mat"),       ("B.021.DE_1","227.mat"),       ("B.021.DE_2","228.mat"),       ("B.021.DE_3","229.mat"),    
@@ -186,7 +193,8 @@ list_of_bearings_mert = [
 ]
 
 
-list_of_bearings_reduced = [
+def list_of_bearings_reduced():
+    return [
     ("N.000.NN_0","97.mat"),        ("N.000.NN_1","98.mat"),        ("N.000.NN_2","99.mat"),        ("N.000.NN_3","100.mat"),
     ("I.007.DE_0","105.mat"),       ("I.007.DE_1","106.mat"),       ("I.007.DE_2","107.mat"),       ("I.007.DE_3","108.mat"),
     ("B.007.DE_0","118.mat"),       ("B.007.DE_1","119.mat"),       ("B.007.DE_2","120.mat"),       ("B.007.DE_3","121.mat"),    
@@ -253,7 +261,7 @@ class CWRU():
     """
 
     def get_cwru_bearings(self):
-        list_of_bearings = eval("list_of_bearings_"+self.config)
+        list_of_bearings = eval("list_of_bearings_"+self.config+"()")
         bearing_label, bearing_file_names = zip(*list_of_bearings)
         return np.array(bearing_label), np.array(bearing_file_names)
 
@@ -398,8 +406,8 @@ class CWRU():
         return self.group_severity()
 
 if __name__ == "__main__":
-    dataset = CWRU(config='dbg', acquisition_maxsize=84_000)
-    # dataset.download()
+    dataset = CWRU(config='dbg', acquisition_maxsize=21_000)
+    dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))

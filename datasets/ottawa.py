@@ -7,21 +7,14 @@ import scipy.io
 import scipy.signal
 import numpy as np
 import os
-from sklearn.model_selection import KFold, GroupKFold, StratifiedShuffleSplit
 import shutil
 import zipfile
-import sys
 
 # Unpack Tools
 from pyunpack import Archive
 
-# Code to avoid incomplete array results
-np.set_printoptions(threshold=sys.maxsize)
-
-
 def download_file(url, dirname, zip_name):
     print("Downloading Bearings Data.")
-
     try:
         req = urllib.request.Request(url, method='HEAD')
         f = urllib.request.urlopen(req)
@@ -209,8 +202,8 @@ class Ottawa():
         return self.group_acquisition()
  
 if __name__ == "__main__":
-    dataset = Ottawa(config='dbg', acquisition_maxsize=84_000)
-    # dataset.download()
+    dataset = Ottawa(config='dbg', acquisition_maxsize=21_000)
+    dataset.download()
     dataset.load_acquisitions()
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
