@@ -1,4 +1,4 @@
-from tensorflow.keras import layers, callbacks, saving, regularizers
+from tensorflow.keras import layers, callbacks, saving
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
@@ -55,13 +55,12 @@ class CNN1D(BaseEstimator, ClassifierMixin):
     
     def make_feature_layers(self):
         self.featLayers = Sequential(name="feat_layers")
-        for i, (filters, kernel) in enumerate(zip([32, 64, 128, 256, 256],[8 for _ in range(5)])):
+        for i, (filters, kernel) in enumerate(zip([32, 64, 128, 256, 256],
+                                                  [8 for _ in range(5)])):
             self.featLayers.add(layers.Conv1D(filters, kernel, 
                                               activation='relu', 
                                               name=f"conv_kernel{kernel}_{i+1}",
-                                              kernel_regularizer=regularizers.L1L2(l1=1e-5, l2=1e-4),
                                               ))
-            self.featLayers.add(layers.Dropout(0.5))
             self.featLayers.add(layers.MaxPooling1D(2, name=f"maxpool_{i+1}"))
         self.featLayers.add(layers.GlobalMaxPooling1D(name='flat'))
         return self.featLayers
