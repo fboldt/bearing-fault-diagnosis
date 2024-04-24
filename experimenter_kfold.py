@@ -4,7 +4,7 @@ from datasets.mfpt import MFPT
 from datasets.ottawa import Ottawa
 from datasets.paderborn import Paderborn
 from datasets.uored_vafcls import UORED_VAFCLS
-# from datasets.phm import PHM
+from datasets.phm import PHM
 from estimators.cnn1d import CNN1D
 from utils.train_estimator import train_estimator
 from utils.get_acquisitions import get_acquisitions
@@ -32,7 +32,6 @@ def kfold(datasets, repetitions=3, clf=CNN1D()):
         for train_index, test_index in kf.split(X, y, groups):
             Xtr, ytr = X[train_index], y[train_index]
             Xte, yte = X[test_index], y[test_index]
-            # print(Xtr.shape, ytr.shape, Xte.shape, yte.shape)
             train_estimator(clf.fit, Xtr, ytr, groups[train_index])
             ypr = clf.predict(Xte)
             accuracies.append(accuracy_score(yte, ypr))
@@ -45,18 +44,16 @@ def kfold(datasets, repetitions=3, clf=CNN1D()):
         total.append(mean_accuracy)
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
-debug = False
-epochs = 20
+debug = True
+epochs = 50
 verbose = 2
+acquisition_maxsize=None
 
 datasets = [
-    # PHM(config="motor_tr", acquisition_maxsize=64_000)
-    CWRU(config='nio', acquisition_maxsize=21_000),
-    # Hust(config='dbg', acquisition_maxsize=21_000),
-    MFPT(config='dbg', acquisition_maxsize=21_000),
-    # Ottawa(config='dbg', acquisition_maxsize=21_000),
-    # Paderborn(config='dbg', acquisition_maxsize=21_000),
-    # UORED_VAFCLS(config='dbg', acquisition_maxsize=21_000),
+    PHM(config="all_tr", acquisition_maxsize=acquisition_maxsize),
+    # PHM(config="motor_tr", acquisition_maxsize=acquisition_maxsize),
+    # PHM(config="gearbox_tr", acquisition_maxsize=acquisition_maxsize),
+    # PHM(config="leftaxlebox_tr", acquisition_maxsize=acquisition_maxsize),
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),
