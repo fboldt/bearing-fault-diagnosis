@@ -6,11 +6,12 @@ from datasets.paderborn import Paderborn
 from datasets.uored_vafcls import UORED_VAFCLS
 from estimators.cnn1d import CNN1D
 from sklearn.metrics import accuracy_score, confusion_matrix
-import numpy as np
 from experimenter_kfold import train_estimator
 from utils.get_acquisitions import get_acquisitions
+import copy
 
 def cross_dataset(sources, targets, clf=CNN1D()):
+    clf = copy.copy(clf)
     print("loading sources acquisitions...")
     Xtr, ytr, groups = get_acquisitions(sources)
     print("training estimator...")
@@ -24,13 +25,23 @@ def cross_dataset(sources, targets, clf=CNN1D()):
     print(f" {labels}")
     print(confusion_matrix(yte, ypr, labels=labels))
 
+debug = True
+
 datasets = [
-    CWRU(config='nio', acquisition_maxsize=84_000),
-    Hust(config='dbg', acquisition_maxsize=84_000),
-    MFPT(config='dbg', acquisition_maxsize=84_000),
-    Ottawa(config='dbg', acquisition_maxsize=84_000),
-    Paderborn(config='dbg', acquisition_maxsize=84_000),
-    UORED_VAFCLS(config='dbg', acquisition_maxsize=84_000),
+    # PHM(config="motor_tr", acquisition_maxsize=64_000)
+    CWRU(config='nio', acquisition_maxsize=21_000),
+    MFPT(config='dbg', acquisition_maxsize=21_000),
+    Hust(config='dbg', acquisition_maxsize=21_000),
+    # Ottawa(config='dbg', acquisition_maxsize=21_000),
+    # Paderborn(config='dbg', acquisition_maxsize=21_000),
+    # UORED_VAFCLS(config='dbg', acquisition_maxsize=21_000),
+] if debug else [
+    CWRU(config='all'),
+    Hust(config='all'),
+    MFPT(config='all'),
+    Ottawa(config='all'),
+    Paderborn(config='all'),
+    UORED_VAFCLS(config='all'),
 ]
 
 sources = datasets[:-1]

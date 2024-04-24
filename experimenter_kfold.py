@@ -6,37 +6,33 @@ from datasets.paderborn import Paderborn
 from datasets.uored_vafcls import UORED_VAFCLS
 # from datasets.phm import PHM
 from estimators.cnn1d import CNN1D
+from utils.train_estimator import train_estimator
 from utils.get_acquisitions import get_acquisitions
+from collections.abc import Iterable
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import StratifiedGroupKFold
-
-def train_estimator(estimator_training_function, Xtr, ytr, groups=None):
-    if groups is not None:
-        group_kfold = StratifiedGroupKFold(n_splits=2)
-        for (train_partial_index, val_index) in group_kfold.split(Xtr, ytr, groups):
-            Xtr_partial, ytr_partial = Xtr[train_partial_index], ytr[train_partial_index]
-            Xva, yva = Xtr[val_index], ytr[val_index]
-            break
-        estimator_training_function(Xtr_partial, ytr_partial, Xva, yva)
-    else:
-        estimator_training_function(Xtr, ytr)
+import copy
 
 def kfold(datasets, repetitions=3, clf=CNN1D()):
+    clf = copy.copy(clf)
     total = []
-    X, y, groups = get_acquisitions(datasets)
-    n_folds = 10
-    for dataset in datasets:
-        n_folds = min(n_folds, dataset.n_folds)
+    if isinstance(datasets, Iterable):
+        X, y, groups = get_acquisitions(datasets)
+        n_folds = 10
+        for dataset in datasets:
+            n_folds = min(n_folds, dataset.n_folds)
+    else:
+        X, y, groups = datasets.get_acquisitions()
+        n_folds = datasets.n_folds
+        print(datasets)
     for i in range(repetitions):
         print(f"{i+1}/{repetitions}: ")
-        for dataset in datasets:
-            print(dataset)
         accuracies = []
         kf = StratifiedGroupKFold(n_splits=n_folds)
         for train_index, test_index in kf.split(X, y, groups):
             Xtr, ytr = X[train_index], y[train_index]
             Xte, yte = X[test_index], y[test_index]
-            print(Xtr.shape, ytr.shape, Xte.shape, yte.shape)
+            # print(Xtr.shape, ytr.shape, Xte.shape, yte.shape)
             train_estimator(clf.fit, Xtr, ytr, groups[train_index])
             ypr = clf.predict(Xte)
             accuracies.append(accuracy_score(yte, ypr))
@@ -49,16 +45,18 @@ def kfold(datasets, repetitions=3, clf=CNN1D()):
         total.append(mean_accuracy)
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
-debug = True
+debug = False
+epochs = 20
+verbose = 2
 
 datasets = [
     # PHM(config="motor_tr", acquisition_maxsize=64_000)
-    CWRU(config='nio', acquisition_maxsize=84_000),
-    Hust(config='dbg', acquisition_maxsize=84_000),
-    MFPT(config='dbg', acquisition_maxsize=84_000),
-    Ottawa(config='dbg', acquisition_maxsize=84_000),
-    Paderborn(config='dbg', acquisition_maxsize=84_000),
-    UORED_VAFCLS(config='dbg', acquisition_maxsize=84_000),
+    CWRU(config='nio', acquisition_maxsize=21_000),
+    # Hust(config='dbg', acquisition_maxsize=21_000),
+    MFPT(config='dbg', acquisition_maxsize=21_000),
+    # Ottawa(config='dbg', acquisition_maxsize=21_000),
+    # Paderborn(config='dbg', acquisition_maxsize=21_000),
+    # UORED_VAFCLS(config='dbg', acquisition_maxsize=21_000),
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),
@@ -70,9 +68,6 @@ datasets = [
 
 def experimenter(datasets=datasets, repetitions=3, clf=CNN1D()):
     kfold(datasets, repetitions=repetitions, clf=clf)
-
-epochs = 50
-verbose = 2
 
 if __name__ == "__main__":
     experimenter(repetitions=1, clf=CNN1D(epochs=epochs,verbose=verbose))

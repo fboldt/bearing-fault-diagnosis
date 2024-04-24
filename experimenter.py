@@ -2,7 +2,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from datasets.cwru import CWRU
 from datasets.hust import Hust
-from datasets.mafaulda import Mafaulda
+# from datasets.mafaulda import Mafaulda
 from datasets.mfpt import MFPT
 from datasets.ottawa import Ottawa
 from datasets.paderborn import Paderborn
@@ -17,15 +17,15 @@ import time
 from utils.show_info import show_title
 from utils.save_output import ConsoleOutputToFile
 
-debug = False
+debug = True
 
 datasets = [
-    CWRU(config='nio', acquisition_maxsize=84_000),
-    Hust(config='dbg', acquisition_maxsize=84_000),
-    MFPT(config='dbg', acquisition_maxsize=84_000),
-    Ottawa(config='dbg', acquisition_maxsize=84_000),
-    Paderborn(config='dbg', acquisition_maxsize=84_000),
-    UORED_VAFCLS(config='dbg', acquisition_maxsize=84_000),
+    CWRU(config='nio', acquisition_maxsize=21_000),
+    Hust(config='dbg', acquisition_maxsize=21_000),
+    MFPT(config='dbg', acquisition_maxsize=21_000),
+    # Ottawa(config='dbg', acquisition_maxsize=21_000),
+    # Paderborn(config='dbg', acquisition_maxsize=21_000),
+    # UORED_VAFCLS(config='dbg', acquisition_maxsize=21_000),
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),
@@ -36,17 +36,18 @@ datasets = [
 ]
 
 kfold_repetitions = 1 if debug else 10
-epochs = 10 if debug else 1000
+epochs = 5 if debug else 1000
 verbose = 2 if debug else 0
-clf = CNN1D(epochs=epochs, verbose=verbose)
+clf=CNN1D(epochs=epochs, verbose=verbose)
 
 def experimenter():
     for target in datasets:
         sources = list(set(datasets) - set([target]))
         show_title("Kfold")
-        kfold([target], repetitions=kfold_repetitions, clf=clf)
+        kfold(target, repetitions=kfold_repetitions, clf=clf)
         show_title("Transfer Learning")
-        transfer_learning(sources, target, repetitions=kfold_repetitions, clf=clf)
+        transfer_learning(sources, target, repetitions=kfold_repetitions, 
+                          clf=clf)
 
 
 if __name__ == "__main__":
