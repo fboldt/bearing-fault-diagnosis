@@ -17,7 +17,7 @@ import time
 from utils.show_info import show_title
 from utils.save_output import ConsoleOutputToFile
 
-debug = True
+debug = False
 
 datasets = [
     CWRU(config='nio', acquisition_maxsize=21_000),
