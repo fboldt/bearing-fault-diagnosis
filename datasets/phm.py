@@ -33,11 +33,32 @@ def pre_stage_tr(data_sources = ["data_motor", "data_gearbox", "data_leftaxlebox
                         data_files.append((f"{os.path.basename(fault)}_{os.path.basename(sample)}", files))
     return data_files
 
+def pre_stage_te(data_sources = ["data_motor", "data_gearbox", "data_leftaxlebox", "data_rightaxlebox"]):    
+    data_dir = "raw_phm/Data_Pre Stage/Test data"
+    data_files = []
+    for sample in pathlib.Path(data_dir).iterdir(): 
+        if sample.is_dir():
+            files = []
+            for file in pathlib.Path(sample).iterdir():
+                if os.path.basename(file)[:-4] in data_sources:
+                    files.append(f"{file}")
+            if len(files) > 0:
+                data_files.append((f"test_{os.path.basename(sample)}", files))
+    return data_files
+
+def list_of_data_all_te():
+    files = pre_stage_te(["data_motor", 
+                          "data_gearbox", 
+                          "data_leftaxlebox", 
+                          "data_rightaxlebox"
+                          ])
+    return files
+
 def list_of_data_all_tr():
     files = pre_stage_tr(["data_motor", 
                           "data_gearbox", 
                           "data_leftaxlebox", 
-                          #"data_rightaxlebox"
+                          "data_rightaxlebox"
                           ])
     return files
 
@@ -66,7 +87,7 @@ class PHM():
         bearing_label, bearing_file_names = zip(*list_of_bearings)
         return np.array(bearing_label), bearing_file_names
 
-    def __init__(self, sample_size=6400, n_channels=None, acquisition_maxsize=None, config='motor_tr'):
+    def __init__(self, sample_size=64000, n_channels=None, acquisition_maxsize=None, config='all_tr', cache_file=None):
         self.n_channels = n_channels
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize
@@ -82,7 +103,8 @@ class PHM():
                 files_path[key] = []
             files_path[key].append(bearing)
         self.files = files_path
-
+        if cache_file is not None:
+            self.load_cache(cache_file)
 
     def load_acquisitions(self):
         """
@@ -112,7 +134,8 @@ class PHM():
                 if self.signal_data is None:
                     self.signal_data = np.empty((0, self.sample_size, n_channels))
                 self.signal_data = np.append(self.signal_data, sample, axis=0)
-                self.labels.append(int(key.split("_")[0][4:]))
+                if not key.startswith('test'):
+                    self.labels.append(int(key.split("_")[0][4:]))
                 self.keys = np.append(self.keys, key)
         self.labels = np.array(self.labels)
         print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
@@ -134,10 +157,27 @@ class PHM():
 
     def groups(self):
         return self.group_acquisition()
+    
+    def save_cache(self, filename):
+        with open(filename, 'wb') as f:
+            np.save(f, self.signal_data)
+            np.save(f, self.labels)
+            np.save(f, self.keys)
+    
+    def load_cache(self, filename):
+        with open(filename, 'rb') as f:
+            self.signal_data = np.load(f)
+            self.labels = np.load(f)
+            self.keys = np.load(f)
 
 if __name__ == "__main__":
-    dataset = PHM(config="all_tr", acquisition_maxsize=32_000)
+    dataset = PHM(config="all_tr", sample_size=64000)
+    # '''
     dataset.load_acquisitions()
+    dataset.save_cache("phm_21ch_tr.npy")
+    '''
+    dataset.load_cache("phm_21ch_tr.npy")
+    # '''
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
     print("labels", labels, f"({len(labels)})")

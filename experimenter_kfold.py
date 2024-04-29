@@ -45,12 +45,13 @@ def kfold(datasets, repetitions=3, clf=CNN1D()):
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
 debug = True
-epochs = 50
+epochs = 100
 verbose = 2
-acquisition_maxsize=None
+acquisition_maxsize = None
+cache_file = "phm_dbg_tr.npy"
 
 datasets = [
-    PHM(config="all_tr", acquisition_maxsize=acquisition_maxsize),
+    PHM(cache_file = cache_file),
     # PHM(config="motor_tr", acquisition_maxsize=acquisition_maxsize),
     # PHM(config="gearbox_tr", acquisition_maxsize=acquisition_maxsize),
     # PHM(config="leftaxlebox_tr", acquisition_maxsize=acquisition_maxsize),

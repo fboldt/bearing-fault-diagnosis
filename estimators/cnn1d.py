@@ -9,7 +9,7 @@ import os.path
 import shutil
 
 class CNN1D(BaseEstimator, ClassifierMixin):
-    def __init__(self, optimizer='adam', epochs=1000, checkpoint="model.checkpoint", verbose=2):
+    def __init__(self, optimizer='adam', epochs=100, checkpoint="model.checkpoint", verbose=2):
         self.optimizer = optimizer
         self.epochs = epochs
         self.model = None
@@ -40,7 +40,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
     
     def callbacks_list(self, checkpoint=None):
         checkpoint = checkpoint if checkpoint else self.checkpoint
-        monitor = "val_loss"
+        monitor = "val_accuracy"
         return [
             callbacks.ModelCheckpoint(
                 filepath=checkpoint,
@@ -49,7 +49,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
             ),
             callbacks.EarlyStopping(
                 monitor=monitor,
-                patience=100,
+                patience=self.epochs//10,
             )
         ]
     
@@ -62,15 +62,16 @@ class CNN1D(BaseEstimator, ClassifierMixin):
                                               activation='relu', 
                                               name=f"conv_kernel{kernel}_{i+1}",
                                               ))
-            self.featLayers.add(layers.MaxPooling1D(2, name=f"maxpool_{i+1}"))
+            self.featLayers.add(layers.AveragePooling1D(2, name=f"maxpool_{i+1}"))
         self.featLayers.add(layers.GlobalMaxPooling1D(name='flat'))
         return self.featLayers
 
     def make_model(self, input_shape, num_classes):
         self.model = Sequential(name="backbone")
         self.model.add(layers.InputLayer(input_shape=input_shape))
+        self.model.add(layers.BatchNormalization())
         self.model.add(self.make_feature_layers())
-        self.model.add(layers.Dropout(0.5))
+        self.model.add(layers.Dropout(0.05))
         self.model.add(layers.Dense(num_classes))
         self.model.add(layers.Activation('softmax'))
     
