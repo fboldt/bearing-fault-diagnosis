@@ -268,8 +268,8 @@ class CWRU():
     def __str__(self):
         return f"CWRU ({self.config})"
 
-    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, 
-                 config="dbg"):
+    def __init__(self, sample_size=64000, n_channels=1, acquisition_maxsize=None, 
+                 config="all", cache_file=None):
         self.sample_size = sample_size
         self.n_channels = n_channels
         self.acquisition_maxsize = acquisition_maxsize
@@ -306,6 +306,8 @@ class CWRU():
         for key, bearing in zip(self.bearing_labels, self.bearing_names):
             files_path[key] = os.path.join(self.rawfilesdir, bearing)
         self.files = files_path
+        if cache_file is not None:
+            self.load_cache(cache_file)
 
     def download(self):
         """
@@ -405,10 +407,29 @@ class CWRU():
     def groups(self):
         return self.group_severity()
 
+    def save_cache(self, filename):
+        with open(filename, 'wb') as f:
+            np.save(f, self.signal_data)
+            np.save(f, self.labels)
+            np.save(f, self.keys)
+            np.save(f, self.config)
+    
+    def load_cache(self, filename):
+        with open(filename, 'rb') as f:
+            self.signal_data = np.load(f)
+            self.labels = np.load(f)
+            self.keys = np.load(f)
+            self.config = np.load(f)
+
 if __name__ == "__main__":
-    dataset = CWRU(config='dbg', acquisition_maxsize=21_000)
-    dataset.download()
+    dataset = CWRU(config='all', acquisition_maxsize=None)
+    '''
+    # dataset.download()
     dataset.load_acquisitions()
+    dataset.save_cache("cwru_all_de.npy")
+    '''
+    dataset.load_cache("cwru_all_de.npy")
+    # '''
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
     print("labels", labels, f"({len(labels)})")

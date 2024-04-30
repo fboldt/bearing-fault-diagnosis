@@ -163,20 +163,23 @@ class PHM():
             np.save(f, self.signal_data)
             np.save(f, self.labels)
             np.save(f, self.keys)
+            np.save(f, self.config)
     
     def load_cache(self, filename):
         with open(filename, 'rb') as f:
             self.signal_data = np.load(f)
             self.labels = np.load(f)
             self.keys = np.load(f)
+            self.config = np.load(f)
 
 if __name__ == "__main__":
-    dataset = PHM(config="all_tr", sample_size=64000)
+    cache_name = "phm_21ch_tr.npy"
+    dataset = PHM(config="all_tr", sample_size=64000, acquisition_maxsize=None)
     # '''
     dataset.load_acquisitions()
-    dataset.save_cache("phm_21ch_tr.npy")
+    dataset.save_cache(cache_name)
     '''
-    dataset.load_cache("phm_21ch_tr.npy")
+    dataset.load_cache(cache_name)
     # '''
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
