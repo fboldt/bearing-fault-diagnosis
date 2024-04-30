@@ -5,7 +5,8 @@ from datasets.ottawa import Ottawa
 from datasets.paderborn import Paderborn
 from datasets.uored_vafcls import UORED_VAFCLS
 from datasets.phm import PHM
-from estimators.cnn1d import CNN1D
+# from estimators.cnn1d import CNN1D
+from estimators.randomforest import RandomForest
 from utils.train_estimator import train_estimator
 from utils.get_acquisitions import get_acquisitions
 from collections.abc import Iterable
@@ -13,7 +14,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import StratifiedGroupKFold
 import copy
 
-def kfold(datasets, repetitions=3, clf=CNN1D()):
+def kfold(datasets, repetitions=3, clf=None):
     clf = copy.copy(clf)
     total = []
     if isinstance(datasets, Iterable):
@@ -47,14 +48,15 @@ def kfold(datasets, repetitions=3, clf=CNN1D()):
 debug = True
 epochs = 100
 verbose = 2
-acquisition_maxsize = None
-cache_file = "phm_dbg_tr.npy"
+# '''
+clf = RandomForest(1000, 25)
+'''
+clf = CNN1D(epochs=epochs,verbose=verbose)
+# '''
 
 datasets = [
-    PHM(cache_file = cache_file),
-    # PHM(config="motor_tr", acquisition_maxsize=acquisition_maxsize),
-    # PHM(config="gearbox_tr", acquisition_maxsize=acquisition_maxsize),
-    # PHM(config="leftaxlebox_tr", acquisition_maxsize=acquisition_maxsize),
+    CWRU(cache_file = "cwru_all_de.npy"),
+    # PHM(cache_file = "phm_dbg_tr.npy"),
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),
@@ -64,8 +66,8 @@ datasets = [
     UORED_VAFCLS(config='all'),
 ]
 
-def experimenter(datasets=datasets, repetitions=3, clf=CNN1D()):
+def experimenter(datasets=datasets, repetitions=3, clf=None):
     kfold(datasets, repetitions=repetitions, clf=clf)
 
 if __name__ == "__main__":
-    experimenter(repetitions=1, clf=CNN1D(epochs=epochs,verbose=verbose))
+    experimenter(repetitions=1, clf=clf)

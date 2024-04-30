@@ -7,6 +7,9 @@ def train_estimator(estimator_training_function, Xtr, ytr, groups=None):
             Xtr_partial, ytr_partial = Xtr[train_partial_index], ytr[train_partial_index]
             Xva, yva = Xtr[val_index], ytr[val_index]
             break
-        estimator_training_function(Xtr_partial, ytr_partial, Xva, yva)
+        try:
+            estimator_training_function(Xtr_partial, ytr_partial, Xva, yva)
+        except:
+            estimator_training_function(Xtr, ytr)
     else:
         estimator_training_function(Xtr, ytr)
