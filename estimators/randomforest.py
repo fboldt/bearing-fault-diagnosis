@@ -1,20 +1,15 @@
 from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin
 from sklearn.ensemble import RandomForestClassifier
+from imblearn.pipeline import Pipeline
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import RandomUnderSampler
-from imblearn.pipeline import Pipeline
+from estimators.features.heterogeneous import Heterogeneous
 
 class Reshape(BaseEstimator, TransformerMixin):
   def fit(self, X, y=None):
     return self
   def transform(self, X, y=None):
     return X.reshape(X.shape[0], X.shape[1])
-  
-model = RandomForestClassifier(1000, max_features=25) 
-over = SMOTE()
-under = RandomUnderSampler()
-steps = [('reshape', Reshape()), ('over', over), ('under', under), ('model', model)]
-clf = Pipeline(steps=steps) 
 
 class RandomForest(BaseEstimator, ClassifierMixin):
     def __init__(self, n_estimators=100, max_features=None):
@@ -24,6 +19,7 @@ class RandomForest(BaseEstimator, ClassifierMixin):
         steps = [('reshape', Reshape()), 
                  ('over', SMOTE()), 
                  ('under', RandomUnderSampler()), 
+                 ('feature', Heterogeneous()),
                  ('model', model)]
         self.clf = Pipeline(steps=steps) 
     def fit(self, X, y):
