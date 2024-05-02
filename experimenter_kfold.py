@@ -55,8 +55,8 @@ clf = CNN1D(epochs=epochs,verbose=verbose)
 # '''
 
 datasets = [
-    CWRU(cache_file = "cwru_12k.npy"),
-    # PHM(cache_file = "phm_dbg_tr.npy"),
+    # CWRU(cache_file = "cwru_12k.npy"),
+    PHM(cache_file = "phm_all_tr_dbg.npy"),
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),
