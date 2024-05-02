@@ -131,9 +131,23 @@ class PHM():
                 hash[i] = len(hash)
             groups = np.append(groups, hash[i])
         return groups
+    
+    def group_acquisition_by_n_sample(self):
+        groups = []
+        hash = dict()
+        for i in self.keys:
+            if i[-7:] == 'Sample1':
+                hash[i] = 0
+            if i[-7:] == 'Sample2':
+                hash[i] = 1
+            if i[-7:] == 'Sample3':
+                hash[i] = 2            
+            groups = np.append(groups, hash[i])
+        return groups
 
     def groups(self):
-        return self.group_acquisition()
+        # return self.group_acquisition()
+        return self.group_acquisition_by_n_sample()
 
 if __name__ == "__main__":
     dataset = PHM(config="all_tr", acquisition_maxsize=32_000)
