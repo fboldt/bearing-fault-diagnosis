@@ -49,13 +49,13 @@ debug = True
 epochs = 100
 verbose = 2
 # '''
-clf = RandomForest(1000, 25)
+clf = RandomForest(250, 4)
 '''
 clf = CNN1D(epochs=epochs,verbose=verbose)
 # '''
 
 datasets = [
-    CWRU(cache_file = "cwru_all_de.npy"),
+    CWRU(cache_file = "cwru_12k.npy"),
     # PHM(cache_file = "phm_dbg_tr.npy"),
 ] if debug else [
     CWRU(config='all'),
