@@ -33,7 +33,7 @@ def list_of_bearings_nio():
     ("O.021.DE.@6_0","234.mat"),    ("O.021.DE.@6_1","235.mat"),    ("O.021.DE.@6_2","236.mat"),    ("O.021.DE.@6_3","237.mat"),    
     # ("O.021.DE.@3_0","246.mat"),    ("O.021.DE.@3_1","247.mat"),    ("O.021.DE.@3_2","248.mat"),    ("O.021.DE.@3_3","249.mat"),    
     # ("O.021.DE.@12_0","258.mat"),   ("O.021.DE.@12_1","259.mat"),   ("O.021.DE.@12_2","260.mat"),   ("O.021.DE.@12_3","261.mat"),    
-    # ("O.014.FE.@6_0","313.mat"),    
+    ("O.014.FE.@6_0","313.mat"),    
 ]
 
 def list_of_bearings_12k():
@@ -268,18 +268,16 @@ class CWRU():
     def __str__(self):
         return f"CWRU ({self.config})"
 
-    def __init__(self, sample_size=64000, n_channels=1, acquisition_maxsize=None, 
+    def __init__(self, sample_size=64000, acquisition_maxsize=None, 
                  config="all", cache_file=None):
         self.sample_size = sample_size
-        self.n_channels = n_channels
         self.acquisition_maxsize = acquisition_maxsize
         self.config = config
         self.rawfilesdir = "raw_cwru"
         self.url = "https://engineering.case.edu/sites/default/files/"
         self.n_folds = 3
         self.bearing_labels, self.bearing_names = self.get_cwru_bearings()
-        self.accelerometers = ['DE', 'FE', 'BA'][:self.n_channels]
-        self.signal_data = np.empty((0, self.sample_size, len(self.accelerometers)))
+        self.signal_data = np.empty((0, self.sample_size, 1))
         self.labels = []
         self.keys = []
 
@@ -323,41 +321,38 @@ class CWRU():
             download_file(url, dirname, bearing)
         print("Dataset Loaded.")
 
+    def extract_acquisition(self, key, position):
+        cwd = os.getcwd()
+        matlab_file = scipy.io.loadmat(os.path.join(cwd, self.files[key]))
+        acquisition = []
+        file_number = self.files[key][len(self.rawfilesdir)+1:-4]
+        signal_key = [key for key in matlab_file if key.endswith(file_number+ "_" + position + "_time")]            
+        if len(signal_key) == 0:
+            signal_key = [key for key in matlab_file if key.endswith("_" + position + "_time")]            
+        if len(signal_key) > 0:
+            if self.acquisition_maxsize:
+                acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0][:self.acquisition_maxsize])
+            else:
+                acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0])
+        acquisition = np.array(acquisition)       
+        for i in range(acquisition.shape[1]//self.sample_size):
+            sample = acquisition[:,(i * self.sample_size):((i + 1) * self.sample_size)]
+            self.signal_data = np.append(self.signal_data, np.array([sample.T]), axis=0)
+            self.labels = np.append(self.labels, key[0])
+            self.keys = np.append(self.keys, key)
+            
     def load_acquisitions(self):
         """
         Extracts the acquisitions of each file in the dictionary files_names.
         """
-        cwd = os.getcwd()
         for x, key in enumerate(self.files):
-            matlab_file = scipy.io.loadmat(os.path.join(cwd, self.files[key]))
-            
-            acquisition = []
-            
             print('\r', f" loading acquisitions {100*(x+1)/len(self.files):.2f} %", end='')
-            for position in self.accelerometers:
-                file_number = self.files[key][len(self.rawfilesdir)+1:-4]
-                signal_key = [key for key in matlab_file if key.endswith(file_number+ "_" + position + "_time")]
-                
-                if len(signal_key) == 0:
-                    signal_key = [key for key in matlab_file if key.endswith("_" + position + "_time")]
-                
-                if len(signal_key) > 0:
-                    if self.acquisition_maxsize:
-                        acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0][:self.acquisition_maxsize])
-                    else:
-                        acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0])
-            
-            acquisition = np.array(acquisition)
-            if len(acquisition.shape)<2 or acquisition.shape[0]<self.n_channels:
-                continue
-                        
-            for i in range(acquisition.shape[1]//self.sample_size):
-                sample = acquisition[:,(i * self.sample_size):((i + 1) * self.sample_size)]
-                
-                self.signal_data = np.append(self.signal_data, np.array([sample.T]), axis=0)
-                self.labels = np.append(self.labels, key[0])
-                self.keys = np.append(self.keys, key)
-        
+            position = key[6:8]
+            if position == 'NN':
+                for position in ['DE', 'FE']:
+                    self.extract_acquisition(key, position)
+            else:
+                self.extract_acquisition(key, position)
         print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
     
     def get_acquisitions(self):
@@ -422,13 +417,13 @@ class CWRU():
             self.config = np.load(f)
 
 if __name__ == "__main__":
-    dataset = CWRU(config='all', acquisition_maxsize=None)
-    '''
+    dataset = CWRU(config='12k', acquisition_maxsize=None)
+    # '''
     # dataset.download()
     dataset.load_acquisitions()
-    dataset.save_cache("cwru_all_de.npy")
+    dataset.save_cache("cwru_12k.npy")
     '''
-    dataset.load_cache("cwru_all_de.npy")
+    dataset.load_cache("cwru_12k.npy")
     # '''
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
