@@ -13,9 +13,11 @@ class Reshape(BaseEstimator, TransformerMixin):
 
 class RandomForest(BaseEstimator, ClassifierMixin):
     def __init__(self, n_estimators=100, max_features=None):
+        self.n_estimators = n_estimators
+        self.max_features = max_features
         super().__init__()
-        model = RandomForestClassifier(n_estimators=n_estimators, 
-                                       max_features=max_features) 
+        model = RandomForestClassifier(n_estimators=self.n_estimators, 
+                                       max_features=self.max_features) 
         steps = [('reshape', Reshape()), 
                  ('over', SMOTE()), 
                  ('under', RandomUnderSampler()), 
