@@ -9,13 +9,14 @@ import os.path
 import shutil
 
 class CNN1D(BaseEstimator, ClassifierMixin):
-    def __init__(self, optimizer='adam', epochs=100, checkpoint="model.checkpoint", verbose=2):
+    def __init__(self, optimizer='adam', epochs=100, checkpoint="model.checkpoint.keras", verbose=2):
         self.optimizer = optimizer
         self.epochs = epochs
         self.model = None
         self.checkpoint = checkpoint
-        self.prefitckp = "prefit.checkpoint"
+        self.prefitckp = "prefit.checkpoint.keras"
         self.verbose = verbose
+        self.validation_split = 0.2
     
     def __str__(self):
         if self.model:
@@ -68,26 +69,23 @@ class CNN1D(BaseEstimator, ClassifierMixin):
 
     def make_model(self, input_shape, num_classes):
         self.model = Sequential(name="backbone")
-        self.model.add(layers.InputLayer(input_shape=input_shape))
+        self.model.add(layers.InputLayer(shape=input_shape))
         self.model.add(layers.BatchNormalization())
         self.model.add(self.make_feature_layers())
         self.model.add(layers.Dropout(0.05))
         self.model.add(layers.Dense(num_classes))
         self.model.add(layers.Activation('softmax'))
     
-    def training(self, X, y, Xva=None, yva=None, checkpoint=None):
+    def training(self, X, y, Xva, yva, checkpoint=None):
         self.n_steps = X.shape[1]
         self.n_features = X.shape[2]
-
         self.labels, ids = np.unique(y, return_inverse=True)
         y_cat = to_categorical(ids)
         num_classes = y_cat.shape[1]
-
         if os.path.isdir(self.prefitckp):
             print("loading", self.prefitckp)
             self.model = saving.load_model(self.prefitckp)
             self.model.layers[0].trainable = False
-
         if self.model == None:
             self.make_model((self.n_steps, self.n_features), num_classes)
         else:
@@ -95,33 +93,29 @@ class CNN1D(BaseEstimator, ClassifierMixin):
             self.model.pop() 
             self.model.add(layers.Dense(num_classes))
             self.model.add(layers.Activation('softmax'))
-
         self.model.compile(
             optimizer=self.optimizer,
             loss="categorical_crossentropy",
             metrics=["accuracy"]
             )
-        
         if Xva is None or yva is None:
-            Xtr, Xva, ytr, yva_cat = train_test_split(X, y_cat, 
-                                                test_size=self.validation_split,
-                                                stratify=y)
+            Xtr, Xva, ytr, yva_cat = train_test_split(X, y_cat,
+                                                      test_size=self.validation_split,
+                                                      stratify=y)
         else:
             yva_cat = label_binarize(yva, classes=self.labels)
-            Xtr, ytr = X, y_cat
-        
+            Xtr, ytr = X, y_cat        
         self.model.fit(Xtr, ytr, 
                        epochs=self.epochs, 
                        verbose=self.verbose,
                        callbacks=self.callbacks_list(checkpoint),
-                       validation_data=(Xva, yva_cat))
-        
+                       validation_data=(Xva, yva_cat))        
         if os.path.isdir(checkpoint):
             if self.verbose:
                 print("loading", checkpoint)
             self.model = saving.load_model(checkpoint)
 
-    def prefit(self, Xtr, ytr, Xva=None, yva=None):
+    def prefit(self, Xtr, ytr, Xva, yva):
         self.remove_prefitckp_file()
         self.training(Xtr, ytr, Xva, yva, self.prefitckp)
         self.model.layers[0].trainable = False
