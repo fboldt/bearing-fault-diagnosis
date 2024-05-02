@@ -9,7 +9,7 @@ class Reshape(BaseEstimator, TransformerMixin):
   def fit(self, X, y=None):
     return self
   def transform(self, X, y=None):
-    return X.reshape(X.shape[0], X.shape[1])
+    return X.reshape(X.shape[0], X.shape[1]*X.shape[2])
 
 class RandomForest(BaseEstimator, ClassifierMixin):
     def __init__(self, n_estimators=100, max_features=None):
