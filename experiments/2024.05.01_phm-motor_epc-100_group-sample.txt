@@ -1,7 +1,8 @@
 PHM (motor_tr)
   loading acquisitions 100.00 %  (1500 examples) | labels: {0, 1, 2, 3, 4}
 size of groups: 1500
-1/1: 
+repetition 1/1:
+fold 0/3  
 Epoch 1/100
 16/16 - 10s - loss: 5.8042 - accuracy: 0.3680 - val_loss: 0.8268 - val_accuracy: 0.7580 - 10s/epoch - 640ms/step
 Epoch 2/100
