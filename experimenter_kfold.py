@@ -5,7 +5,6 @@ from datasets.ottawa import Ottawa
 from datasets.paderborn import Paderborn
 from datasets.uored_vafcls import UORED_VAFCLS
 from datasets.phm import PHM
-# from estimators.cnn1d import CNN1D
 from estimators.randomforest import RandomForest
 from utils.train_estimator import train_estimator
 from utils.get_acquisitions import get_acquisitions
@@ -36,6 +35,7 @@ def kfold(datasets, repetitions=3, clf=None):
             train_estimator(clf.fit, Xtr, ytr, groups[train_index])
             ypr = clf.predict(Xte)
             accuracies.append(accuracy_score(yte, ypr))
+            print(clf)
             print(f"fold {len(accuracies)}/{n_folds} accuracy: {accuracies[-1]}")
             labels = list(set(yte))
             print(f" {labels}")
@@ -46,17 +46,18 @@ def kfold(datasets, repetitions=3, clf=None):
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
 debug = True
-epochs = 100
-verbose = 2
-# '''
+'''
 clf = RandomForest(250, 4)
 '''
+from estimators.cnn1d import CNN1D
+epochs = 100
+verbose = 2
 clf = CNN1D(epochs=epochs,verbose=verbose)
 # '''
 
 datasets = [
-    # CWRU(cache_file = "cwru_12k.npy"),
-    PHM(cache_file = "phm_all_tr_dbg.npy"),
+    CWRU(cache_file = "cwru_12k.npy"),
+    # PHM(cache_file = "phm_all_tr_dbg.npy"),
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),

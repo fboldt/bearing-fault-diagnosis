@@ -417,13 +417,15 @@ class CWRU():
             self.config = np.load(f)
 
 if __name__ == "__main__":
-    dataset = CWRU(config='12k', acquisition_maxsize=None)
+    config = "12k"
+    cache_name = f"cwru_{config}.npy"
+    dataset = CWRU(config=config, acquisition_maxsize=None)
     # '''
     # dataset.download()
     dataset.load_acquisitions()
-    dataset.save_cache("cwru_12k.npy")
+    dataset.save_cache(cache_name)
     '''
-    dataset.load_cache("cwru_12k.npy")
+    dataset.load_cache(cache_name)
     # '''
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
