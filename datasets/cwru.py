@@ -268,7 +268,7 @@ class CWRU():
     def __str__(self):
         return f"CWRU ({self.config})"
 
-    def __init__(self, sample_size=64000, acquisition_maxsize=None, 
+    def __init__(self, sample_size=4096, acquisition_maxsize=None, 
                  config="all", cache_file=None):
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize

@@ -5,7 +5,6 @@ from datasets.ottawa import Ottawa
 from datasets.paderborn import Paderborn
 from datasets.uored_vafcls import UORED_VAFCLS
 from datasets.phm import PHM
-from estimators.randomforest import RandomForest
 from utils.train_estimator import train_estimator
 from utils.get_acquisitions import get_acquisitions
 from collections.abc import Iterable
@@ -47,9 +46,10 @@ def kfold(datasets, repetitions=3, clf=None):
 
 debug = True
 '''
+from estimators.randomforest import RandomForest
 clf = RandomForest(250, 4)
 '''
-from estimators.cnn1d import CNN1D
+from estimators.cnn1dpt import CNN1D
 epochs = 100
 verbose = 2
 clf = CNN1D(epochs=epochs,verbose=verbose)
