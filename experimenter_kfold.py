@@ -10,10 +10,8 @@ from utils.get_acquisitions import get_acquisitions
 from collections.abc import Iterable
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import StratifiedGroupKFold
-import copy
 
-def kfold(datasets, repetitions=3, clf=None):
-    clf = copy.copy(clf)
+def kfold(datasets, clfmaker, repetitions=3):
     total = []
     if isinstance(datasets, Iterable):
         X, y, groups = get_acquisitions(datasets)
@@ -31,10 +29,11 @@ def kfold(datasets, repetitions=3, clf=None):
         for train_index, test_index in kf.split(X, y, groups):
             Xtr, ytr = X[train_index], y[train_index]
             Xte, yte = X[test_index], y[test_index]
+            clf = clfmaker.estimator()
             train_estimator(clf.fit, Xtr, ytr, groups[train_index])
             ypr = clf.predict(Xte)
             accuracies.append(accuracy_score(yte, ypr))
-            print(clf)
+            # print(clf)
             print(f"fold {len(accuracies)}/{n_folds} accuracy: {accuracies[-1]}")
             labels = list(set(yte))
             print(f" {labels}")
@@ -49,15 +48,19 @@ debug = True
 from estimators.randomforest import RandomForest
 clf = RandomForest(1000, 25)
 '''
-from estimators.cnn1d import CNN1D
+from estimators.cnn1d import Contructor
 epochs = 100
 verbose = 0
-clf = CNN1D(epochs=epochs,verbose=verbose)
+clfmaker = Contructor(epochs=epochs, verbose=verbose)
 # '''
 
 datasets = [
     # CWRU(cache_file = "cwru_all_de.npy"),
-    PHM(cache_file = "phm_motor_tr100.npy"),
+    # PHM(cache_file = "phm_all_tr.npy"),
+    # PHM(cache_file = "phm_motor_tr.npy"),
+    # PHM(cache_file = "phm_gearbox_tr.npy"),
+    # PHM(cache_file = "phm_leftaxlebox_tr.npy"),
+    PHM(cache_file = "phm_18ch_tr100.npy"),
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),
@@ -67,8 +70,8 @@ datasets = [
     UORED_VAFCLS(config='all'),
 ]
 
-def experimenter(datasets=datasets, repetitions=3, clf=None):
-    kfold(datasets, repetitions=repetitions, clf=clf)
+def experimenter(datasets=datasets, clfmaker=clfmaker, repetitions=3):
+    kfold(datasets, clfmaker=clfmaker, repetitions=repetitions)
 
 if __name__ == "__main__":
-    experimenter(repetitions=3, clf=clf)
+    experimenter(clfmaker=clfmaker, repetitions=1)

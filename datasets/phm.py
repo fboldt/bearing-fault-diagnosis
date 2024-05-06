@@ -54,11 +54,41 @@ def list_of_data_all_te():
                           ])
     return files
 
+def list_of_data_18ch_te():
+    files = pre_stage_te(["data_motor", 
+                          "data_gearbox", 
+                          "data_leftaxlebox", 
+                          ])
+    return files
+
+def list_of_data_motor_te():
+    files = pre_stage_te(["data_motor"])
+    return files
+
+def list_of_data_gearbox_te():
+    files = pre_stage_te(["data_gearbox"])
+    return files
+
+def list_of_data_leftaxlebox_te():
+    files = pre_stage_te(["data_leftaxlebox"])
+    return files
+
+def list_of_data_rightaxlebox_te():
+    files = pre_stage_te(["data_rightaxlebox"])
+    return files
+
 def list_of_data_all_tr():
     files = pre_stage_tr(["data_motor", 
                           "data_gearbox", 
                           "data_leftaxlebox", 
                           "data_rightaxlebox"
+                          ])
+    return files
+
+def list_of_data_18ch_tr():
+    files = pre_stage_tr(["data_motor", 
+                          "data_gearbox", 
+                          "data_leftaxlebox",
                           ])
     return files
 
@@ -73,7 +103,6 @@ def list_of_data_leftaxlebox_tr():
 
 def list_of_data_rightaxlebox_tr():
     return pre_stage_tr(["data_rightaxlebox"])
-
 
 class PHM():
     """
@@ -105,6 +134,7 @@ class PHM():
         self.files = files_path
         if cache_file is not None:
             self.load_cache(cache_file)
+        self.cache_file = cache_file
 
     def load_acquisitions(self):
         """
@@ -141,9 +171,11 @@ class PHM():
         print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
         
     def get_acquisitions(self):
-        if len(self.labels) == 0:
+        if len(self.labels) == 0 and self.cache_file is None:
             self.load_acquisitions()
         groups = self.groups()
+        # if str(self.config).endswith("tr"):
+        #     groups = groups % 3
         return self.signal_data, self.labels, groups
              
     def group_acquisition(self):
@@ -153,7 +185,7 @@ class PHM():
             if i not in hash:
                 hash[i] = len(hash)
             groups = np.append(groups, hash[i])
-        return groups
+        return np.array(groups, dtype=int)
 
     def groups(self):
         return self.group_acquisition()
@@ -173,9 +205,9 @@ class PHM():
             self.config = np.load(f)
 
 if __name__ == "__main__":
-    config = "motor_tr" # "all_tr" # "leftaxlebox_tr" # "gearbox_tr" # 
-    cache_name = f"phm_{config}1000.npy"
-    dataset = PHM(config=config, sample_size=640, acquisition_maxsize=None)
+    config = "18ch_te" # "all_tr" # "motor_tr" # "leftaxlebox_tr" # "gearbox_tr" # 
+    cache_name = f"phm_{config}.npy"
+    dataset = PHM(config=config, sample_size=64000, acquisition_maxsize=None)
     # '''
     dataset.load_acquisitions()
     dataset.save_cache(cache_name)
@@ -185,5 +217,8 @@ if __name__ == "__main__":
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
     print("labels", labels, f"({len(labels)})")
-    keys = list(set(dataset.keys))
-    print("keys", np.array(keys), f"({len(keys)})")
+    # keys = (dataset.keys)
+    # print("keys", keys, f"({len(keys)})")
+    # groups = (dataset.groups())
+    # print("groups", groups, f"({len(groups)})")
+    # print([[keys,groups[i]] for i, keys in enumerate(keys)])

@@ -5,12 +5,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.preprocessing import label_binarize
 import numpy as np
-import os.path
-import shutil
-import copy
+import os
 
 class CNN1D(BaseEstimator, ClassifierMixin):
-    def __init__(self, epochs=100, checkpoint="model.checkpoint", verbose=2):
+    def __init__(self, epochs=100, checkpoint="model.checkpoint.keras", verbose=2):
         self.optimizer = optimizers.Adam(learning_rate=0.001)
         self.epochs = epochs
         self.model = None
@@ -24,25 +22,27 @@ class CNN1D(BaseEstimator, ClassifierMixin):
                return f"{self.model.summary(expand_nested=True)}"
         return "CNN1D"
     
-    def __del__(self):
-        self.remove_chepoint_file()
-        self.remove_prefitckp_file()
+    # def __del__(self):
+    #     self.remove_chepoint_file()
+    #     self.remove_prefitckp_file()
 
     def remove_chepoint_file(self):
-        if os.path.isdir(self.checkpoint):
+        if os.path.exists(self.checkpoint):
             if self.verbose:
                 print("removing", self.checkpoint)
-            shutil.rmtree(self.checkpoint)
+            os.remove(self.checkpoint)
+        if os.path.exists(self.checkpoint+".labels"):
+            os.remove(self.checkpoint+".labels")
 
     def remove_prefitckp_file(self):
-        if os.path.isdir(self.prefitckp):
+        if os.path.exists(self.prefitckp):
             if self.verbose:
                 print("removing", self.prefitckp)
-            shutil.rmtree(self.prefitckp)
+            os.remove(self.prefitckp)
     
     def callbacks_list(self, checkpoint=None):
         checkpoint = checkpoint if checkpoint else self.checkpoint
-        monitor = "val_loss" # "val_accuracy" # 
+        monitor = "val_accuracy" # "val_loss" # 
         return [
             callbacks.ModelCheckpoint(
                 filepath=checkpoint,
@@ -74,20 +74,22 @@ class CNN1D(BaseEstimator, ClassifierMixin):
 
     def make_model(self, input_shape, num_classes):
         self.model = Sequential(name="backbone")
-        self.model.add(layers.InputLayer(shape=input_shape))
+        self.model.add(layers.InputLayer(input_shape=input_shape))
         self.model.add(layers.BatchNormalization())
         self.model.add(self.make_feature_layers())
         self.model.add(layers.Dropout(0.5))
         self.model.add(layers.Dense(num_classes))
         self.model.add(layers.Activation('softmax'))
     
-    def training(self, X, y, Xva, yva, checkpoint=None):
+    def training(self, X, y, Xva=None, yva=None, checkpoint=None):
         self.n_steps = X.shape[1]
         self.n_features = X.shape[2]
         self.labels, ids = np.unique(y, return_inverse=True)
+        with open(checkpoint+".labels", 'wb') as f:
+            np.save(f, self.labels)
         y_cat = to_categorical(ids)
         num_classes = y_cat.shape[1]
-        if os.path.isdir(self.prefitckp):
+        if os.path.exists(self.prefitckp):
             print("loading", self.prefitckp)
             self.model = saving.load_model(self.prefitckp)
             self.model.layers[0].trainable = False
@@ -99,7 +101,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
             self.model.add(layers.Dense(num_classes))
             self.model.add(layers.Activation('softmax'))
         self.model.compile(
-            optimizer=copy.copy(self.optimizer),
+            optimizer=self.optimizer,
             loss="categorical_crossentropy",
             metrics=["accuracy"]
             )
@@ -109,13 +111,13 @@ class CNN1D(BaseEstimator, ClassifierMixin):
                                                       stratify=y)
         else:
             yva_cat = label_binarize(yva, classes=self.labels)
-            Xtr, ytr = X, y_cat        
+            Xtr, ytr = X, y_cat
         self.model.fit(Xtr, ytr, 
                        epochs=self.epochs, 
                        verbose=self.verbose,
                        callbacks=self.callbacks_list(checkpoint),
                        validation_data=(Xva, yva_cat))        
-        if os.path.isdir(checkpoint):
+        if os.path.exists(checkpoint):
             if self.verbose:
                 print("loading", checkpoint)
             self.model = saving.load_model(checkpoint)
@@ -125,17 +127,26 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.training(Xtr, ytr, Xva, yva, self.prefitckp)
         self.model.layers[0].trainable = False
 
-    def fit(self, Xtr, ytr, Xva, yva):
+    def fit(self, Xtr, ytr, Xva=None, yva=None):
+        self.remove_chepoint_file()
         self.training(Xtr, ytr, Xva, yva, self.checkpoint)
 
     def predict(self, X):
-        if os.path.isdir(self.checkpoint):
+        if os.path.exists(self.checkpoint):
             if self.verbose:
                 print("loading", self.checkpoint)
             model = saving.load_model(self.checkpoint)
+            with open(self.checkpoint+".labels", 'rb') as f:
+                self.labels = np.load(f)
         else: 
             model = self.model
-        X = X.reshape((X.shape[0], X.shape[1], self.n_features))
         predictions = model.predict(X)
         return self.labels[np.argmax(predictions, axis=1)]
-    
+
+class Contructor():
+    def __init__(self, epochs=100, checkpoint="model.checkpoint.keras", verbose=2):
+        self.epochs=epochs
+        self.checkpoint=checkpoint
+        self.verbose=verbose
+    def estimator(self):
+        return CNN1D(epochs=self.epochs, checkpoint=self.checkpoint, verbose=self.verbose)

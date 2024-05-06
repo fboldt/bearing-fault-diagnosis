@@ -164,3 +164,4 @@ raw_*/
 *.npy
 *-ubyte
 *-ubyte.gz
+*.keras
