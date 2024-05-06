@@ -5,8 +5,6 @@ from datasets.ottawa import Ottawa
 from datasets.paderborn import Paderborn
 from datasets.uored_vafcls import UORED_VAFCLS
 from datasets.phm import PHM
-# from estimators.cnn1d import CNN1D
-from estimators.randomforest import RandomForest
 from utils.train_estimator import train_estimator
 from utils.get_acquisitions import get_acquisitions
 from collections.abc import Iterable
@@ -46,17 +44,19 @@ def kfold(datasets, repetitions=3, clf=None):
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
 debug = True
-epochs = 100
-verbose = 2
-# '''
+'''
+from estimators.randomforest import RandomForest
 clf = RandomForest(1000, 25)
 '''
+from estimators.cnn1d import CNN1D
+epochs = 100
+verbose = 0
 clf = CNN1D(epochs=epochs,verbose=verbose)
 # '''
 
 datasets = [
-    CWRU(cache_file = "cwru_all_de.npy"),
-    # PHM(cache_file = "phm_dbg_tr.npy"),
+    # CWRU(cache_file = "cwru_all_de.npy"),
+    PHM(cache_file = "phm_motor_tr100.npy"),
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),
@@ -70,4 +70,4 @@ def experimenter(datasets=datasets, repetitions=3, clf=None):
     kfold(datasets, repetitions=repetitions, clf=clf)
 
 if __name__ == "__main__":
-    experimenter(repetitions=1, clf=clf)
+    experimenter(repetitions=3, clf=clf)

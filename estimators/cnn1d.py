@@ -1,4 +1,4 @@
-from tensorflow.keras import layers, callbacks, saving
+from tensorflow.keras import layers, callbacks, saving, optimizers
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
@@ -7,10 +7,11 @@ from sklearn.preprocessing import label_binarize
 import numpy as np
 import os.path
 import shutil
+import copy
 
 class CNN1D(BaseEstimator, ClassifierMixin):
-    def __init__(self, optimizer='adam', epochs=100, checkpoint="model.checkpoint", verbose=2):
-        self.optimizer = optimizer
+    def __init__(self, epochs=100, checkpoint="model.checkpoint", verbose=2):
+        self.optimizer = optimizers.Adam(learning_rate=0.001)
         self.epochs = epochs
         self.model = None
         self.checkpoint = checkpoint
@@ -40,7 +41,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
     
     def callbacks_list(self, checkpoint=None):
         checkpoint = checkpoint if checkpoint else self.checkpoint
-        monitor = "val_accuracy"
+        monitor = "val_loss" # "val_accuracy" # 
         return [
             callbacks.ModelCheckpoint(
                 filepath=checkpoint,
@@ -56,13 +57,17 @@ class CNN1D(BaseEstimator, ClassifierMixin):
     def make_feature_layers(self):
         self.featLayers = Sequential(name="feat_layers")
         filters = [32, 64, 128]
-        for i, (filters, kernel) in enumerate(zip(filters,
-                                                  [32 for _ in range(len(filters))])):
-            self.featLayers.add(layers.Conv1D(filters, kernel, 
+        kernels = [32 for _ in range(len(filters))]
+        for i, (filter, kernel) in enumerate(zip(filters[:-1], kernels[:-1])):
+            self.featLayers.add(layers.Conv1D(filter, kernel, 
                                               activation='relu', 
                                               name=f"conv_kernel{kernel}_{i+1}",
                                               ))
             self.featLayers.add(layers.AveragePooling1D(2, name=f"maxpool_{i+1}"))
+        self.featLayers.add(layers.Conv1D(filters[-1], kernels[-1], 
+                                          activation='relu', 
+                                          name=f"conv_kernel{kernel}_last",
+                                          ))
         self.featLayers.add(layers.GlobalMaxPooling1D(name='flat'))
         return self.featLayers
 
@@ -71,7 +76,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.model.add(layers.InputLayer(input_shape=input_shape))
         self.model.add(layers.BatchNormalization())
         self.model.add(self.make_feature_layers())
-        self.model.add(layers.Dropout(0.05))
+        self.model.add(layers.Dropout(0.5))
         self.model.add(layers.Dense(num_classes))
         self.model.add(layers.Activation('softmax'))
     
@@ -97,7 +102,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
             self.model.add(layers.Activation('softmax'))
 
         self.model.compile(
-            optimizer=self.optimizer,
+            optimizer=copy.copy(self.optimizer),
             loss="categorical_crossentropy",
             metrics=["accuracy"]
             )

@@ -173,8 +173,9 @@ class PHM():
             self.config = np.load(f)
 
 if __name__ == "__main__":
-    cache_name = "phm_21ch_tr.npy"
-    dataset = PHM(config="all_tr", sample_size=64000, acquisition_maxsize=None)
+    config = "motor_tr" # "all_tr" # "leftaxlebox_tr" # "gearbox_tr" # 
+    cache_name = f"phm_{config}1000.npy"
+    dataset = PHM(config=config, sample_size=640, acquisition_maxsize=None)
     # '''
     dataset.load_acquisitions()
     dataset.save_cache(cache_name)
