@@ -34,6 +34,7 @@ def kfold(datasets, repetitions=3, clf=None):
             train_estimator(clf.fit, Xtr, ytr, groups[train_index])
             ypr = clf.predict(Xte)
             accuracies.append(accuracy_score(yte, ypr))
+            print(clf)
             print(f"fold {len(accuracies)}/{n_folds} accuracy: {accuracies[-1]}")
             labels = list(set(yte))
             print(f" {labels}")

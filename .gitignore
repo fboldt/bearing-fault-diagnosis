@@ -162,3 +162,5 @@ cython_debug/
 raw_*/
 *.zip
 *.npy
+*-ubyte
+*-ubyte.gz
