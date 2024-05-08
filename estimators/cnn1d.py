@@ -69,7 +69,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
             start, end, f = sources[source]
             f = x
             for (filter, kernel) in zip(filters, kernels):
-                f = layers.Conv1D(filter, kernel, strides=int(kernel_size**0.5)+1, activation='relu')(f[:,:,start:end])
+                f = layers.Conv1D(filter, kernel, strides=int((kernel_size//2)**0.5)+1, activation='relu')(f[:,:,start:end])
                 f = layers.SpatialDropout1D(0.25)(f)
             f = layers.GlobalAveragePooling1D()(f)
             convs.append(f)
