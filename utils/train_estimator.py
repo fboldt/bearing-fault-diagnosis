@@ -3,7 +3,7 @@ import inspect
 
 def train_estimator(estimator_training_function, Xtr, ytr, groups=None):
     if "Xva" in str(inspect.signature(estimator_training_function)):
-        n_splits=10
+        n_splits=5
         splitter = StratifiedGroupKFold(n_splits) if groups is not None else StratifiedKFold(n_splits)
         for (train_partial_index, val_index) in splitter.split(Xtr, ytr, groups):
             Xtr_partial, ytr_partial = Xtr[train_partial_index], ytr[train_partial_index]

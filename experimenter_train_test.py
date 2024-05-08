@@ -5,9 +5,9 @@ from sklearn.metrics import accuracy_score
 import csv
 
 from estimators.cnn1d import Contructor
-epochs = 500
+epochs = 50
 verbose = 2
-basename = "phm_leftaxlebox" # "phm_gearbox" # "phm_motor" # "phm_18ch"
+basename = "phm_18ch" # "phm_leftaxlebox" # "phm_gearbox" # "phm_motor" # 
 n = 1
 checkpoint = f"{basename}.keras"
 clfmaker = Contructor(epochs=epochs, checkpoint=checkpoint, verbose=verbose)
@@ -42,10 +42,11 @@ def test(clf, dataset, csvfile=None):
 
 if __name__ == "__main__":
     clf = clfmaker.estimator()
-    # kfold(clfmaker, dataset)
-    # '''
-    train(clf, dataset_tr)
-    test(clf, dataset_te, f"{basename}{n}.csv")
     '''
-    test(clf, dataset_tr)
+    kfold(clf, dataset_tr)
+    '''
+    for i in range(5):
+        train(clf, dataset_tr)
+        test(clf, dataset_tr)
+        test(clf, dataset_te, f"{basename}{n}.csv")
     # '''

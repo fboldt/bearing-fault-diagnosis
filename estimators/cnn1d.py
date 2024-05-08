@@ -1,4 +1,4 @@
-from tensorflow.keras import layers, callbacks, saving, optimizers
+from tensorflow.keras import layers, callbacks, saving, optimizers, Model, Input
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
@@ -9,13 +9,13 @@ import os
 
 class CNN1D(BaseEstimator, ClassifierMixin):
     def __init__(self, epochs=100, checkpoint="model.checkpoint.keras", verbose=2):
-        self.optimizer = optimizers.Adam(learning_rate=0.0005)
+        self.optimizer = optimizers.Adam(learning_rate=0.001)
         self.epochs = epochs
         self.model = None
         self.checkpoint = checkpoint
         self.prefitckp = "prefit.checkpoint.keras"
         self.verbose = verbose
-        self.validation_split = 0.1
+        self.validation_split = 0.2
     
     def __str__(self):
         if self.model:
@@ -55,31 +55,35 @@ class CNN1D(BaseEstimator, ClassifierMixin):
             )
         ]
     
-    def make_feature_layers(self):
-        self.featLayers = Sequential(name="feat_layers")
-        filters = [32, 64, 128]
-        kernels = [32 for _ in range(len(filters))]
-        for i, (filter, kernel) in enumerate(zip(filters[:-1], kernels[:-1])):
-            self.featLayers.add(layers.Conv1D(filter, kernel, 
-                                              activation='relu', 
-                                              name=f"conv_kernel{kernel}_{i+1}",
-                                              ))
-            self.featLayers.add(layers.AveragePooling1D(2, name=f"maxpool_{i+1}"))
-        self.featLayers.add(layers.Conv1D(filters[-1], kernels[-1], 
-                                          activation='relu', 
-                                          name=f"conv_kernel{kernel}_last",
-                                          ))
-        self.featLayers.add(layers.GlobalMaxPooling1D(name='flat'))
-        return self.featLayers
+    def make_feature_layers(self, x):
+        filters = [2**i for i in range(5,7)]
+        kernel_size = 180
+        kernels = [kernel_size for _ in range(len(filters))]
+        sources = {
+            "gear": (0, 6, None),
+            "leftaxl": (6, 9, None),
+            "motor": (9, 18, None),
+        }
+        convs = []
+        for source in sources.keys():
+            start, end, f = sources[source]
+            f = x
+            for (filter, kernel) in zip(filters, kernels):
+                f = layers.Conv1D(filter, kernel, strides=int(kernel_size**0.5)+1, activation='relu')(f[:,:,start:end])
+                f = layers.SpatialDropout1D(0.25)(f)
+            f = layers.GlobalAveragePooling1D()(f)
+            convs.append(f)
+        x = layers.concatenate(convs, axis=-1)
+        return x
+
 
     def make_model(self, input_shape, num_classes):
-        self.model = Sequential(name="backbone")
-        self.model.add(layers.InputLayer(input_shape=input_shape))
-        self.model.add(layers.BatchNormalization())
-        self.model.add(self.make_feature_layers())
-        self.model.add(layers.Dropout(0.25))
-        self.model.add(layers.Dense(num_classes))
-        self.model.add(layers.Activation('softmax'))
+        inputs = Input(shape=input_shape)
+        x = self.make_feature_layers(inputs)
+        x = layers.Dropout(0.5)(x)
+        x = layers.Dense(num_classes)(x)
+        outputs = layers.Activation('softmax')(x)
+        self.model = Model(inputs, outputs)
     
     def training(self, X, y, Xva=None, yva=None, checkpoint=None):
         self.n_steps = X.shape[1]

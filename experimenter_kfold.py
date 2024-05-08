@@ -30,7 +30,11 @@ def kfold(datasets, clfmaker, repetitions=3):
             Xtr, ytr = X[train_index], y[train_index]
             Xte, yte = X[test_index], y[test_index]
             clf = clfmaker.estimator()
-            train_estimator(clf.fit, Xtr, ytr) # train_estimator(clf.fit, Xtr, ytr, groups[train_index])
+            # '''
+            train_estimator(clf.fit, Xtr, ytr)
+            '''
+            train_estimator(clf.fit, Xtr, ytr, groups[train_index])
+            #'''
             ypr = clf.predict(Xte)
             accuracies.append(accuracy_score(yte, ypr))
             # print(clf)
@@ -49,7 +53,7 @@ from estimators.randomforest import RandomForest
 clf = RandomForest(1000, 25)
 '''
 from estimators.cnn1d import Contructor
-epochs = 100
+epochs = 50
 verbose = 2
 clfmaker = Contructor(epochs=epochs, verbose=verbose)
 # '''
