@@ -30,7 +30,7 @@ def kfold(datasets, clfmaker, repetitions=3):
             Xtr, ytr = X[train_index], y[train_index]
             Xte, yte = X[test_index], y[test_index]
             clf = clfmaker.estimator()
-            train_estimator(clf.fit, Xtr, ytr, groups[train_index])
+            train_estimator(clf.fit, Xtr, ytr) # train_estimator(clf.fit, Xtr, ytr, groups[train_index])
             ypr = clf.predict(Xte)
             accuracies.append(accuracy_score(yte, ypr))
             # print(clf)
@@ -50,17 +50,15 @@ clf = RandomForest(1000, 25)
 '''
 from estimators.cnn1d import Contructor
 epochs = 100
-verbose = 0
+verbose = 2
 clfmaker = Contructor(epochs=epochs, verbose=verbose)
 # '''
 
 datasets = [
-    # CWRU(cache_file = "cwru_all_de.npy"),
-    # PHM(cache_file = "phm_all_tr.npy"),
+    PHM(cache_file = "phm_18ch_tr.npy"),
     # PHM(cache_file = "phm_motor_tr.npy"),
     # PHM(cache_file = "phm_gearbox_tr.npy"),
     # PHM(cache_file = "phm_leftaxlebox_tr.npy"),
-    PHM(cache_file = "phm_18ch_tr100.npy"),
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),
@@ -71,7 +69,8 @@ datasets = [
 ]
 
 def experimenter(datasets=datasets, clfmaker=clfmaker, repetitions=3):
-    kfold(datasets, clfmaker=clfmaker, repetitions=repetitions)
+    for dataset in datasets:
+        kfold(dataset, clfmaker=clfmaker, repetitions=repetitions)
 
 if __name__ == "__main__":
     experimenter(clfmaker=clfmaker, repetitions=1)

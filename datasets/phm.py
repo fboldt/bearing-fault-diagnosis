@@ -205,7 +205,7 @@ class PHM():
             self.config = np.load(f)
 
 if __name__ == "__main__":
-    config = "18ch_te" # "all_tr" # "motor_tr" # "leftaxlebox_tr" # "gearbox_tr" # 
+    config = "motor_tr" # "leftaxlebox_tr" # "gearbox_tr" # "18ch_tr" # "all_tr" # 
     cache_name = f"phm_{config}.npy"
     dataset = PHM(config=config, sample_size=64000, acquisition_maxsize=None)
     # '''

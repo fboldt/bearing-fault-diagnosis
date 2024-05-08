@@ -9,13 +9,13 @@ import os
 
 class CNN1D(BaseEstimator, ClassifierMixin):
     def __init__(self, epochs=100, checkpoint="model.checkpoint.keras", verbose=2):
-        self.optimizer = optimizers.Adam(learning_rate=0.001)
+        self.optimizer = optimizers.Adam(learning_rate=0.0005)
         self.epochs = epochs
         self.model = None
         self.checkpoint = checkpoint
         self.prefitckp = "prefit.checkpoint.keras"
         self.verbose = verbose
-        self.validation_split = 0.2
+        self.validation_split = 0.1
     
     def __str__(self):
         if self.model:
@@ -42,7 +42,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
     
     def callbacks_list(self, checkpoint=None):
         checkpoint = checkpoint if checkpoint else self.checkpoint
-        monitor = "val_accuracy" # "val_loss" # 
+        monitor = "val_loss" # "val_accuracy" # 
         return [
             callbacks.ModelCheckpoint(
                 filepath=checkpoint,
@@ -77,7 +77,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.model.add(layers.InputLayer(input_shape=input_shape))
         self.model.add(layers.BatchNormalization())
         self.model.add(self.make_feature_layers())
-        self.model.add(layers.Dropout(0.5))
+        self.model.add(layers.Dropout(0.25))
         self.model.add(layers.Dense(num_classes))
         self.model.add(layers.Activation('softmax'))
     

@@ -165,3 +165,4 @@ raw_*/
 *-ubyte
 *-ubyte.gz
 *.keras
+*.labels

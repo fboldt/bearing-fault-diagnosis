@@ -7,7 +7,8 @@ import csv
 from estimators.cnn1d import Contructor
 epochs = 500
 verbose = 2
-basename = "phm_18ch"
+basename = "phm_leftaxlebox" # "phm_gearbox" # "phm_motor" # "phm_18ch"
+n = 1
 checkpoint = f"{basename}.keras"
 clfmaker = Contructor(epochs=epochs, checkpoint=checkpoint, verbose=verbose)
 dataset_tr = PHM(cache_file = f"{basename}_tr.npy")
@@ -44,7 +45,7 @@ if __name__ == "__main__":
     # kfold(clfmaker, dataset)
     # '''
     train(clf, dataset_tr)
-    test(clf, dataset_te, "answers5.csv")
+    test(clf, dataset_te, f"{basename}{n}.csv")
     '''
     test(clf, dataset_tr)
     # '''
