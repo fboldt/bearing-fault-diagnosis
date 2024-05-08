@@ -50,7 +50,7 @@ from estimators.randomforest import RandomForest
 clf = RandomForest(250, 4)
 '''
 from estimators.cnn1dpt import CNN1D
-epochs = 100
+epochs = 10
 verbose = 2
 clf = CNN1D(epochs=epochs,verbose=verbose)
 # '''

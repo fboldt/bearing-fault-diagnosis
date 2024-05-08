@@ -33,18 +33,30 @@ class VibrationDataset(Dataset):
         return x, label
 
 class NeuralNetwork(nn.Module):
-    def __init__(self, input_size, output_size):
+    def __init__(self, input_shape, num_classes):
         super().__init__()
-        self.flatten = nn.Flatten()
-        self.linear_relu_stack = nn.Sequential(
-            nn.Linear(input_size, 512),
+        kernel_size = 32
+        out_channels = 16
+        self.features = nn.Sequential(
+            nn.Conv1d(in_channels=input_shape[1], 
+                      out_channels=out_channels, 
+                      kernel_size=kernel_size, stride=1),
             nn.ReLU(),
-            nn.Linear(512, output_size),
+            nn.Conv1d(in_channels=out_channels, 
+                      out_channels=out_channels, 
+                      kernel_size=kernel_size, stride=1),
+            nn.ReLU(),
         )
+        self.flatten = nn.Flatten()
+        n_conv = 2
+        outsize = ((kernel_size*2)**2-n_conv*(kernel_size-1))*out_channels
+        self.linear = nn.Linear(outsize, num_classes)
         self.double()
     def forward(self, x):
+        x = x.permute(0,2,1)
+        x = self.features(x)
         x = self.flatten(x)
-        logits = self.linear_relu_stack(x)
+        logits = self.linear(x)
         return logits
 
 def train(dataloader, model, loss_fn, optimizer):
@@ -93,21 +105,22 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         self.optimizer = torch.optim.RMSprop
     
     def fit(self, Xtr, ytr, Xva, yva):
-        input_size = Xtr.shape[1]*Xtr.shape[2]
-        Xtr = torch.from_numpy(Xtr)
-        Xva = torch.from_numpy(Xva)
+        sample_size = Xtr.shape[1]
+        n_channels = Xtr.shape[2]
         self.labels = np.unique(ytr)
+        output_size = len(self.labels)
+        Xtr = torch.from_numpy(Xtr)
         ytr = label_binarize(ytr, classes=self.labels)
         ytr = torch.from_numpy(np.array(ytr, dtype=float))
-        yva = label_binarize(yva, classes=self.labels)
-        yva = torch.from_numpy(np.argmax(np.array(yva, dtype=float), axis=1))
-        output_size = len(self.labels)
-        self.model = NeuralNetwork(input_size, output_size).to(device)
-        optimizer = self.optimizer(self.model.parameters(), lr=1e-3)
         tr = VibrationDataset(Xtr, ytr)
         tr = DataLoader(tr, batch_size=64, shuffle=True)
+        Xva = torch.from_numpy(Xva)
+        yva = label_binarize(yva, classes=self.labels)
+        yva = torch.from_numpy(np.argmax(np.array(yva, dtype=float), axis=1))
         va = VibrationDataset(Xva, yva)
         va = DataLoader(va, batch_size=64, shuffle=True)
+        self.model = NeuralNetwork((sample_size, n_channels), output_size).to(device)
+        optimizer = self.optimizer(self.model.parameters(), lr=1e-3)
         for t in range(self.epochs):
             print(f"Epoch {t+1}: ", end='')
             train(tr, self.model, self.loss_fn, optimizer)
