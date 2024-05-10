@@ -44,23 +44,25 @@ def kfold(datasets, clfmaker, repetitions=3):
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
 debug = True
+
+from estimators.randomforest import RandomForestConstructor
+clfmaker = RandomForestConstructor(n_estimators=1000, max_features=25)
+
 '''
-from estimators.randomforest import RandomForest
-clf = RandomForest(1000, 25)
-'''
-from estimators.cnn1d import Contructor
+from estimators.cnn1d import CNN1DContructor
 epochs = 100
 verbose = 0
-clfmaker = Contructor(epochs=epochs, verbose=verbose)
-# '''
+clfmaker = CNN1DContructor(epochs=epochs, verbose=verbose)
+'''
 
 datasets = [
     # CWRU(cache_file = "cwru_all_de.npy"),
     # PHM(cache_file = "phm_all_tr.npy"),
-    # PHM(cache_file = "phm_motor_tr.npy"),
+    PHM(cache_file = "phm_motor_tr.npy"),
     # PHM(cache_file = "phm_gearbox_tr.npy"),
-    # PHM(cache_file = "phm_leftaxlebox_tr.npy"),
-    PHM(cache_file = "phm_18ch_tr100.npy"),
+    # PHM(cache_file = "pzzhm_leftaxlebox_tr.npy"),
+    # PHM(cache_file = "phm_18ch_tr100.npy"),
+    # PHM(cache_file = "phm_18ch_tr.npy"),
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),
