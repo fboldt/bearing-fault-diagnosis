@@ -48,18 +48,19 @@ def kfold(datasets, clfmaker, repetitions=3):
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
 debug = True
+repetitions=1
 '''
 from estimators.randomforest import RandomForest
 clf = RandomForest(1000, 25)
 '''
 from estimators.cnn1d_phm import Contructor
-epochs = 50
+epochs = 100
 verbose = 2
 clfmaker = Contructor(epochs=epochs, verbose=verbose)
 # '''
 
 datasets = [
-    PHM(cache_file = "phm_18ch_tr100.npy"),
+    PHM(cache_file = "phm_18ch_tr.npy"),
     # PHM(cache_file = "phm_motor_tr.npy"),
     # PHM(cache_file = "phm_gearbox_tr.npy"),
     # PHM(cache_file = "phm_leftaxlebox_tr.npy"),
@@ -77,4 +78,4 @@ def experimenter(datasets=datasets, clfmaker=clfmaker, repetitions=3):
         kfold(dataset, clfmaker=clfmaker, repetitions=repetitions)
 
 if __name__ == "__main__":
-    experimenter(clfmaker=clfmaker, repetitions=1)
+    experimenter(clfmaker=clfmaker, repetitions=repetitions)

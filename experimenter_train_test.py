@@ -1,12 +1,12 @@
 from datasets.phm import PHM
 from utils.train_estimator import train_estimator
-from sklearn.model_selection import cross_validate
+from sklearn.model_selection import cross_validate, StratifiedGroupKFold
 from sklearn.metrics import accuracy_score
 import csv
 
-from estimators.cnn1d import Contructor
-epochs = 50
-verbose = 2
+from estimators.cnn1d_phm import Contructor
+epochs = 300
+verbose = 0
 basename = "phm_18ch" # "phm_leftaxlebox" # "phm_gearbox" # "phm_motor" # 
 n = 1
 checkpoint = f"{basename}.keras"
@@ -16,8 +16,9 @@ dataset_te = PHM(cache_file = f"{basename}_te.npy")
 
 def kfold(clf, dataset):
     X, y, groups = dataset.get_acquisitions()
-    scores = cross_validate(clf, X, y, groups=groups)
-    print(scores['test_score'], sum(scores['test_score'])/5)
+    scores = cross_validate(clf, X, y, groups=groups, 
+                            cv=StratifiedGroupKFold(n_splits=3))
+    print(scores['test_score'], sum(scores['test_score'])/len(scores['test_score']))
 
 def train(clf, dataset):
     X, y, groups = dataset.get_acquisitions()
@@ -37,16 +38,17 @@ def test(clf, dataset, csvfile=None):
             write = csv.writer(f)        
             write.writerow(["Sample Number", "Fault Code"])
             write.writerows(answers)
-    for answer in answers:
-        print(answer)
+    # for answer in answers:
+    #     print(answer)
 
 if __name__ == "__main__":
-    clf = clfmaker.estimator()
-    '''
-    kfold(clf, dataset_tr)
-    '''
     for i in range(5):
+        clf = clfmaker.estimator()
+    # '''
+        kfold(clf, dataset_tr)
+    '''
         train(clf, dataset_tr)
+        print(clf)
         test(clf, dataset_tr)
-        test(clf, dataset_te, f"{basename}{n}.csv")
+        test(clf, dataset_te, f"{basename}{i}.csv")
     # '''
