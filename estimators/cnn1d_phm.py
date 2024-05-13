@@ -60,18 +60,22 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         kernel_size = 180
         kernels = [kernel_size for _ in range(len(filters))]
         sources = {
-            "gear": (0, 6, None),
-            "leftaxl": (6, 9, None),
-            "motor": (9, 18, None),
+            "gear": (0, 6, 8),
+            "leftaxl": (6, 9, 4),
+            "motor": (9, 18, 4),
         }
+
         convs = []
         for source in sources.keys():
-            start, end, f = sources[source]
+            start, end, n_faults = sources[source]
             f = x
             for (filter, kernel) in zip(filters, kernels):
                 f = layers.Conv1D(filter, kernel, strides=int((kernel_size//2)**0.5)+1, activation='relu')(f[:,:,start:end])
                 f = layers.SpatialDropout1D(0.25)(f)
             f = layers.GlobalAveragePooling1D()(f)
+            f = layers.Dropout(0.5)(f)
+            f = layers.Dense(n_faults)(f)
+            f = layers.Activation('softmax')(f)
             convs.append(f)
         x = layers.concatenate(convs, axis=-1)
         return x
@@ -80,7 +84,6 @@ class CNN1D(BaseEstimator, ClassifierMixin):
     def make_model(self, input_shape, num_classes):
         inputs = Input(shape=input_shape)
         x = self.make_feature_layers(inputs)
-        x = layers.Dropout(0.5)(x)
         x = layers.Dense(num_classes)(x)
         outputs = layers.Activation('softmax')(x)
         self.model = Model(inputs, outputs)
