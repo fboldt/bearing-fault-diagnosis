@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score
 import csv
 
 from estimators.cnn1d_phm import Contructor
-epochs = 300
+epochs = 80
 verbose = 0
 basename = "phm_18ch" # "phm_leftaxlebox" # "phm_gearbox" # "phm_motor" # 
 n = 1

@@ -9,20 +9,21 @@ from datasets.paderborn import Paderborn
 from datasets.phm import PHM
 from datasets.uored_vafcls import UORED_VAFCLS
 from experimenter_kfold import experimenter as kfold
-from experimenter_cross_dataset import experimenter as cross_dataset
-from experimenter_pretrain import experimenter as transfer_learning
+# from experimenter_cross_dataset import experimenter as cross_dataset
+# from experimenter_pretrain import experimenter as transfer_learning
 from datetime import datetime
 import time
 
 from utils.show_info import show_title
 from utils.save_output import ConsoleOutputToFile
 
-debug = False
+debug = True
 
 datasets = [
-    PHM(cache_file = "phm_motor_tr.npy"),
-    PHM(cache_file = "phm_gearbox_tr.npy"),
-    PHM(cache_file = "phm_leftaxlebox_tr.npy"),
+    PHM(cache_file = "phm_18ch_tr.npy"),
+    # PHM(cache_file = "phm_motor_tr.npy"),
+    # PHM(cache_file = "phm_gearbox_tr.npy"),
+    # PHM(cache_file = "phm_leftaxlebox_tr.npy"),
 # '''
 ]
 '''
@@ -36,10 +37,10 @@ datasets = [
 ]
 #'''
 
-kfold_repetitions = 1 if debug else 3
-epochs = 5 if debug else 100
+kfold_repetitions = 1 if debug else 5
+epochs = 5 if debug else 200
 verbose = 2 if debug else 0
-from estimators.cnn1d import Contructor
+from estimators.cnn1d_phm import Contructor
 clfmaker = Contructor(epochs=epochs, verbose=verbose)
 
 def experimenter():

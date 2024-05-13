@@ -48,13 +48,13 @@ def kfold(datasets, clfmaker, repetitions=3):
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
 debug = True
-repetitions=1
+repetitions=3
 '''
 from estimators.randomforest import RandomForest
 clf = RandomForest(1000, 25)
 '''
 from estimators.cnn1d_phm import Contructor
-epochs = 100
+epochs = 200
 verbose = 2
 clfmaker = Contructor(epochs=epochs, verbose=verbose)
 # '''
