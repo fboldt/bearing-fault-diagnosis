@@ -1,4 +1,4 @@
-from datasets.cwru import CWRU
+from datasets.cwru48 import CWRU48k
 from datasets.hust import Hust
 from datasets.mfpt import MFPT
 from datasets.ottawa import Ottawa
@@ -11,6 +11,7 @@ from collections.abc import Iterable
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import StratifiedGroupKFold
 
+from estimators.estimator_factory import RandomForestEstimator, CNN1DEstimator
 
 def kfold(datasets, clfmaker, repetitions=3):
     total = []
@@ -47,7 +48,6 @@ def kfold(datasets, clfmaker, repetitions=3):
 
 debug = True
 
-from estimators.estimator_factory import RandomForestEstimator, CNN1DEstimator
 
 clfmaker = RandomForestEstimator(n_estimators=1000, max_features=25)
 # clfmaker = CNN1DEstimator(epochs=100, verbose=0)
@@ -59,14 +59,14 @@ datasets = [
     # Hust(cache_file = "hust_dbg.npy"),
     # UORED_VAFCLS(cache_file = "uored_dbg.npy"),
     # MFPT(cache_file = "mfpt_all.npy"),
-    # CWRU(cache_file = "cwru_all_de.npy"),
+    # CWRU48k(cache_file = "cwru_all_de.npy"),
     PHM(cache_file = "phm_motor_tr.npy"),
     # PHM(cache_file = "phm_gearbox_tr.npy"),
     # PHM(cache_file = "pzzhm_leftaxlebox_tr.npy"),
     # PHM(cache_file = "phm_18ch_tr100.npy"),
     # PHM(cache_file = "phm_18ch_tr.npy"),
 ] if debug else [
-    CWRU(config='all'),
+    CWRU48k(config='all'),
     Hust(config='all'),
     MFPT(config='all'),
     Ottawa(config='all'),
