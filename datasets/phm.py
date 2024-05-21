@@ -118,6 +118,7 @@ class PHM():
 
     def __init__(self, sample_size=64000, n_channels=None, acquisition_maxsize=None, 
                  config='all_tr', cache_file=None):
+        self.sample_rate = 64000
         self.n_channels = n_channels
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize

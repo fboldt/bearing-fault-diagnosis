@@ -107,6 +107,7 @@ class Paderborn():
         return f"Paderborn ({self.config})"
 
     def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, config="all"):
+        self.sample_rate = 64000 # Hz
         self.n_channels = n_channels
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize
