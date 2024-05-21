@@ -11,6 +11,7 @@ from collections.abc import Iterable
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import StratifiedGroupKFold
 
+
 def kfold(datasets, clfmaker, repetitions=3):
     total = []
     if isinstance(datasets, Iterable):
@@ -26,6 +27,7 @@ def kfold(datasets, clfmaker, repetitions=3):
         print(f"{i+1}/{repetitions}: ")
         accuracies = []
         kf = StratifiedGroupKFold(n_splits=n_folds)
+        print("X.shape", X.shape)
         for train_index, test_index in kf.split(X, y, groups):
             Xtr, ytr = X[train_index], y[train_index]
             Xte, yte = X[test_index], y[test_index]
@@ -45,19 +47,19 @@ def kfold(datasets, clfmaker, repetitions=3):
 
 debug = True
 
-from estimators.randomforest import RandomForestConstructor
-clfmaker = RandomForestConstructor(n_estimators=1000, max_features=25)
+from estimators.estimator_factory import RandomForestEstimator, CNN1DEstimator
 
-'''
-from estimators.cnn1d import CNN1DContructor
-epochs = 100
-verbose = 0
-clfmaker = CNN1DContructor(epochs=epochs, verbose=verbose)
-'''
+clfmaker = RandomForestEstimator(n_estimators=1000, max_features=25)
+# clfmaker = CNN1DEstimator(epochs=100, verbose=0)
+
 
 datasets = [
+    # Paderborn(cache_file = "paderborn_dbg.npy"),
+    # Ottawa(cache_file = "ottawa_all.npy"),
+    # Hust(cache_file = "hust_dbg.npy"),
+    # UORED_VAFCLS(cache_file = "uored_dbg.npy"),
+    # MFPT(cache_file = "mfpt_all.npy"),
     # CWRU(cache_file = "cwru_all_de.npy"),
-    # PHM(cache_file = "phm_all_tr.npy"),
     PHM(cache_file = "phm_motor_tr.npy"),
     # PHM(cache_file = "phm_gearbox_tr.npy"),
     # PHM(cache_file = "pzzhm_leftaxlebox_tr.npy"),
@@ -72,7 +74,7 @@ datasets = [
     UORED_VAFCLS(config='all'),
 ]
 
-def experimenter(datasets=datasets, clfmaker=clfmaker, repetitions=3):
+def experimenter(datasets=datasets, clfmaker = clfmaker.get_estimator(), repetitions=3):
     kfold(datasets, clfmaker=clfmaker, repetitions=repetitions)
 
 if __name__ == "__main__":
