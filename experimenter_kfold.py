@@ -1,4 +1,5 @@
 from datasets.phm import PHM
+from datasets.cwru import CWRU
 from utils.train_estimator import train_estimator
 from utils.get_acquisitions import get_acquisitions
 from collections.abc import Iterable
@@ -56,7 +57,8 @@ clfmaker = Constructor()
 # '''
 
 datasets = [
-    PHM(cache_file = "phm_18ch_tr.npy")
+    # PHM(cache_file = "phm_18ch_tr.npy")
+    CWRU(cache_file="cwru_reduced.npy")
 ]
 
 def experimenter(datasets=datasets, clfmaker=clfmaker, repetitions=3):
