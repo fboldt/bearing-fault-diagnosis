@@ -37,7 +37,6 @@ def kfold(datasets, clfmaker, repetitions=3):
             #'''
             ypr = clf.predict(Xte)
             accuracies.append(accuracy_score(yte, ypr))
-            print(clf)
             print(f"fold {len(accuracies)}/{n_folds} accuracy: {accuracies[-1]}")
             labels = list(set(yte))
             print(f" {labels}")
@@ -45,6 +44,7 @@ def kfold(datasets, clfmaker, repetitions=3):
         mean_accuracy = sum(accuracies)/len(accuracies)
         print(f"mean accuracy: {mean_accuracy}")
         total.append(mean_accuracy)
+    print(clf)
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
 debug = True

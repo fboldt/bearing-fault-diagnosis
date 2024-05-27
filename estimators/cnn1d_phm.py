@@ -84,7 +84,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
     def make_model(self, input_shape, num_classes):
         inputs = Input(shape=input_shape)
         x = self.make_feature_layers(inputs)
-        x = layers.Dropout(0.35)(x)
+        x = layers.Dropout(0.15)(x)
         x = layers.Dense(num_classes)(x)
         outputs = layers.Activation('softmax')(x)
         self.model = Model(inputs, outputs)
