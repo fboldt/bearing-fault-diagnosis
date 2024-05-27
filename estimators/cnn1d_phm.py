@@ -56,6 +56,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         ]
     
     def make_feature_layers(self, x):
+        x = layers.BatchNormalization(axis=2)(x)
         filters = [2**i for i in range(5,7)]
         kernel_size = 128
         kernels = [kernel_size for _ in range(len(filters))]
@@ -69,7 +70,9 @@ class CNN1D(BaseEstimator, ClassifierMixin):
             start, end, n_faults = sources[source]
             f = x
             for (filter, kernel) in zip(filters, kernels):
-                f = layers.Conv1D(filter, kernel, strides=int((kernel_size//2)**0.5)+1, activation='relu')(f[:,:,start:end])
+                f = layers.Conv1D(filter, kernel, 
+                                  strides=int((kernel_size//2)**0.5)+1, 
+                                  activation='relu')(f[:,:,start:end])
             f = layers.LayerNormalization()(f)
             f = layers.GlobalAveragePooling1D()(f)
             f = layers.Dense(n_faults, activation='tanh')(f)

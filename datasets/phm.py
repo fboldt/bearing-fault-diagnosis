@@ -209,7 +209,7 @@ if __name__ == "__main__":
     config = "18ch_tr" # "motor_tr" # "leftaxlebox_tr" # "gearbox_tr" # "all_tr" # 
     cache_name = f"phm_{config}.npy"
     dataset = PHM(config=config, sample_size=64000, acquisition_maxsize=None)
-    # '''
+    '''
     dataset.load_acquisitions()
     dataset.save_cache(cache_name)
     '''

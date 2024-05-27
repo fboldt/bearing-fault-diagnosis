@@ -5,16 +5,16 @@ from sklearn.metrics import accuracy_score
 import csv
 
 from estimators.cnn1d_phm import Contructor
-epochs = 80
+epochs = 100
 verbose = 0
 basename = "phm_18ch" # "phm_leftaxlebox" # "phm_gearbox" # "phm_motor" # 
-n = 1
 checkpoint = f"{basename}.keras"
 clfmaker = Contructor(epochs=epochs, checkpoint=checkpoint, verbose=verbose)
 dataset_tr = PHM(cache_file = f"{basename}_tr.npy")
 dataset_te = PHM(cache_file = f"{basename}_te.npy")
 
-def kfold(clf, dataset):
+def kfold(clfmaker, dataset):
+    clf = clfmaker.estimator()
     X, y, groups = dataset.get_acquisitions()
     scores = cross_validate(clf, X, y, groups=groups, 
                             cv=StratifiedGroupKFold(n_splits=3))
@@ -43,12 +43,12 @@ def test(clf, dataset, csvfile=None):
 
 if __name__ == "__main__":
     for i in range(5):
+        # '''
+        kfold(clfmaker, dataset_tr)
+        '''
         clf = clfmaker.estimator()
-    # '''
-        kfold(clf, dataset_tr)
-    '''
         train(clf, dataset_tr)
         print(clf)
         test(clf, dataset_tr)
         test(clf, dataset_te, f"{basename}{i}.csv")
-    # '''
+        # '''
