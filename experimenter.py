@@ -38,7 +38,7 @@ datasets = [
 #'''
 
 kfold_repetitions = 1 if debug else 5
-epochs = 5 if debug else 200
+epochs = 5 if debug else 50
 verbose = 2 if debug else 0
 from estimators.cnn1d_phm import Contructor
 clfmaker = Contructor(epochs=epochs, verbose=verbose)

@@ -37,7 +37,7 @@ def kfold(datasets, clfmaker, repetitions=3):
             #'''
             ypr = clf.predict(Xte)
             accuracies.append(accuracy_score(yte, ypr))
-            # print(clf)
+            print(clf)
             print(f"fold {len(accuracies)}/{n_folds} accuracy: {accuracies[-1]}")
             labels = list(set(yte))
             print(f" {labels}")
@@ -48,14 +48,14 @@ def kfold(datasets, clfmaker, repetitions=3):
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
 debug = True
-repetitions=3
 '''
 from estimators.randomforest import RandomForest
 clf = RandomForest(1000, 25)
 '''
 from estimators.cnn1d_phm import Contructor
-epochs = 200
-verbose = 2
+epochs = 50
+repetitions = 3
+verbose = 0
 clfmaker = Contructor(epochs=epochs, verbose=verbose)
 # '''
 

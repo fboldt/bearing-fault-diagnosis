@@ -1,0 +1,1306 @@
+  -------
+|  Kfold  |
+  -------
+PHM (18ch_tr)
+1/5: 
+Model: "model"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_1 (InputLayer)        [(None, 64000, 18)]          0         []                            
+ batch_normalization (Batch  (None, 64000, 18)            72        ['input_1[0][0]']             
+ Normalization)                                                                                   
+ tf.__operators__.getitem (  (None, 64000, 6)             0         ['batch_normalization[0][0]'] 
+ SlicingOpLambda)                                                                                 
+ tf.__operators__.getitem_2  (None, 64000, 3)             0         ['batch_normalization[0][0]'] 
+  (SlicingOpLambda)                                                                               
+ tf.__operators__.getitem_4  (None, 64000, 9)             0         ['batch_normalization[0][0]'] 
+  (SlicingOpLambda)                                                                               
+ conv1d (Conv1D)             (None, 7097, 16)             12304     ['tf.__operators__.getitem[0][
+                                                                    0]']                          
+ conv1d_2 (Conv1D)           (None, 7097, 16)             6160      ['tf.__operators__.getitem_2[0
+                                                                    ][0]']                        
+ conv1d_4 (Conv1D)           (None, 7097, 16)             18448     ['tf.__operators__.getitem_4[0
+                                                                    ][0]']                        
+ layer_normalization (Layer  (None, 7097, 16)             32        ['conv1d[0][0]']              
+ Normalization)                                                                                   
+ layer_normalization_2 (Lay  (None, 7097, 16)             32        ['conv1d_2[0][0]']            
+ erNormalization)                                                                                 
+ layer_normalization_4 (Lay  (None, 7097, 16)             32        ['conv1d_4[0][0]']            
+ erNormalization)                                                                                 
+ tf.__operators__.getitem_1  (None, 7097, 6)              0         ['layer_normalization[0][0]'] 
+  (SlicingOpLambda)                                                                               
+ tf.__operators__.getitem_3  (None, 7097, 3)              0         ['layer_normalization_2[0][0]'
+  (SlicingOpLambda)                                                 ]                             
+ tf.__operators__.getitem_5  (None, 7097, 7)              0         ['layer_normalization_4[0][0]'
+  (SlicingOpLambda)                                                 ]                             
+ conv1d_1 (Conv1D)           (None, 775, 32)              24608     ['tf.__operators__.getitem_1[0
+                                                                    ][0]']                        
+ conv1d_3 (Conv1D)           (None, 775, 32)              12320     ['tf.__operators__.getitem_3[0
+                                                                    ][0]']                        
+ conv1d_5 (Conv1D)           (None, 775, 32)              28704     ['tf.__operators__.getitem_5[0
+                                                                    ][0]']                        
+ layer_normalization_1 (Lay  (None, 775, 32)              64        ['conv1d_1[0][0]']            
+ erNormalization)                                                                                 
+ layer_normalization_3 (Lay  (None, 775, 32)              64        ['conv1d_3[0][0]']            
+ erNormalization)                                                                                 
+ layer_normalization_5 (Lay  (None, 775, 32)              64        ['conv1d_5[0][0]']            
+ erNormalization)                                                                                 
+ global_average_pooling1d (  (None, 32)                   0         ['layer_normalization_1[0][0]'
+ GlobalAveragePooling1D)                                            ]                             
+ global_average_pooling1d_1  (None, 32)                   0         ['layer_normalization_3[0][0]'
+  (GlobalAveragePooling1D)                                          ]                             
+ global_average_pooling1d_2  (None, 32)                   0         ['layer_normalization_5[0][0]'
+  (GlobalAveragePooling1D)                                          ]                             
+ dense (Dense)               (None, 8)                    264       ['global_average_pooling1d[0][
+                                                                    0]']                          
+ dense_1 (Dense)             (None, 4)                    132       ['global_average_pooling1d_1[0
+                                                                    ][0]']                        
+ dense_2 (Dense)             (None, 4)                    132       ['global_average_pooling1d_2[0
+                                                                    ][0]']                        
+ concatenate (Concatenate)   (None, 16)                   0         ['dense[0][0]',               
+                                                                     'dense_1[0][0]',             
+                                                                     'dense_2[0][0]']             
+ dropout (Dropout)           (None, 16)                   0         ['concatenate[0][0]']         
+ dense_3 (Dense)             (None, 17)                   289       ['dropout[0][0]']             
+ activation (Activation)     (None, 17)                   0         ['dense_3[0][0]']             
+==================================================================================================
+Total params: 103721 (405.16 KB)
+Trainable params: 103685 (405.02 KB)
+Non-trainable params: 36 (144.00 Byte)
+__________________________________________________________________________________________________
+None
+fold 1/3 accuracy: 0.8117647058823529
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+[[10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  2  0  0  8  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+Model: "model_1"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_2 (InputLayer)        [(None, 64000, 18)]          0         []                            
+ batch_normalization_1 (Bat  (None, 64000, 18)            72        ['input_2[0][0]']             
+ chNormalization)                                                                                 
+ tf.__operators__.getitem_6  (None, 64000, 6)             0         ['batch_normalization_1[0][0]'
+  (SlicingOpLambda)                                                 ]                             
+ tf.__operators__.getitem_8  (None, 64000, 3)             0         ['batch_normalization_1[0][0]'
+  (SlicingOpLambda)                                                 ]                             
+ tf.__operators__.getitem_1  (None, 64000, 9)             0         ['batch_normalization_1[0][0]'
+ 0 (SlicingOpLambda)                                                ]                             
+ conv1d_6 (Conv1D)           (None, 7097, 16)             12304     ['tf.__operators__.getitem_6[0
+                                                                    ][0]']                        
+ conv1d_8 (Conv1D)           (None, 7097, 16)             6160      ['tf.__operators__.getitem_8[0
+                                                                    ][0]']                        
+ conv1d_10 (Conv1D)          (None, 7097, 16)             18448     ['tf.__operators__.getitem_10[
+                                                                    0][0]']                       
+ layer_normalization_6 (Lay  (None, 7097, 16)             32        ['conv1d_6[0][0]']            
+ erNormalization)                                                                                 
+ layer_normalization_8 (Lay  (None, 7097, 16)             32        ['conv1d_8[0][0]']            
+ erNormalization)                                                                                 
+ layer_normalization_10 (La  (None, 7097, 16)             32        ['conv1d_10[0][0]']           
+ yerNormalization)                                                                                
+ tf.__operators__.getitem_7  (None, 7097, 6)              0         ['layer_normalization_6[0][0]'
+  (SlicingOpLambda)                                                 ]                             
+ tf.__operators__.getitem_9  (None, 7097, 3)              0         ['layer_normalization_8[0][0]'
+  (SlicingOpLambda)                                                 ]                             
+ tf.__operators__.getitem_1  (None, 7097, 7)              0         ['layer_normalization_10[0][0]
+ 1 (SlicingOpLambda)                                                ']                            
+ conv1d_7 (Conv1D)           (None, 775, 32)              24608     ['tf.__operators__.getitem_7[0
+                                                                    ][0]']                        
+ conv1d_9 (Conv1D)           (None, 775, 32)              12320     ['tf.__operators__.getitem_9[0
+                                                                    ][0]']                        
+ conv1d_11 (Conv1D)          (None, 775, 32)              28704     ['tf.__operators__.getitem_11[
+                                                                    0][0]']                       
+ layer_normalization_7 (Lay  (None, 775, 32)              64        ['conv1d_7[0][0]']            
+ erNormalization)                                                                                 
+ layer_normalization_9 (Lay  (None, 775, 32)              64        ['conv1d_9[0][0]']            
+ erNormalization)                                                                                 
+ layer_normalization_11 (La  (None, 775, 32)              64        ['conv1d_11[0][0]']           
+ yerNormalization)                                                                                
+ global_average_pooling1d_3  (None, 32)                   0         ['layer_normalization_7[0][0]'
+  (GlobalAveragePooling1D)                                          ]                             
+ global_average_pooling1d_4  (None, 32)                   0         ['layer_normalization_9[0][0]'
+  (GlobalAveragePooling1D)                                          ]                             
+ global_average_pooling1d_5  (None, 32)                   0         ['layer_normalization_11[0][0]
+  (GlobalAveragePooling1D)                                          ']                            
+ dense_4 (Dense)             (None, 8)                    264       ['global_average_pooling1d_3[0
+                                                                    ][0]']                        
+ dense_5 (Dense)             (None, 4)                    132       ['global_average_pooling1d_4[0
+                                                                    ][0]']                        
+ dense_6 (Dense)             (None, 4)                    132       ['global_average_pooling1d_5[0
+                                                                    ][0]']                        
+ concatenate_1 (Concatenate  (None, 16)                   0         ['dense_4[0][0]',             
+ )                                                                   'dense_5[0][0]',             
+                                                                     'dense_6[0][0]']             
+ dropout_1 (Dropout)         (None, 16)                   0         ['concatenate_1[0][0]']       
+ dense_7 (Dense)             (None, 17)                   289       ['dropout_1[0][0]']           
+ activation_1 (Activation)   (None, 17)                   0         ['dense_7[0][0]']             
+==================================================================================================
+Total params: 103721 (405.16 KB)
+Trainable params: 103685 (405.02 KB)
+Non-trainable params: 36 (144.00 Byte)
+__________________________________________________________________________________________________
+None
+fold 2/3 accuracy: 0.9411764705882353
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+[[10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+Model: "model_2"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_3 (InputLayer)        [(None, 64000, 18)]          0         []                            
+ batch_normalization_2 (Bat  (None, 64000, 18)            72        ['input_3[0][0]']             
+ chNormalization)                                                                                 
+ tf.__operators__.getitem_1  (None, 64000, 6)             0         ['batch_normalization_2[0][0]'
+ 2 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_1  (None, 64000, 3)             0         ['batch_normalization_2[0][0]'
+ 4 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_1  (None, 64000, 9)             0         ['batch_normalization_2[0][0]'
+ 6 (SlicingOpLambda)                                                ]                             
+ conv1d_12 (Conv1D)          (None, 7097, 16)             12304     ['tf.__operators__.getitem_12[
+                                                                    0][0]']                       
+ conv1d_14 (Conv1D)          (None, 7097, 16)             6160      ['tf.__operators__.getitem_14[
+                                                                    0][0]']                       
+ conv1d_16 (Conv1D)          (None, 7097, 16)             18448     ['tf.__operators__.getitem_16[
+                                                                    0][0]']                       
+ layer_normalization_12 (La  (None, 7097, 16)             32        ['conv1d_12[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_14 (La  (None, 7097, 16)             32        ['conv1d_14[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_16 (La  (None, 7097, 16)             32        ['conv1d_16[0][0]']           
+ yerNormalization)                                                                                
+ tf.__operators__.getitem_1  (None, 7097, 6)              0         ['layer_normalization_12[0][0]
+ 3 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_1  (None, 7097, 3)              0         ['layer_normalization_14[0][0]
+ 5 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_1  (None, 7097, 7)              0         ['layer_normalization_16[0][0]
+ 7 (SlicingOpLambda)                                                ']                            
+ conv1d_13 (Conv1D)          (None, 775, 32)              24608     ['tf.__operators__.getitem_13[
+                                                                    0][0]']                       
+ conv1d_15 (Conv1D)          (None, 775, 32)              12320     ['tf.__operators__.getitem_15[
+                                                                    0][0]']                       
+ conv1d_17 (Conv1D)          (None, 775, 32)              28704     ['tf.__operators__.getitem_17[
+                                                                    0][0]']                       
+ layer_normalization_13 (La  (None, 775, 32)              64        ['conv1d_13[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_15 (La  (None, 775, 32)              64        ['conv1d_15[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_17 (La  (None, 775, 32)              64        ['conv1d_17[0][0]']           
+ yerNormalization)                                                                                
+ global_average_pooling1d_6  (None, 32)                   0         ['layer_normalization_13[0][0]
+  (GlobalAveragePooling1D)                                          ']                            
+ global_average_pooling1d_7  (None, 32)                   0         ['layer_normalization_15[0][0]
+  (GlobalAveragePooling1D)                                          ']                            
+ global_average_pooling1d_8  (None, 32)                   0         ['layer_normalization_17[0][0]
+  (GlobalAveragePooling1D)                                          ']                            
+ dense_8 (Dense)             (None, 8)                    264       ['global_average_pooling1d_6[0
+                                                                    ][0]']                        
+ dense_9 (Dense)             (None, 4)                    132       ['global_average_pooling1d_7[0
+                                                                    ][0]']                        
+ dense_10 (Dense)            (None, 4)                    132       ['global_average_pooling1d_8[0
+                                                                    ][0]']                        
+ concatenate_2 (Concatenate  (None, 16)                   0         ['dense_8[0][0]',             
+ )                                                                   'dense_9[0][0]',             
+                                                                     'dense_10[0][0]']            
+ dropout_2 (Dropout)         (None, 16)                   0         ['concatenate_2[0][0]']       
+ dense_11 (Dense)            (None, 17)                   289       ['dropout_2[0][0]']           
+ activation_2 (Activation)   (None, 17)                   0         ['dense_11[0][0]']            
+==================================================================================================
+Total params: 103721 (405.16 KB)
+Trainable params: 103685 (405.02 KB)
+Non-trainable params: 36 (144.00 Byte)
+__________________________________________________________________________________________________
+None
+fold 3/3 accuracy: 1.0
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+[[10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+mean accuracy: 0.9176470588235294
+2/5: 
+Model: "model_3"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_4 (InputLayer)        [(None, 64000, 18)]          0         []                            
+ batch_normalization_3 (Bat  (None, 64000, 18)            72        ['input_4[0][0]']             
+ chNormalization)                                                                                 
+ tf.__operators__.getitem_1  (None, 64000, 6)             0         ['batch_normalization_3[0][0]'
+ 8 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_2  (None, 64000, 3)             0         ['batch_normalization_3[0][0]'
+ 0 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_2  (None, 64000, 9)             0         ['batch_normalization_3[0][0]'
+ 2 (SlicingOpLambda)                                                ]                             
+ conv1d_18 (Conv1D)          (None, 7097, 16)             12304     ['tf.__operators__.getitem_18[
+                                                                    0][0]']                       
+ conv1d_20 (Conv1D)          (None, 7097, 16)             6160      ['tf.__operators__.getitem_20[
+                                                                    0][0]']                       
+ conv1d_22 (Conv1D)          (None, 7097, 16)             18448     ['tf.__operators__.getitem_22[
+                                                                    0][0]']                       
+ layer_normalization_18 (La  (None, 7097, 16)             32        ['conv1d_18[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_20 (La  (None, 7097, 16)             32        ['conv1d_20[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_22 (La  (None, 7097, 16)             32        ['conv1d_22[0][0]']           
+ yerNormalization)                                                                                
+ tf.__operators__.getitem_1  (None, 7097, 6)              0         ['layer_normalization_18[0][0]
+ 9 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_2  (None, 7097, 3)              0         ['layer_normalization_20[0][0]
+ 1 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_2  (None, 7097, 7)              0         ['layer_normalization_22[0][0]
+ 3 (SlicingOpLambda)                                                ']                            
+ conv1d_19 (Conv1D)          (None, 775, 32)              24608     ['tf.__operators__.getitem_19[
+                                                                    0][0]']                       
+ conv1d_21 (Conv1D)          (None, 775, 32)              12320     ['tf.__operators__.getitem_21[
+                                                                    0][0]']                       
+ conv1d_23 (Conv1D)          (None, 775, 32)              28704     ['tf.__operators__.getitem_23[
+                                                                    0][0]']                       
+ layer_normalization_19 (La  (None, 775, 32)              64        ['conv1d_19[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_21 (La  (None, 775, 32)              64        ['conv1d_21[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_23 (La  (None, 775, 32)              64        ['conv1d_23[0][0]']           
+ yerNormalization)                                                                                
+ global_average_pooling1d_9  (None, 32)                   0         ['layer_normalization_19[0][0]
+  (GlobalAveragePooling1D)                                          ']                            
+ global_average_pooling1d_1  (None, 32)                   0         ['layer_normalization_21[0][0]
+ 0 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_1  (None, 32)                   0         ['layer_normalization_23[0][0]
+ 1 (GlobalAveragePooling1D)                                         ']                            
+ dense_12 (Dense)            (None, 8)                    264       ['global_average_pooling1d_9[0
+                                                                    ][0]']                        
+ dense_13 (Dense)            (None, 4)                    132       ['global_average_pooling1d_10[
+                                                                    0][0]']                       
+ dense_14 (Dense)            (None, 4)                    132       ['global_average_pooling1d_11[
+                                                                    0][0]']                       
+ concatenate_3 (Concatenate  (None, 16)                   0         ['dense_12[0][0]',            
+ )                                                                   'dense_13[0][0]',            
+                                                                     'dense_14[0][0]']            
+ dropout_3 (Dropout)         (None, 16)                   0         ['concatenate_3[0][0]']       
+ dense_15 (Dense)            (None, 17)                   289       ['dropout_3[0][0]']           
+ activation_3 (Activation)   (None, 17)                   0         ['dense_15[0][0]']            
+==================================================================================================
+Total params: 103721 (405.16 KB)
+Trainable params: 103685 (405.02 KB)
+Non-trainable params: 36 (144.00 Byte)
+__________________________________________________________________________________________________
+None
+fold 1/3 accuracy: 0.9764705882352941
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+[[10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  2  0  0  0  8  0  0  0  0]
+ [ 0  0  0  0  0  0  2  0  0  0  0  0  0  8  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+Model: "model_4"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_5 (InputLayer)        [(None, 64000, 18)]          0         []                            
+ batch_normalization_4 (Bat  (None, 64000, 18)            72        ['input_5[0][0]']             
+ chNormalization)                                                                                 
+ tf.__operators__.getitem_2  (None, 64000, 6)             0         ['batch_normalization_4[0][0]'
+ 4 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_2  (None, 64000, 3)             0         ['batch_normalization_4[0][0]'
+ 6 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_2  (None, 64000, 9)             0         ['batch_normalization_4[0][0]'
+ 8 (SlicingOpLambda)                                                ]                             
+ conv1d_24 (Conv1D)          (None, 7097, 16)             12304     ['tf.__operators__.getitem_24[
+                                                                    0][0]']                       
+ conv1d_26 (Conv1D)          (None, 7097, 16)             6160      ['tf.__operators__.getitem_26[
+                                                                    0][0]']                       
+ conv1d_28 (Conv1D)          (None, 7097, 16)             18448     ['tf.__operators__.getitem_28[
+                                                                    0][0]']                       
+ layer_normalization_24 (La  (None, 7097, 16)             32        ['conv1d_24[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_26 (La  (None, 7097, 16)             32        ['conv1d_26[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_28 (La  (None, 7097, 16)             32        ['conv1d_28[0][0]']           
+ yerNormalization)                                                                                
+ tf.__operators__.getitem_2  (None, 7097, 6)              0         ['layer_normalization_24[0][0]
+ 5 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_2  (None, 7097, 3)              0         ['layer_normalization_26[0][0]
+ 7 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_2  (None, 7097, 7)              0         ['layer_normalization_28[0][0]
+ 9 (SlicingOpLambda)                                                ']                            
+ conv1d_25 (Conv1D)          (None, 775, 32)              24608     ['tf.__operators__.getitem_25[
+                                                                    0][0]']                       
+ conv1d_27 (Conv1D)          (None, 775, 32)              12320     ['tf.__operators__.getitem_27[
+                                                                    0][0]']                       
+ conv1d_29 (Conv1D)          (None, 775, 32)              28704     ['tf.__operators__.getitem_29[
+                                                                    0][0]']                       
+ layer_normalization_25 (La  (None, 775, 32)              64        ['conv1d_25[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_27 (La  (None, 775, 32)              64        ['conv1d_27[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_29 (La  (None, 775, 32)              64        ['conv1d_29[0][0]']           
+ yerNormalization)                                                                                
+ global_average_pooling1d_1  (None, 32)                   0         ['layer_normalization_25[0][0]
+ 2 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_1  (None, 32)                   0         ['layer_normalization_27[0][0]
+ 3 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_1  (None, 32)                   0         ['layer_normalization_29[0][0]
+ 4 (GlobalAveragePooling1D)                                         ']                            
+ dense_16 (Dense)            (None, 8)                    264       ['global_average_pooling1d_12[
+                                                                    0][0]']                       
+ dense_17 (Dense)            (None, 4)                    132       ['global_average_pooling1d_13[
+                                                                    0][0]']                       
+ dense_18 (Dense)            (None, 4)                    132       ['global_average_pooling1d_14[
+                                                                    0][0]']                       
+ concatenate_4 (Concatenate  (None, 16)                   0         ['dense_16[0][0]',            
+ )                                                                   'dense_17[0][0]',            
+                                                                     'dense_18[0][0]']            
+ dropout_4 (Dropout)         (None, 16)                   0         ['concatenate_4[0][0]']       
+ dense_19 (Dense)            (None, 17)                   289       ['dropout_4[0][0]']           
+ activation_4 (Activation)   (None, 17)                   0         ['dense_19[0][0]']            
+==================================================================================================
+Total params: 103721 (405.16 KB)
+Trainable params: 103685 (405.02 KB)
+Non-trainable params: 36 (144.00 Byte)
+__________________________________________________________________________________________________
+None
+fold 2/3 accuracy: 0.9882352941176471
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+[[10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  1  0  9  0  0  0  0  0  0]
+ [ 0  0  1  0  0  0  0  0  0  0  0  9  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+Model: "model_5"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_6 (InputLayer)        [(None, 64000, 18)]          0         []                            
+ batch_normalization_5 (Bat  (None, 64000, 18)            72        ['input_6[0][0]']             
+ chNormalization)                                                                                 
+ tf.__operators__.getitem_3  (None, 64000, 6)             0         ['batch_normalization_5[0][0]'
+ 0 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_3  (None, 64000, 3)             0         ['batch_normalization_5[0][0]'
+ 2 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_3  (None, 64000, 9)             0         ['batch_normalization_5[0][0]'
+ 4 (SlicingOpLambda)                                                ]                             
+ conv1d_30 (Conv1D)          (None, 7097, 16)             12304     ['tf.__operators__.getitem_30[
+                                                                    0][0]']                       
+ conv1d_32 (Conv1D)          (None, 7097, 16)             6160      ['tf.__operators__.getitem_32[
+                                                                    0][0]']                       
+ conv1d_34 (Conv1D)          (None, 7097, 16)             18448     ['tf.__operators__.getitem_34[
+                                                                    0][0]']                       
+ layer_normalization_30 (La  (None, 7097, 16)             32        ['conv1d_30[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_32 (La  (None, 7097, 16)             32        ['conv1d_32[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_34 (La  (None, 7097, 16)             32        ['conv1d_34[0][0]']           
+ yerNormalization)                                                                                
+ tf.__operators__.getitem_3  (None, 7097, 6)              0         ['layer_normalization_30[0][0]
+ 1 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_3  (None, 7097, 3)              0         ['layer_normalization_32[0][0]
+ 3 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_3  (None, 7097, 7)              0         ['layer_normalization_34[0][0]
+ 5 (SlicingOpLambda)                                                ']                            
+ conv1d_31 (Conv1D)          (None, 775, 32)              24608     ['tf.__operators__.getitem_31[
+                                                                    0][0]']                       
+ conv1d_33 (Conv1D)          (None, 775, 32)              12320     ['tf.__operators__.getitem_33[
+                                                                    0][0]']                       
+ conv1d_35 (Conv1D)          (None, 775, 32)              28704     ['tf.__operators__.getitem_35[
+                                                                    0][0]']                       
+ layer_normalization_31 (La  (None, 775, 32)              64        ['conv1d_31[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_33 (La  (None, 775, 32)              64        ['conv1d_33[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_35 (La  (None, 775, 32)              64        ['conv1d_35[0][0]']           
+ yerNormalization)                                                                                
+ global_average_pooling1d_1  (None, 32)                   0         ['layer_normalization_31[0][0]
+ 5 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_1  (None, 32)                   0         ['layer_normalization_33[0][0]
+ 6 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_1  (None, 32)                   0         ['layer_normalization_35[0][0]
+ 7 (GlobalAveragePooling1D)                                         ']                            
+ dense_20 (Dense)            (None, 8)                    264       ['global_average_pooling1d_15[
+                                                                    0][0]']                       
+ dense_21 (Dense)            (None, 4)                    132       ['global_average_pooling1d_16[
+                                                                    0][0]']                       
+ dense_22 (Dense)            (None, 4)                    132       ['global_average_pooling1d_17[
+                                                                    0][0]']                       
+ concatenate_5 (Concatenate  (None, 16)                   0         ['dense_20[0][0]',            
+ )                                                                   'dense_21[0][0]',            
+                                                                     'dense_22[0][0]']            
+ dropout_5 (Dropout)         (None, 16)                   0         ['concatenate_5[0][0]']       
+ dense_23 (Dense)            (None, 17)                   289       ['dropout_5[0][0]']           
+ activation_5 (Activation)   (None, 17)                   0         ['dense_23[0][0]']            
+==================================================================================================
+Total params: 103721 (405.16 KB)
+Trainable params: 103685 (405.02 KB)
+Non-trainable params: 36 (144.00 Byte)
+__________________________________________________________________________________________________
+None
+fold 3/3 accuracy: 0.9529411764705882
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+[[10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  2  0  0  0  0  0  8  0  0  0  0]
+ [ 0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+mean accuracy: 0.9725490196078432
+3/5: 
+Model: "model_6"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_7 (InputLayer)        [(None, 64000, 18)]          0         []                            
+ batch_normalization_6 (Bat  (None, 64000, 18)            72        ['input_7[0][0]']             
+ chNormalization)                                                                                 
+ tf.__operators__.getitem_3  (None, 64000, 6)             0         ['batch_normalization_6[0][0]'
+ 6 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_3  (None, 64000, 3)             0         ['batch_normalization_6[0][0]'
+ 8 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_4  (None, 64000, 9)             0         ['batch_normalization_6[0][0]'
+ 0 (SlicingOpLambda)                                                ]                             
+ conv1d_36 (Conv1D)          (None, 7097, 16)             12304     ['tf.__operators__.getitem_36[
+                                                                    0][0]']                       
+ conv1d_38 (Conv1D)          (None, 7097, 16)             6160      ['tf.__operators__.getitem_38[
+                                                                    0][0]']                       
+ conv1d_40 (Conv1D)          (None, 7097, 16)             18448     ['tf.__operators__.getitem_40[
+                                                                    0][0]']                       
+ layer_normalization_36 (La  (None, 7097, 16)             32        ['conv1d_36[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_38 (La  (None, 7097, 16)             32        ['conv1d_38[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_40 (La  (None, 7097, 16)             32        ['conv1d_40[0][0]']           
+ yerNormalization)                                                                                
+ tf.__operators__.getitem_3  (None, 7097, 6)              0         ['layer_normalization_36[0][0]
+ 7 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_3  (None, 7097, 3)              0         ['layer_normalization_38[0][0]
+ 9 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_4  (None, 7097, 7)              0         ['layer_normalization_40[0][0]
+ 1 (SlicingOpLambda)                                                ']                            
+ conv1d_37 (Conv1D)          (None, 775, 32)              24608     ['tf.__operators__.getitem_37[
+                                                                    0][0]']                       
+ conv1d_39 (Conv1D)          (None, 775, 32)              12320     ['tf.__operators__.getitem_39[
+                                                                    0][0]']                       
+ conv1d_41 (Conv1D)          (None, 775, 32)              28704     ['tf.__operators__.getitem_41[
+                                                                    0][0]']                       
+ layer_normalization_37 (La  (None, 775, 32)              64        ['conv1d_37[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_39 (La  (None, 775, 32)              64        ['conv1d_39[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_41 (La  (None, 775, 32)              64        ['conv1d_41[0][0]']           
+ yerNormalization)                                                                                
+ global_average_pooling1d_1  (None, 32)                   0         ['layer_normalization_37[0][0]
+ 8 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_1  (None, 32)                   0         ['layer_normalization_39[0][0]
+ 9 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_2  (None, 32)                   0         ['layer_normalization_41[0][0]
+ 0 (GlobalAveragePooling1D)                                         ']                            
+ dense_24 (Dense)            (None, 8)                    264       ['global_average_pooling1d_18[
+                                                                    0][0]']                       
+ dense_25 (Dense)            (None, 4)                    132       ['global_average_pooling1d_19[
+                                                                    0][0]']                       
+ dense_26 (Dense)            (None, 4)                    132       ['global_average_pooling1d_20[
+                                                                    0][0]']                       
+ concatenate_6 (Concatenate  (None, 16)                   0         ['dense_24[0][0]',            
+ )                                                                   'dense_25[0][0]',            
+                                                                     'dense_26[0][0]']            
+ dropout_6 (Dropout)         (None, 16)                   0         ['concatenate_6[0][0]']       
+ dense_27 (Dense)            (None, 17)                   289       ['dropout_6[0][0]']           
+ activation_6 (Activation)   (None, 17)                   0         ['dense_27[0][0]']            
+==================================================================================================
+Total params: 103721 (405.16 KB)
+Trainable params: 103685 (405.02 KB)
+Non-trainable params: 36 (144.00 Byte)
+__________________________________________________________________________________________________
+None
+fold 1/3 accuracy: 0.8176470588235294
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+[[10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  8  0  0  0  0  2  0  0  0]
+ [ 0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  3  0  0  2  0  5  0  0  0]
+ [ 0  0  0  0  0  0  0  0  8  0  0  0  0  2  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  7  3]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+Model: "model_7"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_8 (InputLayer)        [(None, 64000, 18)]          0         []                            
+ batch_normalization_7 (Bat  (None, 64000, 18)            72        ['input_8[0][0]']             
+ chNormalization)                                                                                 
+ tf.__operators__.getitem_4  (None, 64000, 6)             0         ['batch_normalization_7[0][0]'
+ 2 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_4  (None, 64000, 3)             0         ['batch_normalization_7[0][0]'
+ 4 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_4  (None, 64000, 9)             0         ['batch_normalization_7[0][0]'
+ 6 (SlicingOpLambda)                                                ]                             
+ conv1d_42 (Conv1D)          (None, 7097, 16)             12304     ['tf.__operators__.getitem_42[
+                                                                    0][0]']                       
+ conv1d_44 (Conv1D)          (None, 7097, 16)             6160      ['tf.__operators__.getitem_44[
+                                                                    0][0]']                       
+ conv1d_46 (Conv1D)          (None, 7097, 16)             18448     ['tf.__operators__.getitem_46[
+                                                                    0][0]']                       
+ layer_normalization_42 (La  (None, 7097, 16)             32        ['conv1d_42[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_44 (La  (None, 7097, 16)             32        ['conv1d_44[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_46 (La  (None, 7097, 16)             32        ['conv1d_46[0][0]']           
+ yerNormalization)                                                                                
+ tf.__operators__.getitem_4  (None, 7097, 6)              0         ['layer_normalization_42[0][0]
+ 3 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_4  (None, 7097, 3)              0         ['layer_normalization_44[0][0]
+ 5 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_4  (None, 7097, 7)              0         ['layer_normalization_46[0][0]
+ 7 (SlicingOpLambda)                                                ']                            
+ conv1d_43 (Conv1D)          (None, 775, 32)              24608     ['tf.__operators__.getitem_43[
+                                                                    0][0]']                       
+ conv1d_45 (Conv1D)          (None, 775, 32)              12320     ['tf.__operators__.getitem_45[
+                                                                    0][0]']                       
+ conv1d_47 (Conv1D)          (None, 775, 32)              28704     ['tf.__operators__.getitem_47[
+                                                                    0][0]']                       
+ layer_normalization_43 (La  (None, 775, 32)              64        ['conv1d_43[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_45 (La  (None, 775, 32)              64        ['conv1d_45[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_47 (La  (None, 775, 32)              64        ['conv1d_47[0][0]']           
+ yerNormalization)                                                                                
+ global_average_pooling1d_2  (None, 32)                   0         ['layer_normalization_43[0][0]
+ 1 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_2  (None, 32)                   0         ['layer_normalization_45[0][0]
+ 2 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_2  (None, 32)                   0         ['layer_normalization_47[0][0]
+ 3 (GlobalAveragePooling1D)                                         ']                            
+ dense_28 (Dense)            (None, 8)                    264       ['global_average_pooling1d_21[
+                                                                    0][0]']                       
+ dense_29 (Dense)            (None, 4)                    132       ['global_average_pooling1d_22[
+                                                                    0][0]']                       
+ dense_30 (Dense)            (None, 4)                    132       ['global_average_pooling1d_23[
+                                                                    0][0]']                       
+ concatenate_7 (Concatenate  (None, 16)                   0         ['dense_28[0][0]',            
+ )                                                                   'dense_29[0][0]',            
+                                                                     'dense_30[0][0]']            
+ dropout_7 (Dropout)         (None, 16)                   0         ['concatenate_7[0][0]']       
+ dense_31 (Dense)            (None, 17)                   289       ['dropout_7[0][0]']           
+ activation_7 (Activation)   (None, 17)                   0         ['dense_31[0][0]']            
+==================================================================================================
+Total params: 103721 (405.16 KB)
+Trainable params: 103685 (405.02 KB)
+Non-trainable params: 36 (144.00 Byte)
+__________________________________________________________________________________________________
+None
+fold 2/3 accuracy: 1.0
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+[[10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+Model: "model_8"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_9 (InputLayer)        [(None, 64000, 18)]          0         []                            
+ batch_normalization_8 (Bat  (None, 64000, 18)            72        ['input_9[0][0]']             
+ chNormalization)                                                                                 
+ tf.__operators__.getitem_4  (None, 64000, 6)             0         ['batch_normalization_8[0][0]'
+ 8 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_5  (None, 64000, 3)             0         ['batch_normalization_8[0][0]'
+ 0 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_5  (None, 64000, 9)             0         ['batch_normalization_8[0][0]'
+ 2 (SlicingOpLambda)                                                ]                             
+ conv1d_48 (Conv1D)          (None, 7097, 16)             12304     ['tf.__operators__.getitem_48[
+                                                                    0][0]']                       
+ conv1d_50 (Conv1D)          (None, 7097, 16)             6160      ['tf.__operators__.getitem_50[
+                                                                    0][0]']                       
+ conv1d_52 (Conv1D)          (None, 7097, 16)             18448     ['tf.__operators__.getitem_52[
+                                                                    0][0]']                       
+ layer_normalization_48 (La  (None, 7097, 16)             32        ['conv1d_48[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_50 (La  (None, 7097, 16)             32        ['conv1d_50[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_52 (La  (None, 7097, 16)             32        ['conv1d_52[0][0]']           
+ yerNormalization)                                                                                
+ tf.__operators__.getitem_4  (None, 7097, 6)              0         ['layer_normalization_48[0][0]
+ 9 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_5  (None, 7097, 3)              0         ['layer_normalization_50[0][0]
+ 1 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_5  (None, 7097, 7)              0         ['layer_normalization_52[0][0]
+ 3 (SlicingOpLambda)                                                ']                            
+ conv1d_49 (Conv1D)          (None, 775, 32)              24608     ['tf.__operators__.getitem_49[
+                                                                    0][0]']                       
+ conv1d_51 (Conv1D)          (None, 775, 32)              12320     ['tf.__operators__.getitem_51[
+                                                                    0][0]']                       
+ conv1d_53 (Conv1D)          (None, 775, 32)              28704     ['tf.__operators__.getitem_53[
+                                                                    0][0]']                       
+ layer_normalization_49 (La  (None, 775, 32)              64        ['conv1d_49[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_51 (La  (None, 775, 32)              64        ['conv1d_51[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_53 (La  (None, 775, 32)              64        ['conv1d_53[0][0]']           
+ yerNormalization)                                                                                
+ global_average_pooling1d_2  (None, 32)                   0         ['layer_normalization_49[0][0]
+ 4 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_2  (None, 32)                   0         ['layer_normalization_51[0][0]
+ 5 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_2  (None, 32)                   0         ['layer_normalization_53[0][0]
+ 6 (GlobalAveragePooling1D)                                         ']                            
+ dense_32 (Dense)            (None, 8)                    264       ['global_average_pooling1d_24[
+                                                                    0][0]']                       
+ dense_33 (Dense)            (None, 4)                    132       ['global_average_pooling1d_25[
+                                                                    0][0]']                       
+ dense_34 (Dense)            (None, 4)                    132       ['global_average_pooling1d_26[
+                                                                    0][0]']                       
+ concatenate_8 (Concatenate  (None, 16)                   0         ['dense_32[0][0]',            
+ )                                                                   'dense_33[0][0]',            
+                                                                     'dense_34[0][0]']            
+ dropout_8 (Dropout)         (None, 16)                   0         ['concatenate_8[0][0]']       
+ dense_35 (Dense)            (None, 17)                   289       ['dropout_8[0][0]']           
+ activation_8 (Activation)   (None, 17)                   0         ['dense_35[0][0]']            
+==================================================================================================
+Total params: 103721 (405.16 KB)
+Trainable params: 103685 (405.02 KB)
+Non-trainable params: 36 (144.00 Byte)
+__________________________________________________________________________________________________
+None
+fold 3/3 accuracy: 1.0
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+[[10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+mean accuracy: 0.9392156862745097
+4/5: 
+Model: "model_9"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_10 (InputLayer)       [(None, 64000, 18)]          0         []                            
+ batch_normalization_9 (Bat  (None, 64000, 18)            72        ['input_10[0][0]']            
+ chNormalization)                                                                                 
+ tf.__operators__.getitem_5  (None, 64000, 6)             0         ['batch_normalization_9[0][0]'
+ 4 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_5  (None, 64000, 3)             0         ['batch_normalization_9[0][0]'
+ 6 (SlicingOpLambda)                                                ]                             
+ tf.__operators__.getitem_5  (None, 64000, 9)             0         ['batch_normalization_9[0][0]'
+ 8 (SlicingOpLambda)                                                ]                             
+ conv1d_54 (Conv1D)          (None, 7097, 16)             12304     ['tf.__operators__.getitem_54[
+                                                                    0][0]']                       
+ conv1d_56 (Conv1D)          (None, 7097, 16)             6160      ['tf.__operators__.getitem_56[
+                                                                    0][0]']                       
+ conv1d_58 (Conv1D)          (None, 7097, 16)             18448     ['tf.__operators__.getitem_58[
+                                                                    0][0]']                       
+ layer_normalization_54 (La  (None, 7097, 16)             32        ['conv1d_54[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_56 (La  (None, 7097, 16)             32        ['conv1d_56[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_58 (La  (None, 7097, 16)             32        ['conv1d_58[0][0]']           
+ yerNormalization)                                                                                
+ tf.__operators__.getitem_5  (None, 7097, 6)              0         ['layer_normalization_54[0][0]
+ 5 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_5  (None, 7097, 3)              0         ['layer_normalization_56[0][0]
+ 7 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_5  (None, 7097, 7)              0         ['layer_normalization_58[0][0]
+ 9 (SlicingOpLambda)                                                ']                            
+ conv1d_55 (Conv1D)          (None, 775, 32)              24608     ['tf.__operators__.getitem_55[
+                                                                    0][0]']                       
+ conv1d_57 (Conv1D)          (None, 775, 32)              12320     ['tf.__operators__.getitem_57[
+                                                                    0][0]']                       
+ conv1d_59 (Conv1D)          (None, 775, 32)              28704     ['tf.__operators__.getitem_59[
+                                                                    0][0]']                       
+ layer_normalization_55 (La  (None, 775, 32)              64        ['conv1d_55[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_57 (La  (None, 775, 32)              64        ['conv1d_57[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_59 (La  (None, 775, 32)              64        ['conv1d_59[0][0]']           
+ yerNormalization)                                                                                
+ global_average_pooling1d_2  (None, 32)                   0         ['layer_normalization_55[0][0]
+ 7 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_2  (None, 32)                   0         ['layer_normalization_57[0][0]
+ 8 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_2  (None, 32)                   0         ['layer_normalization_59[0][0]
+ 9 (GlobalAveragePooling1D)                                         ']                            
+ dense_36 (Dense)            (None, 8)                    264       ['global_average_pooling1d_27[
+                                                                    0][0]']                       
+ dense_37 (Dense)            (None, 4)                    132       ['global_average_pooling1d_28[
+                                                                    0][0]']                       
+ dense_38 (Dense)            (None, 4)                    132       ['global_average_pooling1d_29[
+                                                                    0][0]']                       
+ concatenate_9 (Concatenate  (None, 16)                   0         ['dense_36[0][0]',            
+ )                                                                   'dense_37[0][0]',            
+                                                                     'dense_38[0][0]']            
+ dropout_9 (Dropout)         (None, 16)                   0         ['concatenate_9[0][0]']       
+ dense_39 (Dense)            (None, 17)                   289       ['dropout_9[0][0]']           
+ activation_9 (Activation)   (None, 17)                   0         ['dense_39[0][0]']            
+==================================================================================================
+Total params: 103721 (405.16 KB)
+Trainable params: 103685 (405.02 KB)
+Non-trainable params: 36 (144.00 Byte)
+__________________________________________________________________________________________________
+None
+fold 1/3 accuracy: 0.711764705882353
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+[[10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  3  7  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  9  1  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+Model: "model_10"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_11 (InputLayer)       [(None, 64000, 18)]          0         []                            
+ batch_normalization_10 (Ba  (None, 64000, 18)            72        ['input_11[0][0]']            
+ tchNormalization)                                                                                
+ tf.__operators__.getitem_6  (None, 64000, 6)             0         ['batch_normalization_10[0][0]
+ 0 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_6  (None, 64000, 3)             0         ['batch_normalization_10[0][0]
+ 2 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_6  (None, 64000, 9)             0         ['batch_normalization_10[0][0]
+ 4 (SlicingOpLambda)                                                ']                            
+ conv1d_60 (Conv1D)          (None, 7097, 16)             12304     ['tf.__operators__.getitem_60[
+                                                                    0][0]']                       
+ conv1d_62 (Conv1D)          (None, 7097, 16)             6160      ['tf.__operators__.getitem_62[
+                                                                    0][0]']                       
+ conv1d_64 (Conv1D)          (None, 7097, 16)             18448     ['tf.__operators__.getitem_64[
+                                                                    0][0]']                       
+ layer_normalization_60 (La  (None, 7097, 16)             32        ['conv1d_60[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_62 (La  (None, 7097, 16)             32        ['conv1d_62[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_64 (La  (None, 7097, 16)             32        ['conv1d_64[0][0]']           
+ yerNormalization)                                                                                
+ tf.__operators__.getitem_6  (None, 7097, 6)              0         ['layer_normalization_60[0][0]
+ 1 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_6  (None, 7097, 3)              0         ['layer_normalization_62[0][0]
+ 3 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_6  (None, 7097, 7)              0         ['layer_normalization_64[0][0]
+ 5 (SlicingOpLambda)                                                ']                            
+ conv1d_61 (Conv1D)          (None, 775, 32)              24608     ['tf.__operators__.getitem_61[
+                                                                    0][0]']                       
+ conv1d_63 (Conv1D)          (None, 775, 32)              12320     ['tf.__operators__.getitem_63[
+                                                                    0][0]']                       
+ conv1d_65 (Conv1D)          (None, 775, 32)              28704     ['tf.__operators__.getitem_65[
+                                                                    0][0]']                       
+ layer_normalization_61 (La  (None, 775, 32)              64        ['conv1d_61[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_63 (La  (None, 775, 32)              64        ['conv1d_63[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_65 (La  (None, 775, 32)              64        ['conv1d_65[0][0]']           
+ yerNormalization)                                                                                
+ global_average_pooling1d_3  (None, 32)                   0         ['layer_normalization_61[0][0]
+ 0 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_3  (None, 32)                   0         ['layer_normalization_63[0][0]
+ 1 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_3  (None, 32)                   0         ['layer_normalization_65[0][0]
+ 2 (GlobalAveragePooling1D)                                         ']                            
+ dense_40 (Dense)            (None, 8)                    264       ['global_average_pooling1d_30[
+                                                                    0][0]']                       
+ dense_41 (Dense)            (None, 4)                    132       ['global_average_pooling1d_31[
+                                                                    0][0]']                       
+ dense_42 (Dense)            (None, 4)                    132       ['global_average_pooling1d_32[
+                                                                    0][0]']                       
+ concatenate_10 (Concatenat  (None, 16)                   0         ['dense_40[0][0]',            
+ e)                                                                  'dense_41[0][0]',            
+                                                                     'dense_42[0][0]']            
+ dropout_10 (Dropout)        (None, 16)                   0         ['concatenate_10[0][0]']      
+ dense_43 (Dense)            (None, 17)                   289       ['dropout_10[0][0]']          
+ activation_10 (Activation)  (None, 17)                   0         ['dense_43[0][0]']            
+==================================================================================================
+Total params: 103721 (405.16 KB)
+Trainable params: 103685 (405.02 KB)
+Non-trainable params: 36 (144.00 Byte)
+__________________________________________________________________________________________________
+None
+fold 2/3 accuracy: 0.8235294117647058
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+[[10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0]
+ [ 0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0]
+ [ 0  1  0  0  0  0  0  0  0  0  0  9  0  0  0  0  0]]
+Model: "model_11"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_12 (InputLayer)       [(None, 64000, 18)]          0         []                            
+ batch_normalization_11 (Ba  (None, 64000, 18)            72        ['input_12[0][0]']            
+ tchNormalization)                                                                                
+ tf.__operators__.getitem_6  (None, 64000, 6)             0         ['batch_normalization_11[0][0]
+ 6 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_6  (None, 64000, 3)             0         ['batch_normalization_11[0][0]
+ 8 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_7  (None, 64000, 9)             0         ['batch_normalization_11[0][0]
+ 0 (SlicingOpLambda)                                                ']                            
+ conv1d_66 (Conv1D)          (None, 7097, 16)             12304     ['tf.__operators__.getitem_66[
+                                                                    0][0]']                       
+ conv1d_68 (Conv1D)          (None, 7097, 16)             6160      ['tf.__operators__.getitem_68[
+                                                                    0][0]']                       
+ conv1d_70 (Conv1D)          (None, 7097, 16)             18448     ['tf.__operators__.getitem_70[
+                                                                    0][0]']                       
+ layer_normalization_66 (La  (None, 7097, 16)             32        ['conv1d_66[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_68 (La  (None, 7097, 16)             32        ['conv1d_68[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_70 (La  (None, 7097, 16)             32        ['conv1d_70[0][0]']           
+ yerNormalization)                                                                                
+ tf.__operators__.getitem_6  (None, 7097, 6)              0         ['layer_normalization_66[0][0]
+ 7 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_6  (None, 7097, 3)              0         ['layer_normalization_68[0][0]
+ 9 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_7  (None, 7097, 7)              0         ['layer_normalization_70[0][0]
+ 1 (SlicingOpLambda)                                                ']                            
+ conv1d_67 (Conv1D)          (None, 775, 32)              24608     ['tf.__operators__.getitem_67[
+                                                                    0][0]']                       
+ conv1d_69 (Conv1D)          (None, 775, 32)              12320     ['tf.__operators__.getitem_69[
+                                                                    0][0]']                       
+ conv1d_71 (Conv1D)          (None, 775, 32)              28704     ['tf.__operators__.getitem_71[
+                                                                    0][0]']                       
+ layer_normalization_67 (La  (None, 775, 32)              64        ['conv1d_67[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_69 (La  (None, 775, 32)              64        ['conv1d_69[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_71 (La  (None, 775, 32)              64        ['conv1d_71[0][0]']           
+ yerNormalization)                                                                                
+ global_average_pooling1d_3  (None, 32)                   0         ['layer_normalization_67[0][0]
+ 3 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_3  (None, 32)                   0         ['layer_normalization_69[0][0]
+ 4 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_3  (None, 32)                   0         ['layer_normalization_71[0][0]
+ 5 (GlobalAveragePooling1D)                                         ']                            
+ dense_44 (Dense)            (None, 8)                    264       ['global_average_pooling1d_33[
+                                                                    0][0]']                       
+ dense_45 (Dense)            (None, 4)                    132       ['global_average_pooling1d_34[
+                                                                    0][0]']                       
+ dense_46 (Dense)            (None, 4)                    132       ['global_average_pooling1d_35[
+                                                                    0][0]']                       
+ concatenate_11 (Concatenat  (None, 16)                   0         ['dense_44[0][0]',            
+ e)                                                                  'dense_45[0][0]',            
+                                                                     'dense_46[0][0]']            
+ dropout_11 (Dropout)        (None, 16)                   0         ['concatenate_11[0][0]']      
+ dense_47 (Dense)            (None, 17)                   289       ['dropout_11[0][0]']          
+ activation_11 (Activation)  (None, 17)                   0         ['dense_47[0][0]']            
+==================================================================================================
+Total params: 103721 (405.16 KB)
+Trainable params: 103685 (405.02 KB)
+Non-trainable params: 36 (144.00 Byte)
+__________________________________________________________________________________________________
+None
+fold 3/3 accuracy: 1.0
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+[[10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+mean accuracy: 0.8450980392156863
+5/5: 
+Model: "model_12"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_13 (InputLayer)       [(None, 64000, 18)]          0         []                            
+ batch_normalization_12 (Ba  (None, 64000, 18)            72        ['input_13[0][0]']            
+ tchNormalization)                                                                                
+ tf.__operators__.getitem_7  (None, 64000, 6)             0         ['batch_normalization_12[0][0]
+ 2 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_7  (None, 64000, 3)             0         ['batch_normalization_12[0][0]
+ 4 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_7  (None, 64000, 9)             0         ['batch_normalization_12[0][0]
+ 6 (SlicingOpLambda)                                                ']                            
+ conv1d_72 (Conv1D)          (None, 7097, 16)             12304     ['tf.__operators__.getitem_72[
+                                                                    0][0]']                       
+ conv1d_74 (Conv1D)          (None, 7097, 16)             6160      ['tf.__operators__.getitem_74[
+                                                                    0][0]']                       
+ conv1d_76 (Conv1D)          (None, 7097, 16)             18448     ['tf.__operators__.getitem_76[
+                                                                    0][0]']                       
+ layer_normalization_72 (La  (None, 7097, 16)             32        ['conv1d_72[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_74 (La  (None, 7097, 16)             32        ['conv1d_74[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_76 (La  (None, 7097, 16)             32        ['conv1d_76[0][0]']           
+ yerNormalization)                                                                                
+ tf.__operators__.getitem_7  (None, 7097, 6)              0         ['layer_normalization_72[0][0]
+ 3 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_7  (None, 7097, 3)              0         ['layer_normalization_74[0][0]
+ 5 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_7  (None, 7097, 7)              0         ['layer_normalization_76[0][0]
+ 7 (SlicingOpLambda)                                                ']                            
+ conv1d_73 (Conv1D)          (None, 775, 32)              24608     ['tf.__operators__.getitem_73[
+                                                                    0][0]']                       
+ conv1d_75 (Conv1D)          (None, 775, 32)              12320     ['tf.__operators__.getitem_75[
+                                                                    0][0]']                       
+ conv1d_77 (Conv1D)          (None, 775, 32)              28704     ['tf.__operators__.getitem_77[
+                                                                    0][0]']                       
+ layer_normalization_73 (La  (None, 775, 32)              64        ['conv1d_73[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_75 (La  (None, 775, 32)              64        ['conv1d_75[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_77 (La  (None, 775, 32)              64        ['conv1d_77[0][0]']           
+ yerNormalization)                                                                                
+ global_average_pooling1d_3  (None, 32)                   0         ['layer_normalization_73[0][0]
+ 6 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_3  (None, 32)                   0         ['layer_normalization_75[0][0]
+ 7 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_3  (None, 32)                   0         ['layer_normalization_77[0][0]
+ 8 (GlobalAveragePooling1D)                                         ']                            
+ dense_48 (Dense)            (None, 8)                    264       ['global_average_pooling1d_36[
+                                                                    0][0]']                       
+ dense_49 (Dense)            (None, 4)                    132       ['global_average_pooling1d_37[
+                                                                    0][0]']                       
+ dense_50 (Dense)            (None, 4)                    132       ['global_average_pooling1d_38[
+                                                                    0][0]']                       
+ concatenate_12 (Concatenat  (None, 16)                   0         ['dense_48[0][0]',            
+ e)                                                                  'dense_49[0][0]',            
+                                                                     'dense_50[0][0]']            
+ dropout_12 (Dropout)        (None, 16)                   0         ['concatenate_12[0][0]']      
+ dense_51 (Dense)            (None, 17)                   289       ['dropout_12[0][0]']          
+ activation_12 (Activation)  (None, 17)                   0         ['dense_51[0][0]']            
+==================================================================================================
+Total params: 103721 (405.16 KB)
+Trainable params: 103685 (405.02 KB)
+Non-trainable params: 36 (144.00 Byte)
+__________________________________________________________________________________________________
+None
+fold 1/3 accuracy: 0.9411764705882353
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+[[10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  7  0  0  0  3  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  7  0  0  0  3  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+Model: "model_13"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_14 (InputLayer)       [(None, 64000, 18)]          0         []                            
+ batch_normalization_13 (Ba  (None, 64000, 18)            72        ['input_14[0][0]']            
+ tchNormalization)                                                                                
+ tf.__operators__.getitem_7  (None, 64000, 6)             0         ['batch_normalization_13[0][0]
+ 8 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_8  (None, 64000, 3)             0         ['batch_normalization_13[0][0]
+ 0 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_8  (None, 64000, 9)             0         ['batch_normalization_13[0][0]
+ 2 (SlicingOpLambda)                                                ']                            
+ conv1d_78 (Conv1D)          (None, 7097, 16)             12304     ['tf.__operators__.getitem_78[
+                                                                    0][0]']                       
+ conv1d_80 (Conv1D)          (None, 7097, 16)             6160      ['tf.__operators__.getitem_80[
+                                                                    0][0]']                       
+ conv1d_82 (Conv1D)          (None, 7097, 16)             18448     ['tf.__operators__.getitem_82[
+                                                                    0][0]']                       
+ layer_normalization_78 (La  (None, 7097, 16)             32        ['conv1d_78[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_80 (La  (None, 7097, 16)             32        ['conv1d_80[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_82 (La  (None, 7097, 16)             32        ['conv1d_82[0][0]']           
+ yerNormalization)                                                                                
+ tf.__operators__.getitem_7  (None, 7097, 6)              0         ['layer_normalization_78[0][0]
+ 9 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_8  (None, 7097, 3)              0         ['layer_normalization_80[0][0]
+ 1 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_8  (None, 7097, 7)              0         ['layer_normalization_82[0][0]
+ 3 (SlicingOpLambda)                                                ']                            
+ conv1d_79 (Conv1D)          (None, 775, 32)              24608     ['tf.__operators__.getitem_79[
+                                                                    0][0]']                       
+ conv1d_81 (Conv1D)          (None, 775, 32)              12320     ['tf.__operators__.getitem_81[
+                                                                    0][0]']                       
+ conv1d_83 (Conv1D)          (None, 775, 32)              28704     ['tf.__operators__.getitem_83[
+                                                                    0][0]']                       
+ layer_normalization_79 (La  (None, 775, 32)              64        ['conv1d_79[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_81 (La  (None, 775, 32)              64        ['conv1d_81[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_83 (La  (None, 775, 32)              64        ['conv1d_83[0][0]']           
+ yerNormalization)                                                                                
+ global_average_pooling1d_3  (None, 32)                   0         ['layer_normalization_79[0][0]
+ 9 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_4  (None, 32)                   0         ['layer_normalization_81[0][0]
+ 0 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_4  (None, 32)                   0         ['layer_normalization_83[0][0]
+ 1 (GlobalAveragePooling1D)                                         ']                            
+ dense_52 (Dense)            (None, 8)                    264       ['global_average_pooling1d_39[
+                                                                    0][0]']                       
+ dense_53 (Dense)            (None, 4)                    132       ['global_average_pooling1d_40[
+                                                                    0][0]']                       
+ dense_54 (Dense)            (None, 4)                    132       ['global_average_pooling1d_41[
+                                                                    0][0]']                       
+ concatenate_13 (Concatenat  (None, 16)                   0         ['dense_52[0][0]',            
+ e)                                                                  'dense_53[0][0]',            
+                                                                     'dense_54[0][0]']            
+ dropout_13 (Dropout)        (None, 16)                   0         ['concatenate_13[0][0]']      
+ dense_55 (Dense)            (None, 17)                   289       ['dropout_13[0][0]']          
+ activation_13 (Activation)  (None, 17)                   0         ['dense_55[0][0]']            
+==================================================================================================
+Total params: 103721 (405.16 KB)
+Trainable params: 103685 (405.02 KB)
+Non-trainable params: 36 (144.00 Byte)
+__________________________________________________________________________________________________
+None
+fold 2/3 accuracy: 0.9235294117647059
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+[[10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0]
+ [ 0  0  0  0  0  0  9  0  0  0  1  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  8  0  0  2  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+Model: "model_14"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to                  
+==================================================================================================
+ input_15 (InputLayer)       [(None, 64000, 18)]          0         []                            
+ batch_normalization_14 (Ba  (None, 64000, 18)            72        ['input_15[0][0]']            
+ tchNormalization)                                                                                
+ tf.__operators__.getitem_8  (None, 64000, 6)             0         ['batch_normalization_14[0][0]
+ 4 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_8  (None, 64000, 3)             0         ['batch_normalization_14[0][0]
+ 6 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_8  (None, 64000, 9)             0         ['batch_normalization_14[0][0]
+ 8 (SlicingOpLambda)                                                ']                            
+ conv1d_84 (Conv1D)          (None, 7097, 16)             12304     ['tf.__operators__.getitem_84[
+                                                                    0][0]']                       
+ conv1d_86 (Conv1D)          (None, 7097, 16)             6160      ['tf.__operators__.getitem_86[
+                                                                    0][0]']                       
+ conv1d_88 (Conv1D)          (None, 7097, 16)             18448     ['tf.__operators__.getitem_88[
+                                                                    0][0]']                       
+ layer_normalization_84 (La  (None, 7097, 16)             32        ['conv1d_84[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_86 (La  (None, 7097, 16)             32        ['conv1d_86[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_88 (La  (None, 7097, 16)             32        ['conv1d_88[0][0]']           
+ yerNormalization)                                                                                
+ tf.__operators__.getitem_8  (None, 7097, 6)              0         ['layer_normalization_84[0][0]
+ 5 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_8  (None, 7097, 3)              0         ['layer_normalization_86[0][0]
+ 7 (SlicingOpLambda)                                                ']                            
+ tf.__operators__.getitem_8  (None, 7097, 7)              0         ['layer_normalization_88[0][0]
+ 9 (SlicingOpLambda)                                                ']                            
+ conv1d_85 (Conv1D)          (None, 775, 32)              24608     ['tf.__operators__.getitem_85[
+                                                                    0][0]']                       
+ conv1d_87 (Conv1D)          (None, 775, 32)              12320     ['tf.__operators__.getitem_87[
+                                                                    0][0]']                       
+ conv1d_89 (Conv1D)          (None, 775, 32)              28704     ['tf.__operators__.getitem_89[
+                                                                    0][0]']                       
+ layer_normalization_85 (La  (None, 775, 32)              64        ['conv1d_85[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_87 (La  (None, 775, 32)              64        ['conv1d_87[0][0]']           
+ yerNormalization)                                                                                
+ layer_normalization_89 (La  (None, 775, 32)              64        ['conv1d_89[0][0]']           
+ yerNormalization)                                                                                
+ global_average_pooling1d_4  (None, 32)                   0         ['layer_normalization_85[0][0]
+ 2 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_4  (None, 32)                   0         ['layer_normalization_87[0][0]
+ 3 (GlobalAveragePooling1D)                                         ']                            
+ global_average_pooling1d_4  (None, 32)                   0         ['layer_normalization_89[0][0]
+ 4 (GlobalAveragePooling1D)                                         ']                            
+ dense_56 (Dense)            (None, 8)                    264       ['global_average_pooling1d_42[
+                                                                    0][0]']                       
+ dense_57 (Dense)            (None, 4)                    132       ['global_average_pooling1d_43[
+                                                                    0][0]']                       
+ dense_58 (Dense)            (None, 4)                    132       ['global_average_pooling1d_44[
+                                                                    0][0]']                       
+ concatenate_14 (Concatenat  (None, 16)                   0         ['dense_56[0][0]',            
+ e)                                                                  'dense_57[0][0]',            
+                                                                     'dense_58[0][0]']            
+ dropout_14 (Dropout)        (None, 16)                   0         ['concatenate_14[0][0]']      
+ dense_59 (Dense)            (None, 17)                   289       ['dropout_14[0][0]']          
+ activation_14 (Activation)  (None, 17)                   0         ['dense_59[0][0]']            
+==================================================================================================
+Total params: 103721 (405.16 KB)
+Trainable params: 103685 (405.02 KB)
+Non-trainable params: 36 (144.00 Byte)
+__________________________________________________________________________________________________
+None
+fold 3/3 accuracy: 1.0
+ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+[[10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10  0]
+ [ 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0 10]]
+mean accuracy: 0.9549019607843138
+total mean accuracy: 0.9258823529411764
+Total processing time: 847.97
