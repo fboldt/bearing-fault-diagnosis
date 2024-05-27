@@ -1,9 +1,3 @@
-from datasets.cwru import CWRU
-from datasets.hust import Hust
-from datasets.mfpt import MFPT
-from datasets.ottawa import Ottawa
-from datasets.paderborn import Paderborn
-from datasets.uored_vafcls import UORED_VAFCLS
 from datasets.phm import PHM
 from utils.train_estimator import train_estimator
 from utils.get_acquisitions import get_acquisitions
@@ -48,29 +42,21 @@ def kfold(datasets, clfmaker, repetitions=3):
     print(f"total mean accuracy: {sum(total)/len(total)}")
 
 debug = True
-repetitions=3
+repetitions=1
 '''
-from estimators.randomforest import RandomForest
-clf = RandomForest(1000, 25)
+from estimators.randomforest import Contructor
+clfmaker = Contructor(1000, 25)
 '''
-from estimators.cnn1d_phm import Contructor
-epochs = 200
-verbose = 2
-clfmaker = Contructor(epochs=epochs, verbose=verbose)
+# from estimators.cnn1d_phm import Contructor
+# epochs = 200
+# verbose = 2
+# clfmaker = Contructor(epochs=epochs, verbose=verbose)
+from estimators.hf_transformer import Constructor
+clfmaker = Constructor()
 # '''
 
 datasets = [
-    PHM(cache_file = "phm_18ch_tr.npy"),
-    # PHM(cache_file = "phm_motor_tr.npy"),
-    # PHM(cache_file = "phm_gearbox_tr.npy"),
-    # PHM(cache_file = "phm_leftaxlebox_tr.npy"),
-] if debug else [
-    CWRU(config='all'),
-    Hust(config='all'),
-    MFPT(config='all'),
-    Ottawa(config='all'),
-    Paderborn(config='all'),
-    UORED_VAFCLS(config='all'),
+    PHM(cache_file = "phm_18ch_tr.npy")
 ]
 
 def experimenter(datasets=datasets, clfmaker=clfmaker, repetitions=3):

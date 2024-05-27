@@ -28,3 +28,10 @@ class RandomForest(BaseEstimator, ClassifierMixin):
         self.clf.fit(X, y)
     def predict(self,X):
         return self.clf.predict(X)
+
+class Contructor():
+    def __init__(self, n_estimators=100, max_features=None):
+        self.n_estimators = n_estimators
+        self.max_features = max_features
+    def estimator(self):
+        return RandomForest(self.n_estimators, self.max_features)
