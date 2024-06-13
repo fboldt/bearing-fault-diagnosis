@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from estimators import randomforest, cnn1d
+from estimators import randomforest, cnn1d, sgd
 
 class EstimatorFactory(ABC):    
     @abstractmethod
@@ -25,3 +25,11 @@ class RandomForestEstimator(EstimatorFactory):
         self.max_features = max_features        
     def estimator(self):
         return randomforest.RandomForest(n_estimators=self.n_estimators, max_features=self.max_features)
+
+
+class SGDEstimator(EstimatorFactory):
+    def __init__(self, max_iter=1000, tol=1e-3):
+        self.max_iter = max_iter
+        self.tol = tol        
+    def estimator(self):
+        return sgd.SGDClf(max_iter=self.max_iter, tol=self.tol)
