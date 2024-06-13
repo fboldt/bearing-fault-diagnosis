@@ -224,8 +224,9 @@ class Hust():
         return f"HUST ({self.config})"
 
     def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, 
-                 config="dbg"):
+                 config="dbg", cache_file=None):
         self.url = "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/"
+        self.sample_rate = 51200
         self.sample_size = sample_size
         self.n_channels = n_channels
         self.acquisition_maxsize = acquisition_maxsize
@@ -243,6 +244,10 @@ class Hust():
         for key, bearing in zip(self.bearing_labels, self.bearing_names):
             files_path[key] = os.path.join(self.rawfilesdir, bearing)
         self.files = files_path
+
+        if cache_file is not None:
+            self.load_cache(cache_file)
+        self.cache_file = cache_file
 
 
     def download(self):
@@ -297,13 +302,34 @@ class Hust():
 
     def groups(self):
         return self.group_acquisition()
+    
+    def save_cache(self, filename):
+        with open(filename, 'wb') as f:
+            np.save(f, self.signal_data)
+            np.save(f, self.labels)
+            np.save(f, self.keys)
+            np.save(f, self.config)
+    
+    def load_cache(self, filename):
+        with open(filename, 'rb') as f:
+            self.signal_data = np.load(f)
+            self.labels = np.load(f)
+            self.keys = np.load(f)
+            self.config = np.load(f)
 
 if __name__ == "__main__":
-    dataset = Hust(config='dbg', acquisition_maxsize=21_000)
-    dataset.download()
+    config = "dbg" # "all" # "niob" # "ru" # "mert"
+    cache_name = f"hust_{config}.npy"
+    
+    dataset = Hust(config=config, acquisition_maxsize=21_000)
+    # dataset.download()
     dataset.load_acquisitions()
+    dataset.save_cache(cache_name)
+    # dataset.load_cache(cache_name)
+
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
     print("labels", labels, f"({len(labels)})")
-    keys = list(set(dataset.keys))
-    print("keys", np.array(keys), f"({len(keys)})")
+    
+    # keys = list(set(dataset.keys))
+    # print("keys", np.array(keys), f"({len(keys)})")

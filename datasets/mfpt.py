@@ -86,7 +86,8 @@ class MFPT():
     def __str__(self):
         return f"MFPT ({self.config})"
 
-    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, config='dbg'):
+    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, 
+                 config='dbg', cache_file=None):
         # Code to avoid incomplete array results
         np.set_printoptions(threshold=sys.maxsize)
         self.n_channels = n_channels
@@ -135,6 +136,11 @@ class MFPT():
         files_path["IR_5"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/4 - Seven Inner Race Fault Conditions/InnerRaceFault_vload_6")
         files_path["IR_6"] = os.path.join(self.rawfilesdir, "MFPT Fault Data Sets/4 - Seven Inner Race Fault Conditions/InnerRaceFault_vload_7")
         self.files = files_path
+
+        #loading cache file
+        if cache_file is not None:
+            self.load_cache(cache_file)
+        self.cache_file = cache_file
 
     def download(self):
         """
@@ -193,13 +199,31 @@ class MFPT():
 
     def groups(self):
         return self.group_acquisition()
+    
+    def save_cache(self, filename):
+        with open(filename, 'wb') as f:
+            np.save(f, self.signal_data)
+            np.save(f, self.labels)
+            np.save(f, self.keys)
+            np.save(f, self.config)
+    
+    def load_cache(self, filename):
+        with open(filename, 'rb') as f:
+            self.signal_data = np.load(f)
+            self.labels = np.load(f)
+            self.keys = np.load(f)
+            self.config = np.load(f)
 
 if __name__ == "__main__":
-    dataset = MFPT(config='dbg',acquisition_maxsize=21_000)
-    dataset.download()
+    config = "dbg" # "dbg" # "all"
+    cache_name = f"mfpt_{config}.npy"
+    dataset = MFPT(config=config, acquisition_maxsize=21_000)
+    # dataset.download()
     dataset.load_acquisitions()
+    dataset.save_cache(cache_name)
+    # dataset.load_cache(cache_name)
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
     print("labels", labels, f"({len(labels)})")
-    keys = list(set(dataset.keys))
-    print("keys", np.array(keys), f"({len(keys)})")
+    # keys = list(set(dataset.keys))
+    # print("keys", np.array(keys), f"({len(keys)})")

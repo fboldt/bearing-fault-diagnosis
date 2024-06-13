@@ -80,7 +80,9 @@ class Ottawa():
     def __str__(self):
         return f"Ottawa ({self.config})"
     
-    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, config='all'):
+    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, 
+                 config='all', cache_file=None):
+        self.sample_rate = 200_000 # Hz
         self.n_channels = n_channels
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize
@@ -148,6 +150,12 @@ class Ottawa():
         if self.config != 'dbg':
             files_path["I-D-3"] = os.path.join(self.rawfilesdir, "I-D-3.mat")
         self.files = files_path
+        
+        # loading cache file
+        if cache_file is not None:
+            self.load_cache(cache_file)
+        self.cache_file = cache_file
+
 
     def download(self):
         """
@@ -200,13 +208,33 @@ class Ottawa():
 
     def groups(self):
         return self.group_acquisition()
+
+    def save_cache(self, filename):
+        with open(filename, 'wb') as f:
+            np.save(f, self.signal_data)
+            np.save(f, self.labels)
+            np.save(f, self.keys)
+            np.save(f, self.config)
+    
+    def load_cache(self, filename):
+        with open(filename, 'rb') as f:
+            self.signal_data = np.load(f)
+            self.labels = np.load(f)
+            self.keys = np.load(f)
+            self.config = np.load(f)    
  
+
 if __name__ == "__main__":
-    dataset = Ottawa(config='dbg', acquisition_maxsize=21_000)
-    dataset.download()
+    config = "dbg" # "all" # "dbg"
+    cache_name = f"ottawa_{config}.npy"
+    dataset = Ottawa(config=config, acquisition_maxsize=21_000)
+    # dataset.download()
+
     dataset.load_acquisitions()
+    dataset.save_cache(cache_name)
+    # dataset.load_cache(cache_name)
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
     print("labels", labels, f"({len(labels)})")
-    keys = list(set(dataset.keys))
-    print("keys", np.array(keys), f"({len(keys)})")
+    # keys = list(set(dataset.keys))
+    # print("keys", np.array(keys), f"({len(keys)})")
