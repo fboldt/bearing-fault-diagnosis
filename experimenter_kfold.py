@@ -1,4 +1,4 @@
-from datasets.cwru import CWRU
+from datasets.cwru48 import CWRU48k
 from datasets.hust import Hust
 from datasets.mfpt import MFPT
 from datasets.ottawa import Ottawa
@@ -37,6 +37,7 @@ def kfold(datasets, clfmaker, repetitions=3):
         final = time.time()
         print('Processing time:', final-init)
         '''
+        print("X.shape", X.shape)
         for train_index, test_index in kf.split(X, y, groups):
             Xtr, ytr = X[train_index], y[train_index]
             Xte, yte = X[test_index], y[test_index]
@@ -72,14 +73,19 @@ clfmaker = CNN1DEstimator(epochs=100, verbose=0)
 '''
 
 datasets = [
-    # CWRU(cache_file = "cwru_all_de.npy"),
-    # PHM(cache_file = "phm_all_tr.npy"),
+    # Paderborn(cache_file = "paderborn_dbg.npy"),
+    # Ottawa(cache_file = "ottawa_all.npy"),
+    # Hust(cache_file = "hust_dbg.npy"),
+    # UORED_VAFCLS(cache_file = "uored_dbg.npy"),
+    # MFPT(cache_file = "mfpt_all.npy"),
+    # CWRU48k(cache_file = "cwru_all_de.npy"),
     PHM(cache_file = "phm_motor_tr.npy"),
     # PHM(cache_file = "phm_gearbox_tr.npy"),
-    # PHM(cache_file = "phm_leftaxlebox_tr.npy"),
-    # PHM(cache_file = "phm_18ch_tr100.npy"),   
+    # PHM(cache_file = "pzzhm_leftaxlebox_tr.npy"),
+    # PHM(cache_file = "phm_18ch_tr100.npy"),
+    # PHM(cache_file = "phm_18ch_tr.npy"),
 ] if debug else [
-    CWRU(config='all'),
+    CWRU48k(config='all'),
     Hust(config='all'),
     MFPT(config='all'),
     Ottawa(config='all'),
