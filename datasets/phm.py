@@ -116,7 +116,9 @@ class PHM():
         bearing_label, bearing_file_names = zip(*list_of_bearings)
         return np.array(bearing_label), bearing_file_names
 
-    def __init__(self, sample_size=64000, n_channels=None, acquisition_maxsize=None, config='all_tr', cache_file=None):
+    def __init__(self, sample_size=64000, n_channels=None, acquisition_maxsize=None, 
+                 config='all_tr', cache_file=None):
+        self.sample_rate = 64000
         self.n_channels = n_channels
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize
@@ -205,7 +207,7 @@ class PHM():
             self.config = np.load(f)
 
 if __name__ == "__main__":
-    config = "18ch_te" # "all_tr" # "motor_tr" # "leftaxlebox_tr" # "gearbox_tr" # 
+    config = "motor_tr" # "18ch_te" # "all_tr" # "motor_tr" # "leftaxlebox_tr" # "gearbox_tr" # 
     cache_name = f"phm_{config}.npy"
     dataset = PHM(config=config, sample_size=64000, acquisition_maxsize=None)
     # '''
