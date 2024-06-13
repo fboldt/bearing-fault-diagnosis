@@ -1,6 +1,6 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-from datasets.cwru import CWRU
+from datasets.cwru48 import CWRU48k
 from datasets.hust import Hust
 # from datasets.mafaulda import Mafaulda
 from datasets.mfpt import MFPT
@@ -20,14 +20,14 @@ from utils.save_output import ConsoleOutputToFile
 debug = True
 
 datasets = [
-    CWRU(config='nio', acquisition_maxsize=21_000),
+    CWRU48k(config='nio', acquisition_maxsize=21_000),
     Hust(config='dbg', acquisition_maxsize=21_000),
     MFPT(config='dbg', acquisition_maxsize=21_000),
     # Ottawa(config='dbg', acquisition_maxsize=21_000),
     # Paderborn(config='dbg', acquisition_maxsize=21_000),
     # UORED_VAFCLS(config='dbg', acquisition_maxsize=21_000),
 ] if debug else [
-    CWRU(config='all'),
+    CWRU48k(config='all'),
     Hust(config='all'),
     MFPT(config='all'),
     Ottawa(config='all'),
