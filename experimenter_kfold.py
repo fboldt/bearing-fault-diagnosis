@@ -53,17 +53,14 @@ from estimators.randomforest import RandomForest
 clf = RandomForest(1000, 25)
 '''
 from estimators.cnn1d_phm import Contructor
-epochs = 50
+epochs = 20
 repetitions = 3
-verbose = 0
+verbose = 2
 clfmaker = Contructor(epochs=epochs, verbose=verbose)
 # '''
 
 datasets = [
-    PHM(cache_file = "phm_18ch_tr.npy"),
-    # PHM(cache_file = "phm_motor_tr.npy"),
-    # PHM(cache_file = "phm_gearbox_tr.npy"),
-    # PHM(cache_file = "phm_leftaxlebox_tr.npy"),
+    PHM(cache_file = "phm_21ch_tr.npy"),
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),

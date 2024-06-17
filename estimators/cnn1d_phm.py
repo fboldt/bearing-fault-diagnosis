@@ -1,5 +1,4 @@
 from tensorflow.keras import layers, callbacks, saving, optimizers, Model, Input, activations
-from tensorflow.keras.models import Sequential
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 from sklearn.base import BaseEstimator, ClassifierMixin
@@ -56,24 +55,27 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         ]
     
     def make_feature_layers(self, x):
+        print(x.shape)
         x = layers.BatchNormalization(axis=2)(x)
-        filters = [2**i for i in range(4,6)]
-        kernel_size = 128
-        kernels = [kernel_size for _ in range(len(filters))]
+        filters = [16, 32]
+        kernels = [128, 128]
         sources = {
-            "gear": (0, 6, 8),
-            "leftaxl": (6, 9, 4),
-            "motor": (9, 18, 4),
+            "motor": (0, 9, 4),
+            "gear": (9, 15, 8),
+            "leftaxl": (15, 18, 4),
+            "rightaxl": (18, 21, 4),
         }
         convs = []
         for source in sources.keys():
             start, end, n_faults = sources[source]
-            f = x
-            for (filter, kernel) in zip(filters, kernels):
-                f = layers.Conv1D(filter, kernel, 
-                                  strides=int((kernel_size//2)**0.5)+1, 
-                                  activation='relu')(f[:,:,start:end])
-                f = layers.LayerNormalization()(f)
+            f = layers.Conv1D(filters[0], kernels[0], 
+                                strides=int((kernels[0]//2)**0.5)+1, 
+                                activation='relu')(x[:,:,start:end])
+            f = layers.LayerNormalization()(f)
+            f = layers.Conv1D(filters[1], kernels[1],
+                                strides=int((kernels[1]//2)**0.5)+1,
+                                activation='relu')(f)
+            f = layers.LayerNormalization()(f)
             f = layers.GlobalAveragePooling1D()(f)
             f = layers.Dense(n_faults, activation='tanh')(f)
             convs.append(f)

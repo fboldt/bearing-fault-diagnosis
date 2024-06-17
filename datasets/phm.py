@@ -23,14 +23,14 @@ def pre_stage_tr(data_sources = ["data_motor", "data_gearbox", "data_leftaxlebox
             conditions.add(condition)
     for fault in pathlib.Path(data_dir).iterdir():
         if fault.is_dir() and os.path.basename(fault) in conditions:
-            for sample in pathlib.Path(fault).iterdir(): 
-                if sample.is_dir():
-                    files = []
-                    for file in pathlib.Path(sample).iterdir():
-                        if os.path.basename(file)[:-4] in data_sources:
-                            files.append(f"{file}")
-                    if len(files) > 0:
-                        data_files.append((f"{os.path.basename(fault)}_{os.path.basename(sample)}", files))
+            for s in range(1,4): 
+                sample = os.path.join(fault, f"Sample{s}")
+                files = []
+                for f in data_sources:
+                    file = os.path.join(sample, f"{f}.csv")
+                    files.append(f"{file}")
+                if len(files) > 0:
+                    data_files.append((f"{os.path.basename(fault)}_{os.path.basename(sample)}", files))
     return data_files
 
 def pre_stage_te(data_sources = ["data_motor", "data_gearbox", "data_leftaxlebox", "data_rightaxlebox"]):    
@@ -46,7 +46,7 @@ def pre_stage_te(data_sources = ["data_motor", "data_gearbox", "data_leftaxlebox
                 data_files.append((f"test_{os.path.basename(sample)}", files))
     return data_files
 
-def list_of_data_all_te():
+def list_of_data_21ch_te():
     files = pre_stage_te(["data_motor", 
                           "data_gearbox", 
                           "data_leftaxlebox", 
@@ -54,55 +54,13 @@ def list_of_data_all_te():
                           ])
     return files
 
-def list_of_data_18ch_te():
-    files = pre_stage_te(["data_motor", 
-                          "data_gearbox", 
-                          "data_leftaxlebox", 
-                          ])
-    return files
-
-def list_of_data_motor_te():
-    files = pre_stage_te(["data_motor"])
-    return files
-
-def list_of_data_gearbox_te():
-    files = pre_stage_te(["data_gearbox"])
-    return files
-
-def list_of_data_leftaxlebox_te():
-    files = pre_stage_te(["data_leftaxlebox"])
-    return files
-
-def list_of_data_rightaxlebox_te():
-    files = pre_stage_te(["data_rightaxlebox"])
-    return files
-
-def list_of_data_all_tr():
+def list_of_data_21ch_tr():
     files = pre_stage_tr(["data_motor", 
                           "data_gearbox", 
                           "data_leftaxlebox", 
                           "data_rightaxlebox"
                           ])
     return files
-
-def list_of_data_18ch_tr():
-    files = pre_stage_tr(["data_motor", 
-                          "data_gearbox", 
-                          "data_leftaxlebox",
-                          ])
-    return files
-
-def list_of_data_motor_tr():
-    return pre_stage_tr(["data_motor"])
-
-def list_of_data_gearbox_tr():
-    return pre_stage_tr(["data_gearbox"])
-
-def list_of_data_leftaxlebox_tr():
-    return pre_stage_tr(["data_leftaxlebox"])
-
-def list_of_data_rightaxlebox_tr():
-    return pre_stage_tr(["data_rightaxlebox"])
 
 class PHM():
     """
@@ -116,7 +74,7 @@ class PHM():
         bearing_label, bearing_file_names = zip(*list_of_bearings)
         return np.array(bearing_label), bearing_file_names
 
-    def __init__(self, sample_size=64000, n_channels=None, acquisition_maxsize=None, config='all_tr', cache_file=None):
+    def __init__(self, sample_size=64000, n_channels=None, acquisition_maxsize=None, config='21ch_tr', cache_file=None):
         self.n_channels = n_channels
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize
@@ -126,12 +84,12 @@ class PHM():
         self.labels = []
         self.keys = []
         self.bearing_labels, self.bearing_names = self.get_phm_bearings()
-        files_path = {}
-        for key, bearing in zip(self.bearing_labels, self.bearing_names):
-            if key not in files_path.keys():
-                files_path[key] = []
-            files_path[key].append(bearing)
-        self.files = files_path
+        # files_path = {}
+        # for key, bearing in zip(self.bearing_labels, self.bearing_names):
+        #     if key not in files_path.keys():
+        #         files_path[key] = []
+        #     files_path[key].append(bearing)
+        # self.files = files_path
         if cache_file is not None:
             self.load_cache(cache_file)
         self.cache_file = cache_file
@@ -140,22 +98,22 @@ class PHM():
         """
         Extracts the acquisitions of each file in the dictionary files_names.
         """
-        for x, key in enumerate(self.files):
-            print('\r', f" loading acquisitions {100*(x+1)/len(self.files):.2f} %", end='')
+        for x, key in enumerate(self.bearing_labels):
+            # print('\r', f" loading acquisitions {100*(x+1)/len(self.files):.2f} %", end='')
+            print(key)
             vibration_data = None
-            for files in self.files[key]:
-                vibration_data_raw = None
-                for file in files:
-                    # print(file)
-                    loaded_data = np.loadtxt(file, delimiter=',', skiprows=1)
-                    if vibration_data_raw is None:
-                        vibration_data_raw = loaded_data
-                    else: 
-                        vibration_data_raw = np.concatenate((vibration_data_raw, loaded_data), axis=1)
-                if vibration_data is None:
-                    vibration_data = vibration_data_raw
-                else:
-                    vibration_data = np.concatenate((vibration_data, vibration_data_raw), axis=1)
+            vibration_data_raw = None
+            for file in self.bearing_names[x]:
+                print(file)
+                loaded_data = np.loadtxt(file, delimiter=',', skiprows=1)
+                if vibration_data_raw is None:
+                    vibration_data_raw = loaded_data
+                else: 
+                    vibration_data_raw = np.concatenate((vibration_data_raw, loaded_data), axis=1)
+            if vibration_data is None:
+                vibration_data = vibration_data_raw
+            else:
+                vibration_data = np.concatenate((vibration_data, vibration_data_raw), axis=1)
             if self.acquisition_maxsize is not None:
                 vibration_data = vibration_data[:self.acquisition_maxsize]
             for i in range(len(vibration_data)//self.sample_size):
@@ -206,7 +164,7 @@ class PHM():
             self.config = np.load(f)
 
 if __name__ == "__main__":
-    config = "18ch_tr" # "motor_tr" # "leftaxlebox_tr" # "gearbox_tr" # "all_tr" # 
+    config = "21ch_tr" # "motor_tr" # "leftaxlebox_tr" # "gearbox_tr" # "all_tr" # 
     cache_name = f"phm_{config}.npy"
     dataset = PHM(config=config, sample_size=64000, acquisition_maxsize=None)
     '''
