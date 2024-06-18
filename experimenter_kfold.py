@@ -14,7 +14,7 @@ import numpy as np
 import time
 
 def kfold(datasets, clfmaker, repetitions=3):
-    total = []
+    total = np.array([])
     if isinstance(datasets, Iterable):
         X, y, groups = get_acquisitions(datasets)
         n_folds = 10
@@ -29,14 +29,7 @@ def kfold(datasets, clfmaker, repetitions=3):
         accuracies = []
         kf = StratifiedGroupKFold(n_splits=n_folds)
         clf = clfmaker.estimator()
-        init = time.time()
-        '''
-        scores = cross_val_score(clf.model(), X, y, cv=kf, groups=groups, scoring='accuracy')
-        print(f"Scores: {scores}")
-        print(f"Mean Score: {np.mean(scores):.2f}")
-        final = time.time()
-        print('Processing time:', final-init)
-        '''
+        init = time.time()        
         print("X.shape", X.shape)
         for train_index, test_index in kf.split(X, y, groups):
             Xtr, ytr = X[train_index], y[train_index]
@@ -54,12 +47,9 @@ def kfold(datasets, clfmaker, repetitions=3):
         print('Processing time:', final-init)
         mean_accuracy = sum(accuracies)/len(accuracies)
         print(f"mean accuracy: {mean_accuracy}")
-        total.append(mean_accuracy)
-    print(f"total mean accuracy: {sum(total)/len(total)}")
-        # '''
-
-
-debug = True
+        total = np.append(total, mean_accuracy)
+    print(f"total mean accuracy: {np.mean(total)}")
+    print(f"standard deviation: {np.std(total)}")
 
 '''
 from estimators.estimator_factory import RandomForestEstimator 
@@ -67,19 +57,22 @@ clfmaker = RandomForestEstimator(n_estimators=1000, max_features=25)
 '''
 from estimators.estimator_factory import SGDEstimator
 clfmaker = SGDEstimator()
-'''
-from estimators.estimator_factory import CNN1DEstimator 
-clfmaker = CNN1DEstimator(epochs=100, verbose=0)
-'''
+# '''
+# from estimators.estimator_factory import CNN1DEstimator 
+# clfmaker = CNN1DEstimator(epochs=100, verbose=0)
+
+
+debug = True
 
 datasets = [
     # Paderborn(cache_file = "paderborn_dbg.npy"),
     # Ottawa(cache_file = "ottawa_all.npy"),
     # Hust(cache_file = "hust_dbg.npy"),
-    # UORED_VAFCLS(cache_file = "uored_dbg.npy"),
+    UORED_VAFCLS(cache_file = "uored_all.npy"),
     # MFPT(cache_file = "mfpt_all.npy"),
-    # CWRU48k(cache_file = "cwru_all_de.npy"),
-    PHM(cache_file = "phm_motor_tr.npy"),
+    # CWRU48k(cache_file = "cwru48k_dbg.npy"),
+    # CWRU48k(cache_file = "cwru48k_balanced.npy"),
+    # PHM(cache_file = "phm_motor_tr.npy"),
     # PHM(cache_file = "phm_gearbox_tr.npy"),
     # PHM(cache_file = "pzzhm_leftaxlebox_tr.npy"),
     # PHM(cache_file = "phm_18ch_tr100.npy"),
