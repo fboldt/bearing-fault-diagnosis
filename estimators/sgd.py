@@ -22,10 +22,10 @@ class SGDClf(BaseEstimator, ClassifierMixin):
         super().__init__()
         model = SGDClassifier(max_iter=1000, tol=1e-2, loss=self.loss) 
         steps = [('reshape', Reshape()), 
+                 ('feature', StatisticalTime()),
                  ('scale', StandardScaler()),
                  ('over', SMOTE()), 
                  ('under', RandomUnderSampler()), 
-                 ('feature', StatisticalTime()),
                  ('model', model)]
         self.clf = Pipeline(steps=steps)
     def model(self):
