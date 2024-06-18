@@ -267,9 +267,18 @@ class Paderborn():
 
 
 if __name__ == "__main__":
+    config = "dbg" # "all" # "reduced"
+    cache_name = f"paderborn_{config}.npy"
+    
     dataset = Paderborn(config='dbg', acquisition_maxsize=21_000)
-    dataset.download()
-    dataset.load_acquisitions()
+    os.path.exists("raw_paderborn") or dataset.download()
+
+    if not os.path.exists(cache_name):
+        dataset.load_acquisitions()
+        dataset.save_cache(cache_name)
+    else:
+        dataset.load_cache(cache_name)    
+    
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
     print("labels", labels, f"({len(labels)})")
