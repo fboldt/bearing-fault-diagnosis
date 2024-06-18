@@ -289,15 +289,20 @@ class UORED_VAFCLS():
             self.config = np.load(f)
 
 if __name__ == "__main__":
-    config = "dbg" # "all" # "nio" # "niob" # "mert" # "faulty_healthy"
+    config = "all" # "dbg" # "all" # "nio" # "niob" # "mert" # "faulty_healthy"
     cache_name = f"uored_{config}.npy"
+
     dataset = UORED_VAFCLS(config=config, acquisition_maxsize=21_000)
-    # dataset.download()
-    dataset.load_acquisitions()
-    dataset.save_cache(cache_name)
-    # dataset.load_cache(cache_name)
+    os.path.exists("raw_uored_vafcls") or dataset.download()
+    
+    if not os.path.exists(cache_name):
+        dataset.load_acquisitions()
+        dataset.save_cache(cache_name)
+    else:
+        dataset.load_cache(cache_name)
+
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
     print("labels", labels, f"({len(labels)})")
-    # keys = list(set(dataset.keys))
-    # print("keys", np.array(keys), f"({len(keys)})")
+    keys = list(set(dataset.keys))
+    print("keys", np.array(keys), f"({len(keys)})")

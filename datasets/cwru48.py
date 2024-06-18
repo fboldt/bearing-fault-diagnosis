@@ -266,15 +266,15 @@ class CWRU48k():
             self.config = np.load(f)
 
 if __name__ == "__main__":
-    config = "dbg" # "all" # "balanced" # "cmert" # "mert"
+    config = "balanced" # "dbg" # "all" # "balanced" # "cmert" # "mert"
     cache_name = f"cwru48k_{config}.npy"
     dataset = CWRU48k(config=config, acquisition_maxsize=None)
-    os.path.exists("raw_cwru") or dataset.download()
-    dataset.load_acquisitions()
-    dataset.save_cache(cache_name)
-    '''
-    dataset.load_cache(cache_name)
-    '''
+    os.path.exists("raw_cwru") or dataset.download()    
+    if not os.path.exists(cache_name):
+        dataset.load_acquisitions()  
+        dataset.save_cache(cache_name)
+    else: 
+        dataset.load_cache(cache_name)
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
     print("labels", labels, f"({len(labels)})")

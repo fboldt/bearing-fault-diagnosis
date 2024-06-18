@@ -225,16 +225,20 @@ class Ottawa():
  
 
 if __name__ == "__main__":
-    config = "dbg" # "all" # "dbg"
+    config = "all" # "all" # "dbg"
     cache_name = f"ottawa_{config}.npy"
+    
     dataset = Ottawa(config=config, acquisition_maxsize=21_000)
-    # dataset.download()
+    os.path.exists("raw_ottawa") or dataset.download()
+    
+    if not os.path.exists(cache_name):
+        dataset.load_acquisitions()
+        dataset.save_cache(cache_name)
+    else:
+        dataset.load_cache(cache_name)
 
-    dataset.load_acquisitions()
-    dataset.save_cache(cache_name)
-    # dataset.load_cache(cache_name)
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
     print("labels", labels, f"({len(labels)})")
-    # keys = list(set(dataset.keys))
-    # print("keys", np.array(keys), f"({len(keys)})")
+    keys = list(set(dataset.keys))
+    print("keys", np.array(keys), f"({len(keys)})")

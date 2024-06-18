@@ -87,9 +87,10 @@ class MFPT():
         return f"MFPT ({self.config})"
 
     def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, 
-                 config='dbg', cache_file=None):
+                 config='all', cache_file=None):
         # Code to avoid incomplete array results
         np.set_printoptions(threshold=sys.maxsize)
+        self.sample_rate=1
         self.n_channels = n_channels
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize
@@ -215,15 +216,20 @@ class MFPT():
             self.config = np.load(f)
 
 if __name__ == "__main__":
-    config = "dbg" # "dbg" # "all"
+    config = "all" # "dbg" # "all"
     cache_name = f"mfpt_{config}.npy"
+
     dataset = MFPT(config=config, acquisition_maxsize=21_000)
-    # dataset.download()
-    dataset.load_acquisitions()
-    dataset.save_cache(cache_name)
-    # dataset.load_cache(cache_name)
+    os.path.exists("raw_mfpt") or dataset.download()
+    
+    if not os.path.exists(cache_name):
+        dataset.load_acquisitions()
+        dataset.save_cache(cache_name)
+    else:
+        dataset.load_cache(cache_name)
+    
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
     print("labels", labels, f"({len(labels)})")
-    # keys = list(set(dataset.keys))
-    # print("keys", np.array(keys), f"({len(keys)})")
+    keys = list(set(dataset.keys))
+    print("keys", np.array(keys), f"({len(keys)})")

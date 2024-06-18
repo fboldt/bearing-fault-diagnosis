@@ -322,14 +322,16 @@ if __name__ == "__main__":
     cache_name = f"hust_{config}.npy"
     
     dataset = Hust(config=config, acquisition_maxsize=21_000)
-    # dataset.download()
-    dataset.load_acquisitions()
-    dataset.save_cache(cache_name)
-    # dataset.load_cache(cache_name)
+    os.path.exists("raw_hust") or dataset.download()
+    
+    if not os.path.exists(cache_name):
+        dataset.load_acquisitions()
+        dataset.save_cache(cache_name)
+    else:
+        dataset.load_cache(cache_name)
 
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
-    print("labels", labels, f"({len(labels)})")
-    
-    # keys = list(set(dataset.keys))
-    # print("keys", np.array(keys), f"({len(keys)})")
+    print("labels", labels, f"({len(labels)})")    
+    keys = list(set(dataset.keys))
+    print("keys", np.array(keys), f"({len(keys)})")
