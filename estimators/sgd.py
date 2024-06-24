@@ -20,16 +20,12 @@ class SGDClf(BaseEstimator, ClassifierMixin):
         self.tol = tol
         self.loss = loss
         super().__init__()
-        model = SGDClassifier(max_iter=1000, tol=1e-2, loss=self.loss) 
+        model = SGDClassifier(max_iter=1000, tol=1e-3, loss=self.loss) 
         steps = [('reshape', Reshape()), 
                  ('feature', StatisticalTime()),
                  ('scale', StandardScaler()),
-                 ('over', SMOTE()), 
-                 ('under', RandomUnderSampler()), 
                  ('model', model)]
         self.clf = Pipeline(steps=steps)
-    def model(self):
-        return self.clf
     def fit(self, X, y):
         self.clf.fit(X, y)
     def predict(self,X):
