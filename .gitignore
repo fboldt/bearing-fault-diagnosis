@@ -165,3 +165,5 @@ raw_*/
 *-ubyte
 *-ubyte.gz
 *.keras
+
+cache/
