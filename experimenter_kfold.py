@@ -1,4 +1,4 @@
-from datasets.cwru48 import CWRU48k
+from datasets.cwru import CWRU
 from datasets.hust import Hust
 from datasets.mfpt import MFPT
 from datasets.ottawa import Ottawa
@@ -21,13 +21,14 @@ def kfold(datasets, clfmaker, repetitions=3):
         for dataset in datasets:
             n_folds = min(n_folds, dataset.n_folds)
     else:
-        X, y, groups = datasets.get_acquisitions()
+        X, y, groups = datasets.get_acquisitions()        
         n_folds = datasets.n_folds
         print(datasets)
+
     for i in range(repetitions):
         print(f"{i+1}/{repetitions}: ")
         accuracies = []
-        kf = StratifiedGroupKFold(n_splits=n_folds)
+        kf = StratifiedGroupKFold(n_splits=n_folds) #, shuffle=True)
         clf = clfmaker.estimator()
         init = time.time()        
         print("X.shape", X.shape)
@@ -51,34 +52,25 @@ def kfold(datasets, clfmaker, repetitions=3):
     print(f"total mean accuracy: {np.mean(total)}")
     print(f"standard deviation: {np.std(total)}")
 
-'''
 from estimators.estimator_factory import RandomForestEstimator 
 clfmaker = RandomForestEstimator(n_estimators=1000, max_features=25)
-'''
-from estimators.estimator_factory import SGDEstimator
-clfmaker = SGDEstimator()
-# '''
+
+# from estimators.sgd import MakerEstimator
+# clfmaker = MakerEstimator()
+
 # from estimators.estimator_factory import CNN1DEstimator 
 # clfmaker = CNN1DEstimator(epochs=100, verbose=0)
 
 
 debug = True
 
-datasets = [
-    # Paderborn(cache_file = "paderborn_dbg.npy"),
-    # Ottawa(cache_file = "ottawa_all.npy"),
-    # Hust(cache_file = "hust_dbg.npy"),
-    UORED_VAFCLS(cache_file = "uored_all.npy"),
-    # MFPT(cache_file = "mfpt_all.npy"),
-    # CWRU48k(cache_file = "cwru48k_dbg.npy"),
-    # CWRU48k(cache_file = "cwru48k_balanced.npy"),
-    # PHM(cache_file = "phm_motor_tr.npy"),
-    # PHM(cache_file = "phm_gearbox_tr.npy"),
-    # PHM(cache_file = "pzzhm_leftaxlebox_tr.npy"),
-    # PHM(cache_file = "phm_18ch_tr100.npy"),
-    # PHM(cache_file = "phm_18ch_tr.npy"),
+datasets = [    
+    CWRU(cache_file = "cache/cwru_FE.npy"),
+    # CWRU(cache_file = "cache/cwru_DE.npy"),
+    # CWRU(cache_file = "cache/cwru_FE_DE.npy"),
+    # Hust(cache_file="cache/hust_all.npy")
 ] if debug else [
-    CWRU48k(config='all'),
+    CWRU(config='all'),
     Hust(config='all'),
     MFPT(config='all'),
     Ottawa(config='all'),
@@ -89,5 +81,6 @@ datasets = [
 def experimenter(datasets=datasets, clfmaker=clfmaker, repetitions=1):
     kfold(datasets, clfmaker=clfmaker, repetitions=repetitions)
 
+
 if __name__ == "__main__":
-    experimenter(clfmaker=clfmaker, repetitions=1)
+    experimenter(clfmaker=clfmaker, repetitions=5)
