@@ -30,3 +30,11 @@ class SGDClf(BaseEstimator, ClassifierMixin):
         self.clf.fit(X, y)
     def predict(self,X):
         return self.clf.predict(X)
+
+class MakerEstimator(EstimatorFactory):
+    def __init__(self, max_iter=1000, tol=1e-3):
+        self.max_iter = max_iter
+        self.tol = tol        
+    def estimator(self):
+        from estimators import sgd
+        return sgd.SGDClf(max_iter=self.max_iter, tol=self.tol)
