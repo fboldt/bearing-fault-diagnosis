@@ -257,6 +257,8 @@ class UORED_VAFCLS():
         print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
 
     def get_acquisitions(self):
+        if self.cache_file is not None:
+            self.load_cache(self.cache_file)
         if len(self.labels) == 0:
             self.load_acquisitions()
         groups = self.groups()
@@ -290,7 +292,7 @@ class UORED_VAFCLS():
 
 if __name__ == "__main__":
     config = "all" # "dbg" # "all" # "nio" # "niob" # "mert" # "faulty_healthy"
-    cache_name = f"uored_{config}.npy"
+    cache_name = f"cache/uored_{config}.npy"
 
     dataset = UORED_VAFCLS(config=config, acquisition_maxsize=21_000)
     os.path.exists("raw_uored_vafcls") or dataset.download()

@@ -142,3 +142,15 @@ class CNN1D(BaseEstimator, ClassifierMixin):
             model = self.model
         predictions = model.predict(X)
         return self.labels[np.argmax(predictions, axis=1)]
+
+class MakerEstimator(EstimatorFactory):
+    def __init__(self, epochs=100, checkpoint="model.checkpoint.keras", verbose=2):
+        self.epochs=epochs
+        self.checkpoint=checkpoint
+        self.verbose=verbose
+    def estimator(self):
+        from estimators import cnn1d
+        return cnn1d.CNN1D(epochs=self.epochs, checkpoint=self.checkpoint, verbose=self.verbose)
+
+
+
