@@ -6,6 +6,8 @@ import scipy.io
 import numpy as np
 import os
 import urllib
+import re
+
 
 def files_hash():
     return {
@@ -112,59 +114,89 @@ def files_hash():
 
 def list_of_bearings_all():
     return [
-    "B500", "B502", "B504", "B600", "B602", "B604", "B700", "B702", "B704", "B800",
-    "B802", "B804", "I400", "I402", "I404", "I500", "I502", "I504", "I600", "I602",
-    "I604", "I700", "I702", "I704", "I800", "I802", "I804", "IB500", "IB502", "IB504", 
-    "IB600", "IB602", "IB604", "IB700", "IB702", "IB704", "IB800", "IB802", "IB804", 
-    "IO400", "IO402", "IO404", "IO500", "IO502", "IO504", "IO600", "IO602", "IO604", 
-    "IO700", "IO702", "IO704", "IO800", "IO802", "IO804", "N400", "N402", "N404", 
-    "N500", "N502", "N504", "N600", "N602", "N604", "N700", "N702", "N704", "N800", 
-    "N802", "N804", "O400", "O402", "O404", "O500", "O502", "O504", "O600", "O602", 
-    "O604", "O700", "O702", "O704", "O800", "O802", "O804", "OB400", "OB402", "OB404", 
-    "OB500", "OB502", "OB504", "OB600", "OB602", "OB604", "OB700", "OB702", "OB704", 
-    "OB800", "OB802", "OB804"
-]
+        ('B500&51200', 'B500.mat'), ('B502&51200', 'B502.mat'), ('B504&51200', 'B504.mat'), ('B600&51200', 'B600.mat'), 
+        ('B602&51200', 'B602.mat'), ('B604&51200', 'B604.mat'), ('B700&51200', 'B700.mat'), ('B702&51200', 'B702.mat'), 
+        ('B704&51200', 'B704.mat'), ('B800&51200', 'B800.mat'), ('B802&51200', 'B802.mat'), ('B804&51200', 'B804.mat'),
+        ('I400&51200', 'I400.mat'), ('I402&51200', 'I402.mat'), ('I404&51200', 'I404.mat'), ('I500&51200', 'I500.mat'), 
+        ('I502&51200', 'I502.mat'), ('I504&51200', 'I504.mat'), ('I600&51200', 'I600.mat'), ('I602&51200', 'I602.mat'),
+        ('I604&51200', 'I604.mat'), ('I700&51200', 'I700.mat'), ('I702&51200', 'I702.mat'), ('I704&51200', 'I704.mat'),
+        ('I800&51200', 'I800.mat'), ('I802&51200', 'I802.mat'), ('I804&51200', 'I804.mat'), ('IB500&51200', 'IB500.mat'),
+        ('IB502&51200', 'IB502.mat'), ('IB504&51200', 'IB504.mat'), ('IB600&51200', 'IB600.mat'), ('IB602&51200', 'IB602.mat'),
+        ('IB604&51200', 'IB604.mat'), ('IB700&51200', 'IB700.mat'), ('IB702&51200', 'IB702.mat'), ('IB704&51200', 'IB704.mat'),
+        ('IB800&51200', 'IB800.mat'), ('IB802&51200', 'IB802.mat'), ('IB804&51200', 'IB804.mat'), ('IO400&51200', 'IO400.mat'),
+        ('IO402&51200', 'IO402.mat'), ('IO404&51200', 'IO404.mat'), ('IO500&51200', 'IO500.mat'), ('IO502&51200', 'IO502.mat'),
+        ('IO504&51200', 'IO504.mat'), ('IO600&51200', 'IO600.mat'), ('IO602&51200', 'IO602.mat'), ('IO604&51200', 'IO604.mat'),
+        ('IO700&51200', 'IO700.mat'), ('IO702&51200', 'IO702.mat'), ('IO704&51200', 'IO704.mat'), ('IO800&51200', 'IO800.mat'),
+        ('IO802&51200', 'IO802.mat'), ('IO804&51200', 'IO804.mat'), ('N400&51200', 'N400.mat'), ('N402&51200', 'N402.mat'),
+        ('N404&51200', 'N404.mat'), ('N500&51200', 'N500.mat'), ('N502&51200', 'N502.mat'), ('N504&51200', 'N504.mat'),
+        ('N600&51200', 'N600.mat'), ('N602&51200', 'N602.mat'), ('N604&51200', 'N604.mat'), ('N700&51200', 'N700.mat'),
+        ('N702&51200', 'N702.mat'), ('N704&51200', 'N704.mat'), ('N800&51200', 'N800.mat'), ('N802&51200', 'N802.mat'),
+        ('N804&51200', 'N804.mat'), ('O400&51200', 'O400.mat'), ('O402&51200', 'O402.mat'), ('O404&51200', 'O404.mat'),
+        ('O500&51200', 'O500.mat'), ('O502&51200', 'O502.mat'), ('O504&51200', 'O504.mat'), ('O600&51200', 'O600.mat'),
+        ('O602&51200', 'O602.mat'), ('O604&51200', 'O604.mat'), ('O700&51200', 'O700.mat'), ('O702&51200', 'O702.mat'),
+        ('O704&51200', 'O704.mat'), ('O800&51200', 'O800.mat'), ('O802&51200', 'O802.mat'), ('O804&51200', 'O804.mat'),
+        ('OB400&51200', 'OB400.mat'), ('OB402&51200', 'OB402.mat'), ('OB404&51200', 'OB404.mat'), ('OB500&51200', 'OB500.mat'),
+        ('OB502&51200', 'OB502.mat'), ('OB504&51200', 'OB504.mat'), ('OB600&51200', 'OB600.mat'), ('OB602&51200', 'OB602.mat'),
+        ('OB604&51200', 'OB604.mat'), ('OB700&51200', 'OB700.mat'), ('OB702&51200', 'OB702.mat'), ('OB704&51200', 'OB704.mat'),
+        ('OB800&51200', 'OB800.mat'), ('OB802&51200', 'OB802.mat'), ('OB804&51200', 'OB804.mat')
+    ]
 
 def list_of_bearings_niob():
     return [
-    "B500", "B502", "B504", "B600", "B602", "B604", 
-    "B700", "B702", "B704", "B800", "B802", "B804", 
-    "I400", "I402", "I404", "I500", "I502", "I504", 
-    "I600", "I602", "I604", "I700", "I702", "I704", 
-    "I800", "I802", "I804", "N400", "N402", "N404", 
-    "N500", "N502", "N504", "N600", "N602", "N604", 
-    "N700", "N702", "N704", "N800", "N802", "N804", 
-    "O400", "O402", "O404", "O500", "O502", "O504", 
-    "O600", "O602", "O604", "O700", "O702", "O704", 
-    "O800", "O802", "O804"
-]
+        ('B500&51200', 'B500.mat'), ('B502&51200', 'B502.mat'), ('B504&51200', 'B504.mat'), ('B600&51200', 'B600.mat'),
+        ('B602&51200', 'B602.mat'), ('B604&51200', 'B604.mat'), ('B700&51200', 'B700.mat'), ('B702&51200', 'B702.mat'),
+        ('B704&51200', 'B704.mat'), ('B800&51200', 'B800.mat'), ('B802&51200', 'B802.mat'), ('B804&51200', 'B804.mat'),
+        ('I400&51200', 'I400.mat'), ('I402&51200', 'I402.mat'), ('I404&51200', 'I404.mat'), ('I500&51200', 'I500.mat'),
+        ('I502&51200', 'I502.mat'), ('I504&51200', 'I504.mat'), ('I600&51200', 'I600.mat'), ('I602&51200', 'I602.mat'),
+        ('I604&51200', 'I604.mat'), ('I700&51200', 'I700.mat'), ('I702&51200', 'I702.mat'), ('I704&51200', 'I704.mat'),
+        ('I800&51200', 'I800.mat'), ('I802&51200', 'I802.mat'), ('I804&51200', 'I804.mat'), ('N400&51200', 'N400.mat'),
+        ('N402&51200', 'N402.mat'), ('N404&51200', 'N404.mat'), ('N500&51200', 'N500.mat'), ('N502&51200', 'N502.mat'),
+        ('N504&51200', 'N504.mat'), ('N600&51200', 'N600.mat'), ('N602&51200', 'N602.mat'), ('N604&51200', 'N604.mat'),
+        ('N700&51200', 'N700.mat'), ('N702&51200', 'N702.mat'), ('N704&51200', 'N704.mat'), ('N800&51200', 'N800.mat'),
+        ('N802&51200', 'N802.mat'), ('N804&51200', 'N804.mat'), ('O400&51200', 'O400.mat'), ('O402&51200', 'O402.mat'),
+        ('O404&51200', 'O404.mat'), ('O500&51200', 'O500.mat'), ('O502&51200', 'O502.mat'), ('O504&51200', 'O504.mat'),
+        ('O600&51200', 'O600.mat'), ('O602&51200', 'O602.mat'), ('O604&51200', 'O604.mat'), ('O700&51200', 'O700.mat'),
+        ('O702&51200', 'O702.mat'), ('O704&51200', 'O704.mat'), ('O800&51200', 'O800.mat'), ('O802&51200', 'O802.mat'),
+        ('O804&51200', 'O804.mat')
+    ]
 
 # The OB400 was removed. It does not have the run-up feature.
 def list_of_bearings_ru():
     return [
-    "B500", "B502", "B504", "B600", "B602", "B604", "B700", "B702", "B704", "B800",
-    "B802", "B804", "I400", "I402", "I404", "I500", "I502", "I504", "I600", "I602",
-    "I604", "I700", "I702", "I704", "I800", "I802", "I804", "IB500", "IB502", "IB504", 
-    "IB600", "IB602", "IB604", "IB700", "IB702", "IB704", "IB800", "IB802", "IB804", 
-    "IO400", "IO402", "IO404", "IO500", "IO502", "IO504", "IO600", "IO602", "IO604", 
-    "IO700", "IO702", "IO704", "IO800", "IO802", "IO804", "N400", "N402", "N404", 
-    "N500", "N502", "N504", "N600", "N602", "N604", "N700", "N702", "N704", "N800", 
-    "N802", "N804", "O400", "O402", "O404", "O500", "O502", "O504", "O600", "O602", 
-    "O604", "O700", "O702", "O704", "O800", "O802", "O804", "OB402", "OB404", 
-    "OB500", "OB502", "OB504", "OB600", "OB602", "OB604", "OB700", "OB702", "OB704", 
-    "OB800", "OB802", "OB804"
-]
-
-def list_of_bearings_mert():
-    return [
-    'N500', 'N602', 'N704', 'N804',
-    'I500', 'I602', 'I704', 'I804',
-    'O500', 'O602', 'O704', 'O804',
-    'B500', 'B602', 'B704', 'B804'
-]
+        ('B500&51200', 'B500.mat'), ('B502&51200', 'B502.mat'), ('B504&51200', 'B504.mat'), ('B600&51200', 'B600.mat'),
+        ('B602&51200', 'B602.mat'), ('B604&51200', 'B604.mat'), ('B700&51200', 'B700.mat'), ('B702&51200', 'B702.mat'),
+        ('B704&51200', 'B704.mat'), ('B800&51200', 'B800.mat'), ('B802&51200', 'B802.mat'), ('B804&51200', 'B804.mat'),
+        ('I400&51200', 'I400.mat'), ('I402&51200', 'I402.mat'), ('I404&51200', 'I404.mat'), ('I500&51200', 'I500.mat'),
+        ('I502&51200', 'I502.mat'), ('I504&51200', 'I504.mat'), ('I600&51200', 'I600.mat'), ('I602&51200', 'I602.mat'),
+        ('I604&51200', 'I604.mat'), ('I700&51200', 'I700.mat'), ('I702&51200', 'I702.mat'), ('I704&51200', 'I704.mat'),
+        ('I800&51200', 'I800.mat'), ('I802&51200', 'I802.mat'), ('I804&51200', 'I804.mat'), ('IB500&51200', 'IB500.mat'),
+        ('IB502&51200', 'IB502.mat'), ('IB504&51200', 'IB504.mat'), ('IB600&51200', 'IB600.mat'), ('IB602&51200', 'IB602.mat'),
+        ('IB604&51200', 'IB604.mat'), ('IB700&51200', 'IB700.mat'), ('IB702&51200', 'IB702.mat'), ('IB704&51200', 'IB704.mat'),
+        ('IB800&51200', 'IB800.mat'), ('IB802&51200', 'IB802.mat'), ('IB804&51200', 'IB804.mat'), ('IO400&51200', 'IO400.mat'),
+        ('IO402&51200', 'IO402.mat'), ('IO404&51200', 'IO404.mat'), ('IO500&51200', 'IO500.mat'), ('IO502&51200', 'IO502.mat'),
+        ('IO504&51200', 'IO504.mat'), ('IO600&51200', 'IO600.mat'), ('IO602&51200', 'IO602.mat'), ('IO604&51200', 'IO604.mat'),
+        ('IO700&51200', 'IO700.mat'), ('IO702&51200', 'IO702.mat'), ('IO704&51200', 'IO704.mat'), ('IO800&51200', 'IO800.mat'),
+        ('IO802&51200', 'IO802.mat'), ('IO804&51200', 'IO804.mat'), ('N400&51200', 'N400.mat'), ('N402&51200', 'N402.mat'),
+        ('N404&51200', 'N404.mat'), ('N500&51200', 'N500.mat'), ('N502&51200', 'N502.mat'), ('N504&51200', 'N504.mat'),
+        ('N600&51200', 'N600.mat'), ('N602&51200', 'N602.mat'), ('N604&51200', 'N604.mat'), ('N700&51200', 'N700.mat'),
+        ('N702&51200', 'N702.mat'), ('N704&51200', 'N704.mat'), ('N800&51200', 'N800.mat'), ('N802&51200', 'N802.mat'),
+        ('N804&51200', 'N804.mat'), ('O400&51200', 'O400.mat'), ('O402&51200', 'O402.mat'), ('O404&51200', 'O404.mat'),
+        ('O500&51200', 'O500.mat'), ('O502&51200', 'O502.mat'), ('O504&51200', 'O504.mat'), ('O600&51200', 'O600.mat'),
+        ('O602&51200', 'O602.mat'), ('O604&51200', 'O604.mat'), ('O700&51200', 'O700.mat'), ('O702&51200', 'O702.mat'),
+        ('O704&51200', 'O704.mat'), ('O800&51200', 'O800.mat'), ('O802&51200', 'O802.mat'), ('O804&51200', 'O804.mat'),
+        ('OB402&51200', 'OB402.mat'), ('OB404&51200', 'OB404.mat'), ('OB500&51200', 'OB500.mat'), ('OB502&51200', 'OB502.mat'),
+        ('OB504&51200', 'OB504.mat'), ('OB600&51200', 'OB600.mat'), ('OB602&51200', 'OB602.mat'), ('OB604&51200', 'OB604.mat'),
+        ('OB700&51200', 'OB700.mat'), ('OB702&51200', 'OB702.mat'), ('OB704&51200', 'OB704.mat'), ('OB800&51200', 'OB800.mat'),
+        ('OB802&51200', 'OB802.mat'), ('OB804&51200', 'OB804.mat')
+    ] 
 
 def list_of_bearings_dbg():
-    return list_of_bearings_mert()
+    return [
+        ('N500&51200', 'N500.mat'), ('N602&51200', 'N602.mat'), ('N704&51200', 'N704.mat'), ('N804&51200', 'N804.mat'),
+        ('I500&51200', 'I500.mat'), ('I602&51200', 'I602.mat'), ('I704&51200', 'I704.mat'), ('I804&51200', 'I804.mat'),
+        ('O500&51200', 'O500.mat'), ('O602&51200', 'O602.mat'), ('O704&51200', 'O704.mat'), ('O804&51200', 'O804.mat'),
+        ('B500&51200', 'B500.mat'), ('B602&51200', 'B602.mat'), ('B704&51200', 'B704.mat'), ('B804&51200', 'B804.mat')
+    ]
 
 def download_file(url, dirname, bearing):
     print("Downloading Bearing Data:", bearing)   
@@ -213,42 +245,28 @@ class Hust():
     (min sample, max_sample) = (121082, 562001)
     """
 
-
-    def get_hust_bearings(self):
+    def get_bearings(self):
         list_of_bearings = eval("list_of_bearings_"+self.config+"()")
-        bearing_file_names = [name+'.mat' for name in list_of_bearings]
-        bearing_label = [label for label in bearing_file_names]    
-        return np.array(bearing_label), np.array(bearing_file_names)
-
-    def __str__(self):
-        return f"HUST ({self.config})"
+        bearing_label, bearing_file_names = zip(*list_of_bearings)
+        return np.array(bearing_label), np.array(bearing_file_names)    
 
     def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, 
-                 config="dbg", cache_file=None):
+                 config="all", cache_file=None):
         self.url = "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/"
-        self.sample_rate = 51200
+        self.cache_file = cache_file
         self.sample_size = sample_size
         self.n_channels = n_channels
         self.acquisition_maxsize = acquisition_maxsize
         self.config = config
         self.rawfilesdir = "raw_hust"
         self.n_folds = 4
-        self.bearing_labels, self.bearing_names = self.get_hust_bearings()
         self.accelerometers = ['DE'][:self.n_channels]
         self.signal_data = np.empty((0, self.sample_size, len(self.accelerometers)))
         self.labels = []
-        self.keys = [] 
+        self.keys = []
 
-        # Files Paths ordered by bearings
-        files_path = {}
-        for key, bearing in zip(self.bearing_labels, self.bearing_names):
-            files_path[key] = os.path.join(self.rawfilesdir, bearing)
-        self.files = files_path
-
-        if cache_file is not None:
-            self.load_cache(cache_file)
-        self.cache_file = cache_file
-
+    def __str__(self):
+        return f"HUST ({self.config})"      
 
     def download(self):
         list_of_bearings = eval("list_of_bearings_"+self.config+"()")
@@ -266,11 +284,11 @@ class Hust():
         Extracts the acquisitions of each file in the dictionary files_names.
         """
         cwd = os.getcwd()
-        # print(cwd)
-        for x, key in enumerate(self.files):
-            matlab_file = scipy.io.loadmat(os.path.join(cwd, self.files[key]))           
+        list_of_bearings = eval(f"list_of_bearings_{self.config}()")
+        for x, bearing in enumerate(list_of_bearings):
+            matlab_file = scipy.io.loadmat(os.path.join(cwd, f'{self.rawfilesdir}/{bearing[1]}'))           
             acquisition = []
-            print('\r', f" loading acquisitions {100*(x+1)/len(self.files):.2f} %", end='')
+            print('\r', f" loading acquisitions {100*(x+1)/len(list_of_bearings):.2f} %", end='')
             if self.acquisition_maxsize:
                 acquisition.append(matlab_file["data"].reshape(1, -1)[0][:self.acquisition_maxsize])
             else:
@@ -278,26 +296,39 @@ class Hust():
             acquisition = np.array(acquisition)
             if len(acquisition.shape)<2 or acquisition.shape[0]<self.n_channels:
                 continue
-            for i in range(acquisition.shape[1]//self.sample_size):                
+            for i in range(acquisition.shape[1]//self.sample_size): 
                 sample = acquisition[:,(i * self.sample_size):((i + 1) * self.sample_size)]
                 self.signal_data = np.append(self.signal_data, np.array([sample.T]), axis=0)
-                self.labels = np.append(self.labels, key[0])
-                self.keys = np.append(self.keys, key)
+                label = re.match(r'^[a-zA-Z]+', bearing[0]).group(0) if re.match(r'^[A-Z]+', bearing[0]) else ''
+                self.labels = np.append(self.labels, label)
+                self.keys = np.append(self.keys, bearing[0])
         print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
 
-    def get_acquisitions(self):
+    def get_acquisitions(self):        
+        if self.cache_file is not None:
+            self.load_cache(self.cache_file)
+            groups = self.groups()        
+            return self.signal_data, self.labels, groups        
         if len(self.labels) == 0:
-            self.load_acquisitions()
-        groups = self.groups()
+            self.load_acquisitions()        
+        groups = self.groups()        
         return self.signal_data, self.labels, groups
-            
+    
     def group_acquisition(self):
+        print('grouped by acquisition')
         groups = []
         hash = dict()
         for i in self.keys:
             if i not in hash:
                 hash[i] = len(hash)
             groups = np.append(groups, hash[i])
+        return groups
+    
+    def group_load(self):
+        print('grouped by load')  
+        groups = []
+        for i in self.keys:
+            groups = np.append(groups, int(i[3]) % self.n_folds)
         return groups
 
     def groups(self):
@@ -318,17 +349,16 @@ class Hust():
             self.config = np.load(f)
 
 if __name__ == "__main__":
-    config = "dbg" # "all" # "niob" # "ru" # "mert"
-    cache_name = f"hust_{config}.npy"
+    config = "all" # "dbg"
+    cache_file = f"cache/hust_{config}.npy"    
     
     dataset = Hust(config=config, acquisition_maxsize=21_000)
-    os.path.exists("raw_hust") or dataset.download()
-    
-    if not os.path.exists(cache_name):
+    os.path.exists("raw_hust") or dataset.download()    
+    if not os.path.exists(cache_file):
         dataset.load_acquisitions()
-        dataset.save_cache(cache_name)
+        dataset.save_cache(cache_file)
     else:
-        dataset.load_cache(cache_name)
+        dataset.load_cache(cache_file)
 
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
