@@ -9,8 +9,14 @@ import os
 import urllib
 import sys
 
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils.filter_bearings import filter_bearings
+
+
 # Code to avoid incomplete array results
 np.set_printoptions(threshold=sys.maxsize)
+
 
 def list_of_bearings_dbg():
     return [
@@ -20,7 +26,7 @@ def list_of_bearings_dbg():
         ("O.007.DE.@6_0&48000","135.mat"),    ("O.007.DE.@6_1&48000","136.mat"),    ("O.007.DE.@6_2&48000","137.mat"),    ("O.007.DE.@6_3&48000","138.mat"),    
     ]
 
-def list_of_bearings_all48k():
+def list_of_bearings_48k():
     return [
         # ("N.000.NN_0&12000","97.mat"),        ("N.000.NN_1&12000","98.mat"),        ("N.000.NN_2&12000","99.mat"),        ("N.000.NN_3&12000","100.mat"),
         ("I.007.DE_0&48000","109.mat"),       ("I.007.DE_1&48000","110.mat"),       ("I.007.DE_2&48000","111.mat"),       ("I.007.DE_3&48000","112.mat"),
@@ -38,7 +44,7 @@ def list_of_bearings_all48k():
         ("O.021.DE.@12_0&48000","262.mat"),   ("O.021.DE.@12_1&48000","263.mat"),   ("O.021.DE.@12_2&48000","264.mat"),   ("O.021.DE.@12_3&48000","265.mat"),    
     ]
 
-def list_of_bearings_all12k():
+def list_of_bearings_12k():
     return [
     ("N.000.NN_0&12000","97.mat"),        ("N.000.NN_1&12000","98.mat"),        ("N.000.NN_2&12000","99.mat"),        ("N.000.NN_3&12000","100.mat"),
     ("I.007.DE_0&12000","105.mat"),       ("I.007.DE_1&12000","106.mat"),       ("I.007.DE_2&12000","107.mat"),       ("I.007.DE_3&12000","108.mat"),
@@ -69,6 +75,32 @@ def list_of_bearings_all12k():
     ("B.021.FE_0&12000","290.mat"),       ("B.021.FE_1&12000","291.mat"),       ("B.021.FE_2&12000","292.mat"),       ("B.021.FE_3&12000","293.mat"),    
     ("O.021.FE.@6_0&12000","315.mat"),    ("O.021.FE.@3_1&12000","316.mat"),    ("O.021.FE.@3_2&12000","317.mat"),    ("O.021.FE.@3_3&12000","318.mat"),    
 ]
+
+def list_of_bearings_all():
+    return list_of_bearings_48k() + list_of_bearings_12k()
+
+list_of_bearings_FE = filter_bearings(list_of_bearings_all, 
+                                                  ['FE'], 
+                                                  [''])
+
+list_of_bearings_DE = filter_bearings(list_of_bearings_all, 
+                                                  ['DE'], 
+                                                  [''])
+
+list_of_bearings_NN = filter_bearings(list_of_bearings_all, 
+                                                  ['NN'], 
+                                                  [''])
+
+list_of_bearings_FE_DE = filter_bearings(list_of_bearings_all, 
+                                                  [''], 
+                                                  ['DE', 'FE'])
+
+import re
+def get_load_info(key):
+    match = re.search(r'_(\d+)&', key)
+    if match:
+        return match.group(1)
+    
 
 
 def download_file(url, dirname, bearing):
@@ -115,24 +147,18 @@ class CWRU():
     load_acquisitions()
       Extract vibration data from files
     """
-
-    def get_bearings(self):
-        list_of_bearings = eval("list_of_bearings_"+self.config+"()")
-        bearing_label, bearing_file_names = zip(*list_of_bearings)
-        return np.array(bearing_label), np.array(bearing_file_names)
-
     def __str__(self):
         return f"CWRU ({self.config})"
 
     def __init__(self, sample_size=4096, acquisition_maxsize=None, 
-                 config="all48k", cache_file=None):
+                 config="48k", cache_file=None):
+        self.cache_file = cache_file
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize
         self.config = config
         self.rawfilesdir = "raw_cwru"
         self.url = "https://engineering.case.edu/sites/default/files/"
         self.n_folds = 3
-        self.bearing_labels, self.bearing_names = self.get_bearings()
         self.signal_data = np.empty((0, self.sample_size, 1))
         self.labels = []
         self.keys = []
@@ -154,14 +180,7 @@ class CWRU():
         where 007 stands for 0.007 inches and 0021 for 0.021 inches. 
         For Outer Race failures, the character @ is followed by a number 
         that indicates different load zones.
-        """
-        # Files Paths ordered by bearings
-        files_path = {}
-        for key, bearing in zip(self.bearing_labels, self.bearing_names):
-            files_path[key] = os.path.join(self.rawfilesdir, bearing)
-        self.files = files_path
-        if cache_file is not None:
-            self.load_cache(cache_file)
+        """    
 
     def download(self):
         """
@@ -177,13 +196,14 @@ class CWRU():
             download_file(url, dirname, bearing)
         print("Dataset Loaded.")
 
-    def extract_acquisition(self, bearing, position):  # bearing <- (label, filename.mat)
+    def extract_acquisition(self, bearing_info, filename):
         cwd = os.getcwd()
-        full_path = os.path.join(cwd, f'{self.rawfilesdir}/{bearing[1]}')
+        full_path = os.path.join(cwd, f'{self.rawfilesdir}/{filename}')
         matlab_file = scipy.io.loadmat(full_path)
         acquisition = []
-        file_number = bearing[1][len(self.rawfilesdir)+1:-4]
-        signal_key = [key for key in matlab_file if key.endswith(file_number+ "_" + position + "_time")]            
+        file_number = filename.split('.')[0]
+        position = bearing_info.split('.')[2][:2]
+        signal_key = [key for key in matlab_file if key.endswith(file_number + "_" + position + "_time")]
         if len(signal_key) == 0:
             signal_key = [key for key in matlab_file if key.endswith("_" + position + "_time")]            
         if len(signal_key) > 0:
@@ -191,35 +211,40 @@ class CWRU():
                 acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0][:self.acquisition_maxsize])
             else:
                 acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0])
-        acquisition = np.array(acquisition)       
+        acquisition = np.array(acquisition)
+        print('acquisition.shape:', acquisition.shape) 
         for i in range(acquisition.shape[1]//self.sample_size):
             sample = acquisition[:,(i * self.sample_size):((i + 1) * self.sample_size)]
             self.signal_data = np.append(self.signal_data, np.array([sample.T]), axis=0)
-            self.labels = np.append(self.labels, bearing[0][0])
-            self.keys = np.append(self.keys, bearing)
+            self.labels = np.append(self.labels, bearing_info[0])
+            self.keys = np.append(self.keys, bearing_info)
             
     def load_acquisitions(self):
         """
         Extracts the acquisitions of each file in the dictionary files_names.
         """
         list_of_bearings = eval(f"list_of_bearings_{self.config}()")
-        for x, bearing in enumerate(list_of_bearings):
+        for x, (bearing_info, filename) in enumerate(list_of_bearings):
             print('\r', f" loading acquisitions {100*(x+1)/len(list_of_bearings):.2f} %", end='')
-            position = bearing[0][6:8]
+            position = bearing_info[6:8]
             if position == 'NN':
                 for position in ['DE', 'FE']:
-                    self.extract_acquisition(bearing, position)
+                    self.extract_acquisition(bearing_info.replace('NN', position), filename)
             else:
-                self.extract_acquisition(bearing, position)
+                self.extract_acquisition(bearing_info, filename)
         print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
     
     def get_acquisitions(self):
+        if self.cache_file is not None:
+            self.load_cache(self.cache_file)
+            groups = self.groups()
+            return self.signal_data, self.labels, groups
         if len(self.labels) == 0:
             self.load_acquisitions()
-        groups = self.groups()
-        return self.signal_data, self.labels, groups
+        return self.signal_data, self.labels, self.group
     
     def group_acquisition(self):
+        print('group acquisition')
         groups = []
         hash = dict()
         for i in self.keys:
@@ -229,27 +254,30 @@ class CWRU():
         return groups
 
     def group_load(self):    
+        print('group load')
         groups = []
         for i in self.keys:
-            groups = np.append(groups, int(i[-1]) % self.n_folds)
+            groups = np.append(groups, int(i[-7]) % self.n_folds)
         return groups
 
     def group_settings(self):
+        print('group settings')
         groups = []
         hash = dict()
         for i in self.keys:
-            load = i[-1]
+            load = i[-7]
             if load not in hash:
                 hash[load] = len(hash)
             groups = np.append(groups, hash[load])
         return groups
 
     def group_severity(self):
+        print('group severity')
         groups = []
         hash = dict()
         for i in self.keys:
             if i[0] == "N":
-                load_severity = str(i[-1])
+                load_severity = str(i[-7])
             else:
                 load_severity = i[2:5]
             if load_severity not in hash:
@@ -258,6 +286,9 @@ class CWRU():
         return groups
         
     def groups(self):
+        # return self.group_acquisition()
+        # return self.group_load()
+        # return self.group_settings()
         return self.group_severity()
 
     def save_cache(self, filename):
@@ -274,10 +305,11 @@ class CWRU():
             self.keys = np.load(f)
             self.config = np.load(f)
 
-if __name__ == "__main__":
-    config = "dbg" # "all12k" # "all48k"
+if __name__ == "__main__":  
+    print(len(list_of_bearings_FE_DE()))
+    config = "DE" # "DE" # "FE" # "12k" # "48k" 
     cache_name = f"cache/cwru_{config}.npy"
-    dataset = CWRU(config=config, acquisition_maxsize=None)
+    dataset = CWRU(config=config, acquisition_maxsize=21_000)
     os.path.exists("raw_cwru") or dataset.download()    
     if not os.path.exists(cache_name):
         dataset.load_acquisitions()  
