@@ -169,4 +169,4 @@ raw_*/
 cache/
 
 # Ignore model checkpoint files
-model.checkpoint
+model.checkpoint.*
