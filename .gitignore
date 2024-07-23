@@ -167,3 +167,6 @@ raw_*/
 *.keras
 
 cache/
+
+# Ignore model checkpoint files
+model.checkpoint
