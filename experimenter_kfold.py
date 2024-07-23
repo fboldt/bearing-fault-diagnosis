@@ -13,6 +13,9 @@ from sklearn.model_selection import StratifiedGroupKFold, cross_val_score
 import numpy as np
 import time
 
+from estimators.estimator_factory import EstimatorFactory
+
+# Define the k-fold procedure
 def kfold(datasets, clfmaker, repetitions=3):
     total = np.array([])
     if isinstance(datasets, Iterable):
@@ -24,22 +27,19 @@ def kfold(datasets, clfmaker, repetitions=3):
         X, y, groups = datasets.get_acquisitions()        
         n_folds = datasets.n_folds
         print(datasets)
-
     for i in range(repetitions):
         print(f"{i+1}/{repetitions}: ")
         accuracies = []
         kf = StratifiedGroupKFold(n_splits=n_folds) #, shuffle=True)
-        clf = clfmaker.estimator()
         init = time.time()        
         print("X.shape", X.shape)
         for train_index, test_index in kf.split(X, y, groups):
             Xtr, ytr = X[train_index], y[train_index]
             Xte, yte = X[test_index], y[test_index]
-            clf = clfmaker.estimator()
+            clf = clfmaker.get_estimator()
             train_estimator(clf.fit, Xtr, ytr, groups[train_index])
             ypr = clf.predict(Xte)
             accuracies.append(accuracy_score(yte, ypr))
-            # print(clf)
             print(f"fold {len(accuracies)}/{n_folds} accuracy: {accuracies[-1]}")
             labels = list(set(yte))
             print(f" {labels}")
@@ -49,26 +49,22 @@ def kfold(datasets, clfmaker, repetitions=3):
         mean_accuracy = sum(accuracies)/len(accuracies)
         print(f"mean accuracy: {mean_accuracy}")
         total = np.append(total, mean_accuracy)
-    print(f"total mean accuracy: {np.mean(total)}")
-    print(f"standard deviation: {np.std(total)}")
+    print('-----------------------------------------')
+    print(f"Total Mean Accuracy: {np.mean(total)}")
+    print(f"Standard Deviation: {np.std(total)}")
+    print('-----------------------------------------')
 
-from estimators.estimator_factory import RandomForestEstimator 
-clfmaker = RandomForestEstimator(n_estimators=1000, max_features=25)
+# Initialize the estimator factory
+factory = EstimatorFactory()
+factory.set_estimator('random_forest')
 
-# from estimators.sgd import MakerEstimator
-# clfmaker = MakerEstimator()
-
-# from estimators.estimator_factory import CNN1DEstimator 
-# clfmaker = CNN1DEstimator(epochs=100, verbose=0)
-
-
+# Set the debug mode and define the datasets
 debug = True
-
-datasets = [    
-    CWRU(cache_file = "cache/cwru_FE.npy"),
+datasets = [  # debug mode 
+    # CWRU(cache_file = "cache/cwru_FE.npy"),
     # CWRU(cache_file = "cache/cwru_DE.npy"),
     # CWRU(cache_file = "cache/cwru_FE_DE.npy"),
-    # Hust(cache_file="cache/hust_all.npy")
+    Hust(cache_file="cache/hust_all.npy")
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),
@@ -78,9 +74,10 @@ datasets = [
     UORED_VAFCLS(config='all'),
 ]
 
-def experimenter(datasets=datasets, clfmaker=clfmaker, repetitions=1):
+# Define and run the experimenter
+def experimenter(datasets=datasets, clfmaker=factory, repetitions=1):
     kfold(datasets, clfmaker=clfmaker, repetitions=repetitions)
 
-
+# Run the experimenter
 if __name__ == "__main__":
-    experimenter(clfmaker=clfmaker, repetitions=5)
+    experimenter(clfmaker=factory, repetitions=5)

@@ -7,14 +7,13 @@ from imblearn.under_sampling import RandomUnderSampler
 from estimators.features.statisticaltime import StatisticalTime
 from sklearn.preprocessing import StandardScaler
 
-
 class Reshape(BaseEstimator, TransformerMixin):
   def fit(self, X, y=None):
     return self
   def transform(self, X, y=None):
     return X.reshape(X.shape[0], X.shape[1]*X.shape[2])
 
-class SGDClf(BaseEstimator, ClassifierMixin):
+class SGDEstimator(BaseEstimator, ClassifierMixin):
     def __init__(self, max_iter=1000, tol=1e-3, loss="hinge"):
         self.max_iter = max_iter
         self.tol = tol
@@ -30,11 +29,3 @@ class SGDClf(BaseEstimator, ClassifierMixin):
         self.clf.fit(X, y)
     def predict(self,X):
         return self.clf.predict(X)
-
-class MakerEstimator(EstimatorFactory):
-    def __init__(self, max_iter=1000, tol=1e-3):
-        self.max_iter = max_iter
-        self.tol = tol        
-    def estimator(self):
-        from estimators import sgd
-        return sgd.SGDClf(max_iter=self.max_iter, tol=self.tol)
