@@ -8,6 +8,7 @@ import numpy as np
 import os
 import urllib
 import sys
+import logging
 
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -147,8 +148,8 @@ class CWRU():
     load_acquisitions()
       Extract vibration data from files
     """
-    def __str__(self):
-        return f"CWRU ({self.config})"
+    # def __str__(self):        
+    #     return f"CWRU ({self.config})"
 
     def __init__(self, sample_size=4096, acquisition_maxsize=None, 
                  config="48k", cache_file=None):
@@ -162,6 +163,8 @@ class CWRU():
         self.signal_data = np.empty((0, self.sample_size, 1))
         self.labels = []
         self.keys = []
+
+        logging.info(f"CWRU ({self.config})")
 
         """
         Associate each file name to a bearing condition in a Python dictionary. 
@@ -180,7 +183,7 @@ class CWRU():
         where 007 stands for 0.007 inches and 0021 for 0.021 inches. 
         For Outer Race failures, the character @ is followed by a number 
         that indicates different load zones.
-        """    
+        """
 
     def download(self):
         """
@@ -244,7 +247,7 @@ class CWRU():
         return self.signal_data, self.labels, self.group
     
     def group_acquisition(self):
-        print('group acquisition')
+        logging.info('Group Acquisition')
         groups = []
         hash = dict()
         for i in self.keys:
@@ -254,14 +257,14 @@ class CWRU():
         return groups
 
     def group_load(self):    
-        print('group load')
+        logging.info('Group Load')
         groups = []
         for i in self.keys:
             groups = np.append(groups, int(i[-7]) % self.n_folds)
         return groups
 
     def group_settings(self):
-        print('group settings')
+        logging.info('Group Settings')
         groups = []
         hash = dict()
         for i in self.keys:
@@ -272,7 +275,7 @@ class CWRU():
         return groups
 
     def group_severity(self):
-        print('group severity')
+        logging.info('Group Severity')
         groups = []
         hash = dict()
         for i in self.keys:
