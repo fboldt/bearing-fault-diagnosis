@@ -12,8 +12,20 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import StratifiedGroupKFold, cross_val_score
 import numpy as np
 import time
-
 from estimators.estimator_factory import EstimatorFactory
+
+import logging
+from datetime import datetime
+
+# Configure the logger
+current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+log_filename = f"experiments/{current_time}_experiment_log.txt"
+
+# Configure the logger
+logging.basicConfig(level=logging.INFO, format='%(message)s', handlers=[
+    logging.FileHandler(log_filename),
+    logging.StreamHandler()
+])
 
 # Define the k-fold procedure
 def kfold(datasets, clfmaker, repetitions=3):
@@ -26,13 +38,14 @@ def kfold(datasets, clfmaker, repetitions=3):
     else:
         X, y, groups = datasets.get_acquisitions()        
         n_folds = datasets.n_folds
-        print(datasets)
+        logging.info(datasets)
+    logging.info('-----------------------------------------')
     for i in range(repetitions):
-        print(f"{i+1}/{repetitions}: ")
+        logging.info(f"{i+1}/{repetitions}: ")
         accuracies = []
         kf = StratifiedGroupKFold(n_splits=n_folds) #, shuffle=True)
         init = time.time()        
-        print("X.shape", X.shape)
+        logging.info("X.shape {X.shape}")
         for train_index, test_index in kf.split(X, y, groups):
             Xtr, ytr = X[train_index], y[train_index]
             Xte, yte = X[test_index], y[test_index]
@@ -40,31 +53,27 @@ def kfold(datasets, clfmaker, repetitions=3):
             train_estimator(clf.fit, Xtr, ytr, groups[train_index])
             ypr = clf.predict(Xte)
             accuracies.append(accuracy_score(yte, ypr))
-            print(f"fold {len(accuracies)}/{n_folds} accuracy: {accuracies[-1]}")
+            logging.info(f"fold {len(accuracies)}/{n_folds} accuracy: {accuracies[-1]}")
             labels = list(set(yte))
-            print(f" {labels}")
-            print(confusion_matrix(yte, ypr, labels=labels))
+            logging.info(f" {labels}")
+            logging.info(confusion_matrix(yte, ypr, labels=labels))
         final = time.time()
-        print('Processing time:', final-init)
+        logging.info(f'Processing time: {final-init}')
         mean_accuracy = sum(accuracies)/len(accuracies)
-        print(f"mean accuracy: {mean_accuracy}")
+        logging.info(f"mean accuracy: {mean_accuracy}")
         total = np.append(total, mean_accuracy)
-    print('-----------------------------------------')
-    print(f"Total Mean Accuracy: {np.mean(total)}")
-    print(f"Standard Deviation: {np.std(total)}")
-    print('-----------------------------------------')
-
-# Initialize the estimator factory
-factory = EstimatorFactory()
-factory.set_estimator('random_forest')
+    logging.info('-----------------------------------------')
+    logging.info(f"Total Mean Accuracy: {np.mean(total)}")
+    logging.info(f"Standard Deviation: {np.std(total)}")
+    logging.info('-----------------------------------------')
 
 # Set the debug mode and define the datasets
 debug = True
 datasets = [  # debug mode 
-    # CWRU(cache_file = "cache/cwru_FE.npy"),
+    CWRU(cache_file = "cache/cwru_FE.npy"),
     # CWRU(cache_file = "cache/cwru_DE.npy"),
     # CWRU(cache_file = "cache/cwru_FE_DE.npy"),
-    Hust(cache_file="cache/hust_all.npy")
+    # Hust(cache_file="cache/hust_all.npy")
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),
@@ -74,10 +83,14 @@ datasets = [  # debug mode
     UORED_VAFCLS(config='all'),
 ]
 
+# Initialize the estimator factory
+factory = EstimatorFactory()
+factory.set_estimator('random_forest')
+
 # Define and run the experimenter
 def experimenter(datasets=datasets, clfmaker=factory, repetitions=1):
     kfold(datasets, clfmaker=clfmaker, repetitions=repetitions)
 
 # Run the experimenter
 if __name__ == "__main__":
-    experimenter(clfmaker=factory, repetitions=5)
+    experimenter(clfmaker=factory, repetitions=1)
