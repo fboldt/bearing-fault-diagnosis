@@ -3,7 +3,7 @@ import numpy as np
 def get_acquisitions(datasets):
     first_dataset = True
     for dataset in datasets:
-        print(dataset)
+        # print(dataset)
         Xtmp, ytmp, gtmp = dataset.get_acquisitions()
         if first_dataset:
             X, y, g =  Xtmp, ytmp, gtmp
