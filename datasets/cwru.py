@@ -240,11 +240,11 @@ class CWRU():
     def get_acquisitions(self):
         if self.cache_file is not None:
             self.load_cache(self.cache_file)
-            groups = self.groups()
-            return self.signal_data, self.labels, groups
         if len(self.labels) == 0:
             self.load_acquisitions()
-        return self.signal_data, self.labels, self.group
+        groups = self.groups()
+        sr = np.array([int(key[-5:]) for key in self.keys])
+        return self.signal_data, self.labels, groups, sr
     
     def group_acquisition(self):
         logging.info('Group Acquisition')
