@@ -12,7 +12,10 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import StratifiedGroupKFold, cross_val_score
 import numpy as np
 import time
+from utils.resampling import resample_data
 from estimators.estimator_factory import EstimatorFactory
+
+import librosa
 
 import logging
 from datetime import datetime
@@ -31,12 +34,12 @@ logging.basicConfig(level=logging.INFO, format='%(message)s', handlers=[
 def kfold(datasets, clfmaker, repetitions=3):
     total = np.array([])
     if isinstance(datasets, Iterable):
-        X, y, groups = get_acquisitions(datasets)
+        X, y, groups, sr = get_acquisitions(datasets)
         n_folds = 10
         for dataset in datasets:
             n_folds = min(n_folds, dataset.n_folds)
     else:
-        X, y, groups = datasets.get_acquisitions()        
+        X, y, groups, sr = datasets.get_acquisitions()        
         n_folds = datasets.n_folds
         logging.info(datasets)
     logging.info('-----------------------------------------')
@@ -49,10 +52,15 @@ def kfold(datasets, clfmaker, repetitions=3):
         for train_index, test_index in kf.split(X, y, groups):
             Xtr, ytr = X[train_index], y[train_index]
             Xte, yte = X[test_index], y[test_index]
+            # resampling
+            Xtr_rs = resample_data(Xtr, orig_sr=sr, target_sr=12000)
+            Xte_rs = resample_data(Xte, orig_sr=sr, target_sr=12000)
+            # training and prediction
             clf = clfmaker.get_estimator()
             train_estimator(clf.fit, Xtr, ytr, groups[train_index])
             ypr = clf.predict(Xte)
             accuracies.append(accuracy_score(yte, ypr))
+            # experiment log
             logging.info(f"fold {len(accuracies)}/{n_folds} accuracy: {accuracies[-1]}")
             labels = list(set(yte))
             logging.info(f" {labels}")
@@ -70,8 +78,8 @@ def kfold(datasets, clfmaker, repetitions=3):
 # Set the debug mode and define the datasets
 debug = True
 datasets = [  # debug mode 
-    CWRU(cache_file = "cache/cwru_FE.npy"),
-    # CWRU(cache_file = "cache/cwru_DE.npy"),
+    # CWRU(cache_file = "cache/cwru_FE.npy"),
+    CWRU(cache_file = "cache/cwru_DE.npy"),
     # CWRU(cache_file = "cache/cwru_FE_DE.npy"),
     # Hust(cache_file="cache/hust_all.npy")
 ] if debug else [
