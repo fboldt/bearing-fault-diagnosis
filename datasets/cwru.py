@@ -80,29 +80,6 @@ def list_of_bearings_12k():
 def list_of_bearings_all():
     return list_of_bearings_48k() + list_of_bearings_12k()
 
-list_of_bearings_FE = filter_bearings(list_of_bearings_all, 
-                                                  ['FE'], 
-                                                  [''])
-
-list_of_bearings_DE = filter_bearings(list_of_bearings_all, 
-                                                  ['DE'], 
-                                                  [''])
-
-list_of_bearings_NN = filter_bearings(list_of_bearings_all, 
-                                                  ['NN'], 
-                                                  [''])
-
-list_of_bearings_FE_DE = filter_bearings(list_of_bearings_all, 
-                                                  [''], 
-                                                  ['DE', 'FE'])
-
-import re
-def get_load_info(key):
-    match = re.search(r'_(\d+)&', key)
-    if match:
-        return match.group(1)
-    
-
 
 def download_file(url, dirname, bearing):
     print("Downloading Bearing Data:", bearing)
@@ -243,8 +220,9 @@ class CWRU():
         if len(self.labels) == 0:
             self.load_acquisitions()
         groups = self.groups()
-        sr = np.array([int(key[-5:]) for key in self.keys])
-        return self.signal_data, self.labels, groups, sr
+        sampling_rate = np.array([int(key[-5:]) for key in self.keys])
+        logging.info(f"Config: {self.config}")
+        return self.signal_data, self.labels, groups, sampling_rate
     
     def group_acquisition(self):
         logging.info('Group Acquisition')
@@ -310,7 +288,7 @@ class CWRU():
 
 if __name__ == "__main__":  
     print(len(list_of_bearings_FE_DE()))
-    config = "DE" # "DE" # "FE" # "12k" # "48k" 
+    config = "similar_FE" # "DE" # "FE" # "12k" # "48k" 
     cache_name = f"cache/cwru_{config}.npy"
     dataset = CWRU(config=config, acquisition_maxsize=21_000)
     os.path.exists("raw_cwru") or dataset.download()    
