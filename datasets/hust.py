@@ -7,6 +7,7 @@ import numpy as np
 import os
 import urllib
 import re
+import logging
 
 
 def files_hash():
@@ -245,11 +246,7 @@ class Hust():
     (min sample, max_sample) = (121082, 562001)
     """
 
-    def get_bearings(self):
-        list_of_bearings = eval("list_of_bearings_"+self.config+"()")
-        bearing_label, bearing_file_names = zip(*list_of_bearings)
-        return np.array(bearing_label), np.array(bearing_file_names)    
-
+    
     def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, 
                  config="all", cache_file=None):
         self.url = "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/"
@@ -259,14 +256,17 @@ class Hust():
         self.acquisition_maxsize = acquisition_maxsize
         self.config = config
         self.rawfilesdir = "raw_hust"
-        self.n_folds = 4
+        self.n_folds = 3
         self.accelerometers = ['DE'][:self.n_channels]
         self.signal_data = np.empty((0, self.sample_size, len(self.accelerometers)))
         self.labels = []
         self.keys = []
 
-    def __str__(self):
-        return f"HUST ({self.config})"      
+        logging.info(f"CWRU ({self.config})")
+
+
+    # def __str__(self):
+    #     return f"HUST ({self.config})"      
 
     def download(self):
         list_of_bearings = eval("list_of_bearings_"+self.config+"()")
@@ -306,16 +306,16 @@ class Hust():
 
     def get_acquisitions(self):        
         if self.cache_file is not None:
-            self.load_cache(self.cache_file)
-            groups = self.groups()        
-            return self.signal_data, self.labels, groups        
+            self.load_cache(self.cache_file)                    
         if len(self.labels) == 0:
-            self.load_acquisitions()        
-        groups = self.groups()        
-        return self.signal_data, self.labels, groups
+            self.load_acquisitions()
+        groups = self.groups()
+        sampling_rate = np.array([int(key.split('&')[1]) for key in self.keys])
+        logging.info(f"Config: {self.config}")     
+        return self.signal_data, self.labels, groups, sampling_rate
     
     def group_acquisition(self):
-        print('grouped by acquisition')
+        logging.info('Grouping data by acquisition.')
         groups = []
         hash = dict()
         for i in self.keys:
@@ -325,14 +325,25 @@ class Hust():
         return groups
     
     def group_load(self):
-        print('grouped by load')  
+        logging.info('Grouping data by load condition.')  
         groups = []
         for i in self.keys:
-            groups = np.append(groups, int(i[3]) % self.n_folds)
+            load = i.split('&')[0][-1]
+            groups = np.append(groups, int(load) % self.n_folds)
+        return groups
+
+    def group_bearing_type(self):
+        logging.info('Grouping data by bearing type.')  
+        groups = []
+        for i in self.keys:
+            bearing = i.split('&')[0][-3]
+            groups = np.append(groups, int(bearing) % self.n_folds)
         return groups
 
     def groups(self):
-        return self.group_acquisition()
+        # return self.group_acquisition()
+        # return self.group_load()
+        return self.group_bearing_type()
     
     def save_cache(self, filename):
         with open(filename, 'wb') as f:
