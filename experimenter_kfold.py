@@ -34,12 +34,12 @@ logging.basicConfig(level=logging.INFO, format='%(message)s', handlers=[
 def kfold(datasets, clfmaker, repetitions=3, target_sr=12000):
     total = np.array([])
     if isinstance(datasets, Iterable):
-        X, y, groups, sr = get_acquisitions(datasets)
+        X, y, groups, orig_sr = get_acquisitions(datasets)
         n_folds = 10
         for dataset in datasets:
             n_folds = min(n_folds, dataset.n_folds)
     else:
-        X, y, groups, sr = datasets.get_acquisitions()        
+        X, y, groups, orig_sr = datasets.get_acquisitions()        
         n_folds = datasets.n_folds
         logging.info(datasets)
     logging.info('-----------------------------------------')
@@ -51,13 +51,13 @@ def kfold(datasets, clfmaker, repetitions=3, target_sr=12000):
         logging.info(f"X.shape {X.shape}")
         for train_index, test_index in kf.split(X, y, groups):
             Xtr, ytr = X[train_index], y[train_index]
-            Xte, yte = X[test_index], y[test_index]
-            # resampling
-            Xtr_rs = resample_data(Xtr, orig_sr=sr, target_sr=target_sr)
-            Xte_rs = resample_data(Xte, orig_sr=sr, target_sr=target_sr)
-            # training and prediction
-            clf = clfmaker.get_estimator()
-            train_estimator(clf.fit, Xtr_rs, ytr, groups[train_index])
+            Xte, yte = X[test_index], y[test_index]  
+            print(f"set(yte): {np.unique(yte)}")          
+            # training
+            clf = clfmaker.get_estimator(orig_sr=orig_sr, target_sr=target_sr)
+            train_estimator(clf.fit, Xtr, ytr, groups[train_index])
+            # predicting
+            Xte_rs = resample_data(Xte, orig_sr=orig_sr, target_sr=target_sr)
             ypr = clf.predict(Xte_rs)
             accuracies.append(accuracy_score(yte, ypr))
             # experiment log
@@ -80,8 +80,8 @@ debug = True
 datasets = [  # debug mode 
     # CWRU(cache_file = "cache/cwru_FE.npy"),
     # CWRU(cache_file = "cache/cwru_DE.npy"),
-    # CWRU(cache_file = "cache/cwru_FE_DE.npy"),    
-    Hust(cache_file="cache/hust_all.npy")    
+    CWRU(cache_file = "cache/cwru_DE_FE.npy"),    
+    # Hust(cache_file="cache/hust_all.npy")    
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),
@@ -95,8 +95,10 @@ datasets = [  # debug mode
 factory = EstimatorFactory()
 factory.set_estimator('random_forest')
 
-# target sampling rate
-target_sr = 51200
+# SAMPLING RATES
+# hust -> 51200
+# cwru -> 12000/48000
+target_sr = 12000
 
 # Define and run the experimenter
 def experimenter(datasets=datasets, clfmaker=factory, repetitions=1, target_sr=target_sr):

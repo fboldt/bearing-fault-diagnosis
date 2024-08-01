@@ -4,7 +4,7 @@ import os
 from sklearn.base import BaseEstimator, ClassifierMixin
 
 class EstimatorFactory:
-    def __init__(self, estimators_dir=os.path.dirname(__file__)):
+    def __init__(self, estimators_dir=os.path.dirname(__file__), orig_sr=48000, target_sr=12000):
         self.estimators_dir = estimators_dir
         self.estimators = self._find_estimators()
         self.current_estimator = None
@@ -31,7 +31,12 @@ class EstimatorFactory:
         else:
             raise ValueError(f'Estimator {name} not found')
 
-    def get_estimator(self):
+    # def get_estimator(self):
+    #     if self.current_estimator is None:
+    #         raise ValueError('No estimator has been set')
+    #     return self.current_estimator()
+
+    def get_estimator(self, **kwargs):
         if self.current_estimator is None:
             raise ValueError('No estimator has been set')
-        return self.current_estimator()
+        return self.current_estimator(**kwargs)
