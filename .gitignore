@@ -166,7 +166,7 @@ raw_*/
 *-ubyte.gz
 *.keras
 
-cache/
+!cache/
 
 # Ignore model checkpoint files
 model.checkpoint.*
