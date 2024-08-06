@@ -189,7 +189,27 @@ def list_of_bearings_ru():
         ('OB504&51200', 'OB504.mat'), ('OB600&51200', 'OB600.mat'), ('OB602&51200', 'OB602.mat'), ('OB604&51200', 'OB604.mat'),
         ('OB700&51200', 'OB700.mat'), ('OB702&51200', 'OB702.mat'), ('OB704&51200', 'OB704.mat'), ('OB800&51200', 'OB800.mat'),
         ('OB802&51200', 'OB802.mat'), ('OB804&51200', 'OB804.mat')
-    ] 
+    ]
+
+def list_of_bearings_B5():
+    return [
+        ('N500&51200', 'N500.mat'), ('N502&51200', 'N502.mat'), ('N504&51200', 'N504.mat'),
+        ('B500&51200', 'B500.mat'), ('B502&51200', 'B502.mat'), ('B504&51200', 'B504.mat'),
+        ('I500&51200', 'I500.mat'), ('I502&51200', 'I502.mat'), ('I504&51200', 'I504.mat'),
+        ('O500&51200', 'O500.mat'), ('O502&51200', 'O502.mat'), ('O504&51200', 'O504.mat'),        
+    ]
+
+def list_of_bearings_B6():
+    return [
+        ('N600&51200', 'N600.mat'), ('N602&51200', 'N602.mat'), ('N604&51200', 'N604.mat'),
+        ('B600&51200', 'B600.mat'), ('B602&51200', 'B602.mat'), ('B604&51200', 'B604.mat'),
+        ('I600&51200', 'I600.mat'), ('I602&51200', 'I602.mat'), ('I604&51200', 'I604.mat'),
+        ('O600&51200', 'O600.mat'), ('O602&51200', 'O602.mat'), ('O604&51200', 'O604.mat'),
+    ]
+
+def list_of_bearings_B56():
+    return list_of_bearings_B5() + list_of_bearings_B6()
+
 
 def list_of_bearings_dbg():
     return [
@@ -342,8 +362,8 @@ class Hust():
 
     def groups(self):
         # return self.group_acquisition()
-        # return self.group_load()
-        return self.group_bearing_type()
+        return self.group_load()
+        # return self.group_bearing_type()
     
     def save_cache(self, filename):
         with open(filename, 'wb') as f:
