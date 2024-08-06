@@ -35,7 +35,7 @@ class RandomForestEstimator(BaseEstimator, ClassifierMixin):
         self.orig_sr = orig_sr
         super().__init__()
         model = RandomForestClassifier(n_estimators=self.n_estimators, 
-                                       max_features=self.max_features) 
+                                       max_features=self.max_features, max_depth=10) 
         
         steps = [
             ('resample', ResampleData(target_sr=self.target_sr, orig_sr=self.orig_sr)),
