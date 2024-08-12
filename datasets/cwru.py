@@ -9,10 +9,18 @@ import os
 import urllib
 import sys
 import logging
+import re
+
+from utils.resampling import compute_resample_size
 
 
 # Code to avoid incomplete array results
 np.set_printoptions(threshold=sys.maxsize)
+
+def list_of_bearings_test():
+    return [
+        ("N.000.NN_0&12000","97.mat"), ("I.007.DE_0&48000","109.mat"), ("O.021.DE.@6_1&12000","235.mat")    
+    ]
 
 
 def list_of_bearings_dbg():
@@ -213,65 +221,57 @@ class CWRU():
         """
         Download and extract compressed files from CWRU website.
         """
-        # Download MAT Files
         url = self.url
         dirname = self.rawfilesdir
         if not os.path.isdir(dirname):
             os.mkdir(dirname)
         print("Downloading MAT files:")
-        bearings = eval("list_of_bearings_all()")
+        bearings = eval(f"list_of_bearings_{self.config}()")
         filenames = [b[1] for b in bearings]
         for file in filenames:
             download_file(url, dirname, file)
         print("Dataset Loaded.")
 
-    def extract_acquisition(self, bearing_info, filename):
-        cwd = os.getcwd()
-        full_path = os.path.join(cwd, f'{self.rawfilesdir}/{filename}')
+    def extract_acquisition(self, bearing_label, filename):          
+        def split_acquisition(acquisition):
+            for i in range(acquisition.shape[1]//adjusted_sample_size):
+                sample = acquisition[:,(i * adjusted_sample_size):((i + 1) * adjusted_sample_size)]
+                sample = sample[:, :, np.newaxis] # add new dimension to number of channel
+                if self.signal_data.shape[1] == 0:
+                    self.signal_data = np.empty((0, adjusted_sample_size, 1))
+                self.signal_data = np.append(self.signal_data, sample, axis=0)
+                self.labels = np.append(self.labels, bearing_label[0])
+                self.keys = np.append(self.keys, bearing_label)      
+        full_path = os.path.join(f'{self.rawfilesdir}/{filename}')
         matlab_file = scipy.io.loadmat(full_path)
-        acquisition = []
-        file_number = filename.split('.')[0]
-        position = bearing_info.split('.')[2][:2]
-        signal_key = [key for key in matlab_file if key.endswith(file_number + "_" + position + "_time")]
-        if len(signal_key) == 0:
-            signal_key = [key for key in matlab_file if key.endswith("_" + position + "_time")]            
-        if len(signal_key) > 0:
+        orig_sr = int(bearing_label.split("&")[1])
+        target_sr = self.target_sr
+        adjusted_sample_size = compute_resample_size(self.sample_size, orig_sr, target_sr)
+        keys = re.findall(r'X\d{3}_[A-Z]{2}_time', str(matlab_file.keys()))
+        for key in keys:
             if self.acquisition_maxsize:
-                acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0][:self.acquisition_maxsize])
+                split_acquisition(matlab_file[key].reshape(1, -1)[:, :self.acquisition_maxsize])
             else:
-                acquisition.append(matlab_file[signal_key[0]].reshape(1, -1)[0])
-        acquisition = np.array(acquisition)
-        print('acquisition.shape:', acquisition.shape)
+                split_acquisition(matlab_file[key].reshape(1, -1))            
         
-        # adjusting the sampling rate for later resampling.
-        orig_sr = int(bearing_info.split("&")[1])
-        pre_sample_size = self.sample_size * int(orig_sr/self.target_sr)#+ int((self.target_sr/orig_sr)*self.sample_size)
-
-        for i in range(acquisition.shape[1]//pre_sample_size):
-            sample = acquisition[:,(i * pre_sample_size):((i + 1) * pre_sample_size)]
-            if self.signal_data.shape[1] == 0:
-                self.signal_data = np.empty((0, pre_sample_size, 1))
-            self.signal_data = np.append(self.signal_data, np.array([sample.T]), axis=0)
-            self.labels = np.append(self.labels, bearing_info[0])
-            self.keys = np.append(self.keys, bearing_info)
-            
+                    
     def load_acquisitions(self):
         """
         Extracts the acquisitions of each file in the dictionary files_names.
         """
         list_of_bearings = eval(f"list_of_bearings_{self.config}()")
-        for x, (bearing_info, filename) in enumerate(list_of_bearings):
+        for x, (bearing_label, filename) in enumerate(list_of_bearings):
             print('\r', f" loading acquisitions {100*(x+1)/len(list_of_bearings):.2f} %", end='')
-            position = bearing_info[6:8]
+            position = bearing_label[6:8]
             if position == 'NN':
                 positions = ['DE', 'FE']
                 for position in positions:
                     if self.config in positions:
-                        self.extract_acquisition(bearing_info.replace('NN', position), filename)
+                        self.extract_acquisition(bearing_label.replace('NN', position), filename)
                         break
-                    self.extract_acquisition(bearing_info.replace('NN', position), filename)
+                    self.extract_acquisition(bearing_label.replace('NN', position), filename)
             else:
-                self.extract_acquisition(bearing_info, filename)
+                self.extract_acquisition(bearing_label, filename)
         print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
     
     def get_acquisitions(self):
@@ -347,16 +347,20 @@ class CWRU():
             self.config = np.load(f)
 
 if __name__ == "__main__":  
-    config = "48k" #"FEDE" #"DE" # "FE" # "12k" # "48k"
-    target_sr = 48000
+    
+    config = "dbg" #"FEDE" #"DE" # "FE" # "12k" # "48k"
+    target_sr = 12000
     cache_name = f"cache/cwru_{config}.npy"
+    
     dataset = CWRU(config=config, acquisition_maxsize=21_000, target_sr=target_sr)
+    
     os.path.exists("raw_cwru") or dataset.download()    
     if not os.path.exists(cache_name):
-        dataset.load_acquisitions()  
+        dataset.load_acquisitions()
         dataset.save_cache(cache_name)
     else: 
         dataset.load_cache(cache_name)
+    
     print("Signal datase shape", dataset.signal_data.shape)
     labels = list(set(dataset.labels))
     print("labels", labels, f"({len(labels)})")
