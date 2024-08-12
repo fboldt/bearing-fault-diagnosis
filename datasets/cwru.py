@@ -262,16 +262,7 @@ class CWRU():
         list_of_bearings = eval(f"list_of_bearings_{self.config}()")
         for x, (bearing_label, filename) in enumerate(list_of_bearings):
             print('\r', f" loading acquisitions {100*(x+1)/len(list_of_bearings):.2f} %", end='')
-            position = bearing_label[6:8]
-            if position == 'NN':
-                positions = ['DE', 'FE']
-                for position in positions:
-                    if self.config in positions:
-                        self.extract_acquisition(bearing_label.replace('NN', position), filename)
-                        break
-                    self.extract_acquisition(bearing_label.replace('NN', position), filename)
-            else:
-                self.extract_acquisition(bearing_label, filename)
+            self.extract_acquisition(bearing_label, filename)
         print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
     
     def get_acquisitions(self):
