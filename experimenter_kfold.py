@@ -6,7 +6,7 @@ from datasets.paderborn import Paderborn
 from datasets.uored_vafcls import UORED_VAFCLS
 from datasets.phm import PHM
 from utils.train_estimator import train_estimator
-from utils.get_acquisitions import get_acquisitions
+from utils.acquisition_handler import get_acquisitions
 from collections.abc import Iterable
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import StratifiedGroupKFold
