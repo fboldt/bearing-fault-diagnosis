@@ -14,7 +14,6 @@ import numpy as np
 import time
 from estimators.estimator_factory import EstimatorFactory
 
-
 import logging
 from datetime import datetime
 
@@ -47,7 +46,7 @@ def kfold(datasets, clfmaker, repetitions=3):
     for i in range(repetitions):
         logging.info(f"{i+1}/{repetitions}: ")
         accuracies = []
-        kf = StratifiedGroupKFold(n_splits=n_folds) #, shuffle=True)
+        kf = StratifiedGroupKFold(n_splits=n_folds)
         logging.info(f"X.shape {X.shape}")
         for train_index, test_index in kf.split(X, y, groups):
             Xtr, ytr = X[train_index], y[train_index]
