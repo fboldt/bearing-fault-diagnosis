@@ -195,7 +195,6 @@ class CWRU():
         self.signal = Signal(self.cache_filepath)
 
         logging.info(self)
-        logging.info(f"Config: {self.config}")
 
         """
         Associate each file name to a bearing condition in a Python dictionary. 
