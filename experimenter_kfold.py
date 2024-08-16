@@ -19,6 +19,7 @@ import logging
 from datetime import datetime
 
 # Configure the logger
+os.makedirs('experiments', exist_ok=True)
 current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
 os.makedirs('experiments', exist_ok=True)
 log_filename = f"experiments/{current_time}_experiment_log.txt"
@@ -42,7 +43,6 @@ def kfold(datasets, clfmaker, repetitions=3):
         X, y = signal.data, signal.labels        
         n_folds = datasets.n_folds
         logging.info(datasets)
-    print(groups)
     logging.info('-----------------------------------------')
     init = time.time()        
     for i in range(repetitions):
