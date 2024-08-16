@@ -12,6 +12,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import StratifiedGroupKFold
 import numpy as np
 import time
+import os
 from estimators.estimator_factory import EstimatorFactory
 
 import logging
@@ -19,6 +20,7 @@ from datetime import datetime
 
 # Configure the logger
 current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+os.makedirs('experiments', exist_ok=True)
 log_filename = f"experiments/{current_time}_experiment_log.txt"
 
 # Configure the logger
