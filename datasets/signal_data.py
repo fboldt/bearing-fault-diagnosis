@@ -21,6 +21,7 @@ class Signal:
         return self._is_cached
 
     def save_cache(self, cache_filepath):
+        print('Saving cache')
         directory = cache_filepath.split('/')[0]
         os.makedirs(directory, exist_ok=True)
         with open(cache_filepath, 'wb') as f:
@@ -30,6 +31,7 @@ class Signal:
         self._is_cached = True
     
     def load_cache(self, cache_filepath):
+        print('Loading cache')
         with open(cache_filepath, 'rb') as f:
             self._data = np.load(f)
             self._labels = np.load(f)
