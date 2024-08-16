@@ -244,7 +244,7 @@ class CWRU():
             self.signal.add_acquisitions(bearing_label, acquisitions)
                     
     def load_acquisitions(self):
-        not os.path.exists(self.rawfilesdir) or self.download()
+        os.path.exists(self.rawfilesdir) or self.download()
         list_of_bearings = eval(f"list_of_bearings_{self.config}()")
         for x, (bearing_label, bearing_file) in enumerate(list_of_bearings):
             print('\r', f" loading acquisitions {100*(x+1)/len(list_of_bearings):.2f} %", end='')
