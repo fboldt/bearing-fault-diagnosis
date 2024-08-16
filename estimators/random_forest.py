@@ -1,4 +1,3 @@
-import librosa
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin
 from sklearn.ensemble import RandomForestClassifier
