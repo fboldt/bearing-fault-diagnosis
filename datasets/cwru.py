@@ -12,7 +12,7 @@ import logging
 import re
 
 from datasets.signal_data import Signal
-from utils.get_acquisitions import split_acquisition
+from utils.acquisition_handler import split_acquisition
 
 # Code to avoid incomplete array results
 np.set_printoptions(threshold=sys.maxsize)
