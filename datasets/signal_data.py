@@ -6,9 +6,10 @@ class Signal:
         self._data = np.empty((0, 0, 1))
         self._labels = np.array([], dtype=str)
         self._keys = np.array([], dtype=str)
+        self._acquisition_keys = np.array([], dtype=str)
         self._is_cached = os.path.exists(cache_filepath)
 
-    def add_acquisitions(self, bearing_label, acquisitions):
+    def add_acquisitions(self, bearing_label, acquisition_key, acquisitions):
         sample_size = acquisitions.shape[1]
         if self._data.shape[1] == 0:
             self._data = np.empty((0, sample_size, 1))
@@ -16,6 +17,7 @@ class Signal:
         for _ in range(acquisitions.shape[0]):
             self._labels = np.append(self._labels, bearing_label[0])
             self._keys = np.append(self._keys, bearing_label)
+            self._acquisition_keys = np.append(self._acquisition_keys, acquisition_key)
 
     def check_is_cached(self):
         return self._is_cached
@@ -49,4 +51,8 @@ class Signal:
     @property
     def keys(self):
         return self._keys
+    
+    @property
+    def acquisition_keys(self):
+        return self._acquisition_keys
    
