@@ -235,12 +235,13 @@ class CWRU():
         matlab_file = scipy.io.loadmat(full_path)
         keys = re.findall(r'X\d{3}_[A-Z]{2}_time', str(matlab_file.keys()))
         for key in keys:
+            acquisition_key = key
             if self.acquisition_maxsize:
                 data = matlab_file[key].reshape(1, -1)[:, :self.acquisition_maxsize]
             else:
                 data = matlab_file[key].reshape(1, -1)
             acquisitions = split_acquisition(data, self.sample_size)
-            self.signal.add_acquisitions(bearing_label, acquisitions)
+            self.signal.add_acquisitions(bearing_label, acquisition_key, acquisitions)
                     
     def load_acquisitions(self):
         os.path.exists(self.rawfilesdir) or self.download()
@@ -288,7 +289,7 @@ class CWRU():
         return groups
 
     def group_severity(self):
-        logging.info('Grouping the data by severity.')
+        print('group severity')
         groups = []
         hash = dict()
         for i in self.signal.keys:
@@ -299,6 +300,18 @@ class CWRU():
             if load_severity not in hash:
                 hash[load_severity] = len(hash)
             groups = np.append(groups, hash[load_severity])
+        return groups
+    
+    def group_accelerometer_position(self):
+        logging.info('Grouping the data by accelerometer position: FE, DE, and BA.')
+        self.n_folds = 2
+        groups = []
+        hash = dict()
+        for key in self.signal.acquisition_keys:
+            acc_position = key[-7:-5]
+            if acc_position not in hash:
+                hash[acc_position] = len(hash)
+            groups = np.append(groups, hash[acc_position])
         return groups
         
     def groups(self):
