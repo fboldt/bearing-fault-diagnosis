@@ -77,11 +77,12 @@ def kfold(datasets, clfmaker, repetitions=3):
 debug = True
 datasets = [  # debug mode 
     CWRU(config='dbg'),
+    Ottawa(config='dbg'),
 ] if debug else [
     CWRU(config='all'),
     Hust(config='all'),
     MFPT(config='all'),
-    Ottawa(config='all'),
+    Ottawa(config='niob'),
     Paderborn(config='all'),
     UORED_VAFCLS(config='all'),
 ]
