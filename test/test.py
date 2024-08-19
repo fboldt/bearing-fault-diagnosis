@@ -1,12 +1,14 @@
 from test_cwru import TestCWRU
-from test_utils import TestUtils
-from test_experimenter_kfold import TestExperimenterKFold
+# from test_utils import TestUtils
+from test_ottawa import TestOttawa
+# from test_experimenter_kfold import TestExperimenterKFold
 
 if __name__ == "__main__":
-    tests = [ 
-        TestUtils(),
+    tests = [
+        # TestOttawa(),
+        # TestUtils(),
         TestCWRU(),
-        TestExperimenterKFold(),
+        # TestExperimenterKFold(),
     ]
     
     for test in tests:
