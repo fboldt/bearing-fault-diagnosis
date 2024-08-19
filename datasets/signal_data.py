@@ -1,29 +1,30 @@
 import numpy as np
 import os
 
+
 class Signal:
-    def __init__(self, cache_filepath):
-        self._data = np.empty((0, 0, 1))
+
+    def __init__(self, dataset_name, cache_filepath):
+        self._dataset_name = dataset_name
         self._labels = np.array([], dtype=str)
         self._keys = np.array([], dtype=str)
-        self._acquisition_keys = np.array([], dtype=str)
+        self._data = None
         self._is_cached = os.path.exists(cache_filepath)
 
-    def add_acquisitions(self, bearing_label, acquisition_key, acquisitions):
-        sample_size = acquisitions.shape[1]
-        if self._data.shape[1] == 0:
-            self._data = np.empty((0, sample_size, 1))
+
+    def add_acquisitions(self, bearing_label, acquisitions):
+        if self.data is None:
+            self._data = np.empty((0, acquisitions.shape[1], 1))
         self._data = np.append(self._data, acquisitions, axis=0)
         for _ in range(acquisitions.shape[0]):
             self._labels = np.append(self._labels, bearing_label[0])
             self._keys = np.append(self._keys, bearing_label)
-            self._acquisition_keys = np.append(self._acquisition_keys, acquisition_key)
 
     def check_is_cached(self):
         return self._is_cached
 
     def save_cache(self, cache_filepath):
-        print('Saving cache')
+        print(' Saving cache')
         directory = cache_filepath.split('/')[0]
         os.makedirs(directory, exist_ok=True)
         with open(cache_filepath, 'wb') as f:
@@ -33,7 +34,7 @@ class Signal:
         self._is_cached = True
     
     def load_cache(self, cache_filepath):
-        print('Loading cache')
+        print(' Loading cache')
         with open(cache_filepath, 'rb') as f:
             self._data = np.load(f)
             self._labels = np.load(f)
@@ -53,6 +54,6 @@ class Signal:
         return self._keys
     
     @property
-    def acquisition_keys(self):
-        return self._acquisition_keys
-   
+    def dataset_name(self):
+        return self._dataset_name
+    

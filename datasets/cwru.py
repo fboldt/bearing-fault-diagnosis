@@ -17,12 +17,6 @@ from utils.acquisition_handler import split_acquisition
 # Code to avoid incomplete array results
 np.set_printoptions(threshold=sys.maxsize)
 
-def list_of_bearings_test():
-    return [
-        ("N.000.NN_0&12000","97.mat"), ("I.007.DE_0&48000","109.mat"), ("O.021.DE.@6_1&12000","235.mat")    
-    ]
-
-
 def list_of_bearings_dbg():
     return [
         ("N.000.NN_0&12000","97.mat"),        ("N.000.NN_1&12000","98.mat"),        ("N.000.NN_2&12000","99.mat"),        ("N.000.NN_3&12000","100.mat"),
@@ -192,9 +186,8 @@ class CWRU():
         self.rawfilesdir = "raw_cwru"
         self.url = "https://engineering.case.edu/sites/default/files/"
         self.n_folds = 3
-        self.signal = Signal(self.cache_filepath)
-
-        logging.info(self)
+        self.signal = Signal('CWRU', self.cache_filepath)
+       
 
         """
         Associate each file name to a bearing condition in a Python dictionary. 
@@ -235,23 +228,23 @@ class CWRU():
         matlab_file = scipy.io.loadmat(full_path)
         keys = re.findall(r'X\d{3}_[A-Z]{2}_time', str(matlab_file.keys()))
         for key in keys:
-            acquisition_key = key
             if self.acquisition_maxsize:
                 data = matlab_file[key].reshape(1, -1)[:, :self.acquisition_maxsize]
             else:
                 data = matlab_file[key].reshape(1, -1)
             acquisitions = split_acquisition(data, self.sample_size)
-            self.signal.add_acquisitions(bearing_label, acquisition_key, acquisitions)
+            self.signal.add_acquisitions(bearing_label, acquisitions)
                     
     def load_acquisitions(self):
         os.path.exists(self.rawfilesdir) or self.download()
         list_of_bearings = eval(f"list_of_bearings_{self.config}()")
         for x, (bearing_label, bearing_file) in enumerate(list_of_bearings):
-            print('\r', f" loading acquisitions {100*(x+1)/len(list_of_bearings):.2f} %", end='')
+            print('\r', f" Loading acquisitions {100*(x+1)/len(list_of_bearings):.2f} %", end='')
             self.extract_acquisition(bearing_label, bearing_file)
         print(f"  ({np.size(self.signal.labels)} examples) | labels: {np.unique(self.signal.labels)}")
     
     def get_acquisitions(self):
+        logging.info(self) # show name of dataset
         if self.signal.check_is_cached():
             self.signal.load_cache(self.cache_filepath)
         else:
@@ -261,7 +254,7 @@ class CWRU():
         return self.signal, groups
     
     def group_acquisition(self):
-        logging.info('Grouping the data by acquisition.')
+        logging.info(' Grouping the data by acquisition.')
         groups = []
         hash = dict()
         for i in self.signal.keys:
@@ -271,14 +264,14 @@ class CWRU():
         return groups
 
     def group_load(self):    
-        logging.info('Grouping the data by load.')
+        logging.info(' Grouping the data by load.')
         groups = []
         for i in self.signal.keys:
             groups = np.append(groups, int(i[-7]) % self.n_folds)
         return groups
 
     def group_settings(self):
-        logging.info('Grouping the data by settings.')
+        logging.info(' Grouping the data by settings.')
         groups = []
         hash = dict()
         for i in self.signal.keys:
@@ -289,7 +282,7 @@ class CWRU():
         return groups
 
     def group_severity(self):
-        print('group severity')
+        logging.info(' Grouping the data by severity.')
         groups = []
         hash = dict()
         for i in self.signal.keys:
@@ -302,8 +295,8 @@ class CWRU():
             groups = np.append(groups, hash[load_severity])
         return groups
     
-    def group_accelerometer_position(self):
-        logging.info('Grouping the data by accelerometer position: FE, DE, and BA.')
+    def group_sensor_position(self):
+        logging.info(' Grouping the data by accelerometer position: FE, DE, and BA.')
         self.n_folds = 2
         groups = []
         hash = dict()
