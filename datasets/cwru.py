@@ -187,8 +187,7 @@ class CWRU():
         self.url = "https://engineering.case.edu/sites/default/files/"
         self.n_folds = 3
         self.signal = Signal('CWRU', self.cache_filepath)
-
-        
+       
 
         """
         Associate each file name to a bearing condition in a Python dictionary. 
