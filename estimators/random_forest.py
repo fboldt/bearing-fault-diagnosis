@@ -24,9 +24,7 @@ class RandomForestEstimator(BaseEstimator, ClassifierMixin):
                                        max_features=self.max_features) 
         
         steps = [
-            ('reshape', Reshape()), 
-            # ('over', SMOTE()), 
-            # ('under', RandomUnderSampler()), 
+            ('reshape', Reshape()),             
             ('feature', Heterogeneous()),
             ('scale', StandardScaler()),
             ('model', model)]

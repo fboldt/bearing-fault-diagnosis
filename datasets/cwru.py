@@ -221,7 +221,7 @@ class CWRU():
         filenames = [b[1] for b in bearings]
         for file in filenames:
             download_file(url, dirname, file)
-        print("Dataset Loaded.")
+        print("Download finished.")
 
     def extract_acquisition(self, bearing_label, bearing_file):     
         full_path = os.path.join(f'{self.rawfilesdir}/{bearing_file}')
