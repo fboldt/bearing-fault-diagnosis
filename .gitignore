@@ -160,6 +160,7 @@ cython_debug/
 #.idea/
 
 raw_*/
+data_raw
 test_raw_*/
 *.zip
 *.npy
