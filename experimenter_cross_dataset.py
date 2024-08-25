@@ -1,4 +1,4 @@
-from datasets.cwru48 import CWRU48k
+from datasets.cwru import CWRU
 from datasets.hust import Hust
 from datasets.mfpt import MFPT
 from datasets.ottawa import Ottawa
@@ -7,7 +7,7 @@ from datasets.uored_vafcls import UORED_VAFCLS
 from estimators.cnn1d import CNN1D
 from sklearn.metrics import accuracy_score, confusion_matrix
 from experimenter_kfold import train_estimator
-from utils.get_acquisitions import get_acquisitions
+from utils.acquisition_handler import get_acquisitions
 import copy
 
 def cross_dataset(sources, targets, clf=CNN1D()):
