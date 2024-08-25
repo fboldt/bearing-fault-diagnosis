@@ -1,5 +1,5 @@
-from tensorflow.keras import layers, callbacks, saving, optimizers
-from tensorflow.keras.models import Sequential
+from tensorflow.keras import layers, callbacks, optimizers
+from tensorflow.keras.models import Sequential, save_model, load_model
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 from sklearn.base import BaseEstimator, ClassifierMixin
@@ -91,7 +91,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         num_classes = y_cat.shape[1]
         if os.path.exists(self.prefitckp):
             print("loading", self.prefitckp)
-            self.model = saving.load_model(self.prefitckp)
+            self.model = load_model(self.prefitckp)
             self.model.layers[0].trainable = False
         if self.model == None:
             self.make_model((self.n_steps, self.n_features), num_classes)
@@ -120,7 +120,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         if os.path.exists(checkpoint):
             if self.verbose:
                 print("loading", checkpoint)
-            self.model = saving.load_model(checkpoint)
+            self.model = load_model(checkpoint)
 
     def prefit(self, Xtr, ytr, Xva, yva):
         self.remove_prefitckp_file()
@@ -135,7 +135,7 @@ class CNN1D(BaseEstimator, ClassifierMixin):
         if os.path.exists(self.checkpoint):
             if self.verbose:
                 print("loading", self.checkpoint)
-            model = saving.load_model(self.checkpoint)
+            model = load_model(self.checkpoint)
             with open(self.checkpoint+".labels", 'rb') as f:
                 self.labels = np.load(f)
         else: 
