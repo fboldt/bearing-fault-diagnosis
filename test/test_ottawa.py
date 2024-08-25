@@ -36,7 +36,7 @@ class TestOttawa():
     def test_get_acquisitions(self):
         print("Testing get_acquisitions function")
         self.ottawa.get_acquisitions()
-        print(self.ottawa.signal.data.shape)
+        print('Test get_acquisition ok!')
 
 
     """
@@ -51,5 +51,8 @@ class TestOttawa():
         self.test_get_acquisitions() # saving cache
         self.setUp() 
         self.test_get_acquisitions() # loading cache
-        
+    
+if __name__ == '__main__':
+    ottawa = TestOttawa()
+    ottawa.to_test()
    
