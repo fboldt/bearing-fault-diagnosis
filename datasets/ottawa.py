@@ -12,8 +12,6 @@ import logging
 from datasets.signal_data import Signal
 from utils.acquisition_handler import split_acquisition
 
-# Unpack Tools
-from pyunpack import Archive
 
 def files_hash():
     return {
@@ -174,12 +172,12 @@ class Ottawa():
         return f"Ottawa ({self.config})"
     
     def __init__(self, sample_size=4096, acquisition_maxsize=None, config='all'):
-        self.n_channels = 2 # channel 1: vibration data, channel 2: rotational speed data
         self.config = config
+        self.n_channels = 2 # channel 1: vibration data, channel 2: rotational speed data
         self.cache_filepath = f'cache/ottawa_{self.config}.npy'
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize
-        self.rawfilesdir = "raw_ottawa"
+        self.rawfilesdir = "data_raw/raw_ottawa"
         self.url="https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/"
         self.n_folds = 4
         self.signal = Signal('Ottawa', self.cache_filepath)
@@ -213,7 +211,14 @@ class Ottawa():
                 vibration_data = np.array([elem for singleList in matlab_file['Channel_1'] for elem in singleList])
             vibration_data = vibration_data[np.newaxis, :]
             acquisitions = split_acquisition(vibration_data, self.sample_size)
-            self.signal.add_acquisitions(bearing_label.replace('H', 'N', 1) if bearing_label.startswith('H') else bearing_label, acquisitions)
+            
+            if bearing_label.startswith('H'): 
+                bl = bearing_label.replace('H', 'N', 1)
+            elif bearing_label.startswith('C'):
+                bl = bearing_label.replace('C', 'M', 1)
+            else:
+                bl = bearing_label
+            self.signal.add_acquisitions(bl, acquisitions)
         print(f"  ({np.size(self.signal.labels)} examples) | labels: {np.unique(self.signal.labels)}")
 
     def get_acquisitions(self):

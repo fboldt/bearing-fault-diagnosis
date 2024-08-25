@@ -183,7 +183,7 @@ class CWRU():
         self.cache_filepath = f'cache/cwru_{self.config}.npy'
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize
-        self.rawfilesdir = "raw_cwru"
+        self.rawfilesdir = "data_raw/raw_cwru"
         self.url = "https://engineering.case.edu/sites/default/files/"
         self.n_folds = 3
         self.signal = Signal('CWRU', self.cache_filepath)
