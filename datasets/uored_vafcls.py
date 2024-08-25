@@ -8,7 +8,12 @@ import numpy as np
 import os
 import urllib
 import sys
-import csv
+import re
+import logging
+
+from datasets.signal_data import Signal
+from utils.acquisition_handler import split_acquisition
+
 
 # Code to avoid incomplete array results
 np.set_printoptions(threshold=sys.maxsize)
@@ -79,64 +84,52 @@ def files_hash():
 
 def list_of_bearings_all():
     return [
-    "H_1_0",   "H_2_0",   "H_3_0",   "H_4_0",   "H_5_0",   
-    "H_6_0",   "H_7_0",   "H_8_0",   "H_9_0",   "H_10_0",  
-    "H_11_0",  "H_12_0",  "H_13_0",  "H_14_0",  "H_15_0", 
-    "H_16_0",  "H_17_0",  "H_18_0",  "H_19_0",  "H_20_0",  
-    "I_1_1",   "I_1_2",   "I_2_1",   "I_2_2",   "I_3_1",   
-    "I_3_2",   "I_4_1",   "I_4_2",   "I_5_1",   "I_5_2",   
-    "O_6_1",   "O_6_2",   "O_7_1",   "O_7_2",   "O_8_1",   
-    "O_8_2",   "O_9_1",   "O_9_2",   "O_10_1",  "O_10_2", 
-    "B_11_1",  "B_11_2",  "B_12_1",  "B_12_2",  "B_13_1",
-    "B_13_2",  "B_14_1",  "B_14_2",  "B_15_1",  "B_15_2",
-    "C_16_1",  "C_16_2",  "C_17_1",  "C_17_2",  "C_18_1", 
-    "C_18_2",  "C_19_1",  "C_19_2",  "C_20_1",  "C_20_2"
-]
-
-def list_of_bearings_nio():
-    return [
-    "H_1_0",   "H_2_0",   "H_3_0",   "H_4_0",   "H_5_0",   
-    "H_6_0",   "H_7_0",   "H_8_0",   "H_9_0",   "H_10_0",  
-    "H_11_0",  "H_12_0",  "H_13_0",  "H_14_0",  "H_15_0", 
-    "H_16_0",  "H_17_0",  "H_18_0",  "H_19_0",  "H_20_0",  
-    "I_1_1",   "I_1_2",   "I_2_1",   "I_2_2",   "I_3_1",   
-    "I_3_2",   "I_4_1",   "I_4_2",   "I_5_1",   "I_5_2",   
-    "O_6_1",   "O_6_2",   "O_7_1",   "O_7_2",   "O_8_1",   
-    "O_8_2",   "O_9_1",   "O_9_2",   "O_10_1",  "O_10_2"   
-]
+    ("H_1_0&42000", "H_1_0.mat"),   ("H_2_0&42000", "H_2_0.mat"),   ("H_3_0&42000", "H_3_0.mat"),   ("H_4_0&42000", "H_4_0.mat"),   ("H_5_0&42000", "H_5_0.mat"),   
+    ("H_6_0&42000", "H_6_0.mat"),   ("H_7_0&42000", "H_7_0.mat"),   ("H_8_0&42000", "H_8_0.mat"),   ("H_9_0&42000", "H_9_0.mat"),   ("H_10_0&42000", "H_10_0.mat"),  
+    ("H_11_0&42000", "H_11_0.mat"),  ("H_12_0&42000", "H_12_0.mat"),  ("H_13_0&42000", "H_13_0.mat"),  ("H_14_0&42000", "H_14_0.mat"),  ("H_15_0&42000", "H_15_0.mat"), 
+    ("H_16_0&42000", "H_16_0.mat"),  ("H_17_0&42000", "H_17_0.mat"),  ("H_18_0&42000", "H_18_0.mat"),  ("H_19_0&42000", "H_19_0.mat"),  ("H_20_0&42000", "H_20_0.mat"),  
+    ("I_1_1&42000", "I_1_1.mat"),   ("I_1_2&42000", "I_1_2.mat"),   ("I_2_1&42000", "I_2_1.mat"),   ("I_2_2&42000", "I_2_2.mat"),   ("I_3_1&42000", "I_3_1.mat"),   
+    ("I_3_2&42000", "I_3_2.mat"),   ("I_4_1&42000", "I_4_1.mat"),   ("I_4_2&42000", "I_4_2.mat"),   ("I_5_1&42000", "I_5_1.mat"),   ("I_5_2&42000", "I_5_2.mat"),   
+    ("O_6_1&42000", "O_6_1.mat"),   ("O_6_2&42000", "O_6_2.mat"),   ("O_7_1&42000", "O_7_1.mat"),   ("O_7_2&42000", "O_7_2.mat"),   ("O_8_1&42000", "O_8_1.mat"),   
+    ("O_8_2&42000", "O_8_2.mat"),   ("O_9_1&42000", "O_9_1.mat"),   ("O_9_2&42000", "O_9_2.mat"),   ("O_10_1&42000", "O_10_1.mat"),  ("O_10_2&42000", "O_10_2.mat"), 
+    ("B_11_1&42000", "B_11_1.mat"),  ("B_11_2&42000", "B_11_2.mat"),  ("B_12_1&42000", "B_12_1.mat"),  ("B_12_2&42000", "B_12_2.mat"),  ("B_13_1&42000", "B_13_1.mat"),
+    ("B_13_2&42000", "B_13_2.mat"),  ("B_14_1&42000", "B_14_1.mat"),  ("B_14_2&42000", "B_14_2.mat"),  ("B_15_1&42000", "B_15_1.mat"),  ("B_15_2&42000", "B_15_2.mat"),
+    ("C_16_1&42000", "C_16_1.mat"),  ("C_16_2&42000", "C_16_2.mat"),  ("C_17_1&42000", "C_17_1.mat"),  ("C_17_2&42000", "C_17_2.mat"),  ("C_18_1&42000", "C_18_1.mat"), 
+    ("C_18_2&42000", "C_18_2.mat"),  ("C_19_1&42000", "C_19_1.mat"),  ("C_19_2&42000", "C_19_2.mat"),  ("C_20_1&42000", "C_20_1.mat"),  ("C_20_2&42000", "C_20_2.mat")
+    ]
 
 def list_of_bearings_niob():
     return [
-    "H_1_0",   "H_2_0",   "H_3_0",   "H_4_0",   "H_5_0",   
-    "H_6_0",   "H_7_0",   "H_8_0",   "H_9_0",   "H_10_0",  
-    "H_11_0",  "H_12_0",  "H_13_0",  "H_14_0",  "H_15_0", 
-    "H_16_0",  "H_17_0",  "H_18_0",  "H_19_0",  "H_20_0",  
-    "I_1_1",   "I_1_2",   "I_2_1",   "I_2_2",   "I_3_1",   
-    "I_3_2",   "I_4_1",   "I_4_2",   "I_5_1",   "I_5_2",   
-    "O_6_1",   "O_6_2",   "O_7_1",   "O_7_2",   "O_8_1",   
-    "O_8_2",   "O_9_1",   "O_9_2",   "O_10_1",  "O_10_2", 
-    "B_11_1",  "B_11_2",  "B_12_1",  "B_12_2",  "B_13_1",
-    "B_13_2",  "B_14_1",  "B_14_2",  "B_15_1",  "B_15_2",
-]
+    ("H_1_0&42000", "H_1_0.mat"),   ("H_2_0&42000", "H_2_0.mat"),   ("H_3_0&42000", "H_3_0.mat"),   ("H_4_0&42000", "H_4_0.mat"),   ("H_5_0&42000", "H_5_0.mat"),   
+    ("H_6_0&42000", "H_6_0.mat"),   ("H_7_0&42000", "H_7_0.mat"),   ("H_8_0&42000", "H_8_0.mat"),   ("H_9_0&42000", "H_9_0.mat"),   ("H_10_0&42000", "H_10_0.mat"),  
+    ("H_11_0&42000", "H_11_0.mat"),  ("H_12_0&42000", "H_12_0.mat"),  ("H_13_0&42000", "H_13_0.mat"),  ("H_14_0&42000", "H_14_0.mat"),  ("H_15_0&42000", "H_15_0.mat"), 
+    ("H_16_0&42000", "H_16_0.mat"),  ("H_17_0&42000", "H_17_0.mat"),  ("H_18_0&42000", "H_18_0.mat"),  ("H_19_0&42000", "H_19_0.mat"),  ("H_20_0&42000", "H_20_0.mat"),  
+    ("I_1_1&42000", "I_1_1.mat"),   ("I_1_2&42000", "I_1_2.mat"),   ("I_2_1&42000", "I_2_1.mat"),   ("I_2_2&42000", "I_2_2.mat"),   ("I_3_1&42000", "I_3_1.mat"),   
+    ("I_3_2&42000", "I_3_2.mat"),   ("I_4_1&42000", "I_4_1.mat"),   ("I_4_2&42000", "I_4_2.mat"),   ("I_5_1&42000", "I_5_1.mat"),   ("I_5_2&42000", "I_5_2.mat"),   
+    ("O_6_1&42000", "O_6_1.mat"),   ("O_6_2&42000", "O_6_2.mat"),   ("O_7_1&42000", "O_7_1.mat"),   ("O_7_2&42000", "O_7_2.mat"),   ("O_8_1&42000", "O_8_1.mat"),   
+    ("O_8_2&42000", "O_8_2.mat"),   ("O_9_1&42000", "O_9_1.mat"),   ("O_9_2&42000", "O_9_2.mat"),   ("O_10_1&42000", "O_10_1.mat"),  ("O_10_2&42000", "O_10_2.mat"), 
+    ("B_11_1&42000", "B_11_1.mat"),  ("B_11_2&42000", "B_11_2.mat"),  ("B_12_1&42000", "B_12_1.mat"),  ("B_12_2&42000", "B_12_2.mat"),  ("B_13_1&42000", "B_13_1.mat"),
+    ("B_13_2&42000", "B_13_2.mat"),  ("B_14_1&42000", "B_14_1.mat"),  ("B_14_2&42000", "B_14_2.mat"),  ("B_15_1&42000", "B_15_1.mat"),  ("B_15_2&42000", "B_15_2.mat"),
+    ]
 
 def list_of_bearings_faulty_healthy():
     return [
-    "H_1_0",   "H_2_0",   "H_3_0",   "H_4_0",   "H_5_0",   
-    "H_6_0",   "H_7_0",   "H_8_0",   "H_9_0",   "H_10_0",  
-    "H_11_0",  "H_12_0",  "H_13_0",  "H_14_0",  "H_15_0", 
-    "H_16_0",  "H_17_0",  "H_18_0",  "H_19_0",  "H_20_0",  
-    "I_1_2",   "I_2_2",   "I_3_2",   "I_4_2",   "I_5_2",   
-    "O_6_2",   "O_7_2",   "O_8_2",   "O_9_2",   "O_10_2",  
-    "B_11_2",  "B_12_2",  "B_13_2",  "B_14_2",  "B_15_2",  
-    "C_16_2",  "C_17_2",  "C_18_2",  "C_19_2",  "C_20_2"
+    ("H_1_0&42000", "H_1_0.mat"),   ("H_2_0&42000", ".mat"),   ("H_3_0&42000", ".mat"),   ("H_4_0&42000", ".mat"),   ("H_5_0&42000", ".mat"),   
+    ("H_6_0&42000", ".mat"),   ("H_7_0&42000", ".mat"),   ("H_8_0&42000", ".mat"),   ("H_9_0&42000", ".mat"),   ("H_10_0&42000", ".mat"),  
+    ("H_11_0&42000", ".mat"),  ("H_12_0&42000", ".mat"),  ("H_13_0&42000", ".mat"),  ("H_14_0&42000", ".mat"),  ("H_15_0&42000", ".mat"), 
+    ("H_16_0&42000", ".mat"),  ("H_17_0&42000", ".mat"),  ("H_18_0&42000", ".mat"),  ("H_19_0&42000", ".mat"),  ("H_20_0&42000", ".mat"),  
+    ("I_1_2&42000", ".mat"),   ("I_2_2&42000", ".mat"),   ("I_3_2&42000", ".mat"),   ("I_4_2&42000", ".mat"),   ("I_5_2&42000", ".mat"),   
+    ("O_6_2&42000", ".mat"),   ("O_7_2&42000", ".mat"),   ("O_8_2&42000", ".mat"),   ("O_9_2&42000", ".mat"),   ("O_10_2&42000", ".mat"),  
+    ("B_11_2&42000", ".mat"),  ("B_12_2&42000", ".mat"),  ("B_13_2&42000", ".mat"),  ("B_14_2&42000", ".mat"),  ("B_15_2&42000", ".mat"),  
+    ("C_16_2&42000", ".mat"),  ("C_17_2&42000", ".mat"),  ("C_18_2&42000", ".mat"),  ("C_19_2&42000", ".mat"),  ("C_20_2&42000", ".mat")
 ]
 
 def list_of_bearings_mert():
     return [
-    "H_1_0",   "H_2_0",   "H_3_0", "H_4_0", "H_5_0", 
-    "I_1_2",   "I_2_2",   "I_3_2", "I_4_2", "I_5_2", 
-    "O_6_2",   "O_7_2",   "O_8_2", "O_9_2", "O_10_2",
-    "B_11_2",  "B_12_1",  "B_13_2", "B_14_2", "B_15_2",
+    ("H_1_0&42000", "H_1_0.mat"),   ("H_2_0&42000", "H_2_0.mat"),   ("H_3_0&42000", "H_3_0.mat"), ("H_4_0&42000", "H_4_0.mat"), ("H_5_0&42000", "H_5_0.mat"), 
+    ("I_1_2&42000", "I_1_2.mat"),   ("I_2_2&42000", "I_2_2.mat"),   ("I_3_2&42000", "I_3_2.mat"), ("I_4_2&42000", "I_4_2.mat"), ("I_5_2&42000", "I_5_2.mat"), 
+    ("O_6_2&42000", "O_6_2.mat"),   ("O_7_2&42000", "O_7_2.mat"),   ("O_8_2&42000", "O_8_2.mat"), ("O_9_2&42000", "O_9_2.mat"), ("O_10_2&42000", "O_10_2.mat"),
+    ("B_11_2&42000", "B_11_2.mat"),  ("B_12_1&42000", "B_12_1.mat"),  ("B_13_2&42000", "B_13_2.mat"), ("B_14_2&42000", "B_14_2.mat"), ("B_15_2&42000", "B_15_2.mat"),
 ]
 
 def list_of_bearings_dbg():
@@ -186,88 +179,60 @@ class UORED_VAFCLS():
       Extract vibration data from files
     """
 
-
-    def get_uored_vafcls_bearings(self):
-        list_of_bearings = eval("list_of_bearings_"+self.config+"()")
-        bearing_file_names = [name+'.mat' for name in list_of_bearings]
-        bearing_label = [label for label in bearing_file_names]    
-        return np.array(bearing_label), np.array(bearing_file_names)
-
     def __str__(self):
         return f"UORED_VAFCLS ({self.config})"
 
 
-    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, 
-                 config="dbg", cache_file=None):
-        self.sample_rate = 42000
-        self.url = "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/"
-        self.sample_size = sample_size
-        self.n_channels = n_channels
-        self.acquisition_maxsize = acquisition_maxsize
+    def __init__(self, sample_size=4096, acquisition_maxsize=None, config="dbg"):
         self.config = config
-        self.rawfilesdir = "raw_uored_vafcls"
+        self.url = "https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/"
+        self.rawfilesdir = "data_raw/raw_uored_vafcls"
+        self.cache_filepath = f'cache/uored_{self.config}.npy'
+        self.sample_size = sample_size
+        self.acquisition_maxsize = acquisition_maxsize
         self.n_folds = 5
-        self.bearing_labels, self.bearing_names = self.get_uored_vafcls_bearings()
-        self.accelerometers = ['DE'][:self.n_channels]
-        self.signal_data = np.empty((0, self.sample_size, len(self.accelerometers)))
-        self.labels = []
-        self.keys = []
-        # Files Paths ordered by bearings
-        files_path = {}
-        for key, bearing in zip(self.bearing_labels, self.bearing_names):
-            files_path[key] = os.path.join(self.rawfilesdir, bearing)
-        self.files = files_path
-        if cache_file is not None:
-            self.load_cache(cache_file)
-        self.cache_file = cache_file
+        self.signal = Signal('UORED', self.cache_filepath)
 
     def download(self):
-        list_of_bearings = eval("list_of_bearings_"+self.config+"()")
         dirname = self.rawfilesdir
         if not os.path.exists(dirname):
             os.mkdir(dirname)
-        for acquisition in list_of_bearings:
-            url = self.url + files_hash()[acquisition] 
-            files_name = acquisition + '.mat'       
-            download_file(url, dirname, files_name)
+        for _, bearing_file in list_of_bearings_all():
+            url = self.url + files_hash()[bearing_file[:-4]]        
+            download_file(url, dirname, bearing_file)
 
     def load_acquisitions(self):
         """
         Extracts the acquisitions of each file in the dictionary files_names.
         """
-        cwd = os.getcwd()
-        for x, key in enumerate(self.files):
-            matlab_file = scipy.io.loadmat(os.path.join(cwd, self.files[key]))
-            acquisition = []
-            print('\r', f" loading acquisitions {100*(x+1)/len(self.files):.2f} %", end='')
-            label = self.files[key][len(self.rawfilesdir)+1:-4]
+        list_of_bearings = eval(f"list_of_bearings_{self.config}()")
+        for x, (bearing_label, bearing_file) in enumerate(list_of_bearings):
+            print('\r', f" loading acquisitions {100*(x+1)/len(list_of_bearings):.2f} %", end='')
+            matlab_file = scipy.io.loadmat(os.path.join(self.rawfilesdir, bearing_file))
+            label = re.findall(r'[A-Z]_\d{2}_\d{1,2}', bearing_label)
             if self.acquisition_maxsize:
-                acquisition.append(matlab_file[label].reshape(1, -1)[0][:self.acquisition_maxsize] )
-            else: 
-                acquisition.append(matlab_file[label].reshape(1, -1)[0])
-            acquisition = np.array(acquisition)
-            if len(acquisition.shape)<2 or acquisition.shape[0]<self.n_channels:
-                continue
-            for i in range(acquisition.shape[1]//self.sample_size):
-                sample = acquisition[:,(i * self.sample_size):((i + 1) * self.sample_size)]
-                self.signal_data = np.append(self.signal_data, np.array([sample.T]), axis=0)
-                self.labels = np.append(self.labels, key[0])
-                self.keys = np.append(self.keys, key)
-        self.labels[self.labels=='H'] = 'N'
+                vibration_data = np.array([elem for singleList in matlab_file[label] for elem in singleList][:self.acquisition_maxsize])
+            else:
+                vibration_data = np.array([elem for singleList in matlab_file[label] for elem in singleList])
+            vibration_data = vibration_data[np.newaxis, :]
+            acquisitions = split_acquisition(vibration_data, self.sample_size)
+            self.signal.add_acquisitions(bearing_label, acquisitions)
         print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
 
     def get_acquisitions(self):
-        if self.cache_file is not None:
-            self.load_cache(self.cache_file)
-        if len(self.labels) == 0:
+        logging.info(self) # show name of dataset
+        if self.signal.check_is_cached():
+            self.signal.load_cache(self.cache_filepath)
+        else:
             self.load_acquisitions()
+            self.signal.save_cache(self.cache_filepath)
         groups = self.groups()
         return self.signal_data, self.labels, groups
              
     def group_acquisition(self):
         groups = []
         hash = dict()
-        for i in self.keys:
+        for i in self.signal.keys:
             if i not in hash:
                 hash[i] = len(hash)
             groups = np.append(groups, hash[i])
@@ -276,35 +241,3 @@ class UORED_VAFCLS():
     def groups(self):
         return self.group_acquisition()
     
-    def save_cache(self, filename):
-        with open(filename, 'wb') as f:
-            np.save(f, self.signal_data)
-            np.save(f, self.labels)
-            np.save(f, self.keys)
-            np.save(f, self.config)
-    
-    def load_cache(self, filename):
-        with open(filename, 'rb') as f:
-            self.signal_data = np.load(f)
-            self.labels = np.load(f)
-            self.keys = np.load(f)
-            self.config = np.load(f)
-
-if __name__ == "__main__":
-    config = "all" # "dbg" # "all" # "nio" # "niob" # "mert" # "faulty_healthy"
-    cache_name = f"cache/uored_{config}.npy"
-
-    dataset = UORED_VAFCLS(config=config, acquisition_maxsize=21_000)
-    os.path.exists("raw_uored_vafcls") or dataset.download()
-    
-    if not os.path.exists(cache_name):
-        dataset.load_acquisitions()
-        dataset.save_cache(cache_name)
-    else:
-        dataset.load_cache(cache_name)
-
-    print("Signal datase shape", dataset.signal_data.shape)
-    labels = list(set(dataset.labels))
-    print("labels", labels, f"({len(labels)})")
-    keys = list(set(dataset.keys))
-    print("keys", np.array(keys), f"({len(keys)})")
