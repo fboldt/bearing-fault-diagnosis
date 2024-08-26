@@ -112,16 +112,16 @@ def list_of_bearings_niob():
     ("B_13_2&42000", "B_13_2.mat"),  ("B_14_1&42000", "B_14_1.mat"),  ("B_14_2&42000", "B_14_2.mat"),  ("B_15_1&42000", "B_15_1.mat"),  ("B_15_2&42000", "B_15_2.mat"),
     ]
 
-def list_of_bearings_faulty_healthy():
+def list_of_bearings_developed():
     return [
-    ("H_1_0&42000", "H_1_0.mat"),   ("H_2_0&42000", ".mat"),   ("H_3_0&42000", ".mat"),   ("H_4_0&42000", ".mat"),   ("H_5_0&42000", ".mat"),   
-    ("H_6_0&42000", ".mat"),   ("H_7_0&42000", ".mat"),   ("H_8_0&42000", ".mat"),   ("H_9_0&42000", ".mat"),   ("H_10_0&42000", ".mat"),  
-    ("H_11_0&42000", ".mat"),  ("H_12_0&42000", ".mat"),  ("H_13_0&42000", ".mat"),  ("H_14_0&42000", ".mat"),  ("H_15_0&42000", ".mat"), 
-    ("H_16_0&42000", ".mat"),  ("H_17_0&42000", ".mat"),  ("H_18_0&42000", ".mat"),  ("H_19_0&42000", ".mat"),  ("H_20_0&42000", ".mat"),  
-    ("I_1_2&42000", ".mat"),   ("I_2_2&42000", ".mat"),   ("I_3_2&42000", ".mat"),   ("I_4_2&42000", ".mat"),   ("I_5_2&42000", ".mat"),   
-    ("O_6_2&42000", ".mat"),   ("O_7_2&42000", ".mat"),   ("O_8_2&42000", ".mat"),   ("O_9_2&42000", ".mat"),   ("O_10_2&42000", ".mat"),  
-    ("B_11_2&42000", ".mat"),  ("B_12_2&42000", ".mat"),  ("B_13_2&42000", ".mat"),  ("B_14_2&42000", ".mat"),  ("B_15_2&42000", ".mat"),  
-    ("C_16_2&42000", ".mat"),  ("C_17_2&42000", ".mat"),  ("C_18_2&42000", ".mat"),  ("C_19_2&42000", ".mat"),  ("C_20_2&42000", ".mat")
+    ("H_1_0&42000", "H_1_0.mat"),   ("H_2_0&42000", "H_2_0.mat"),   ("H_3_0&42000", "H_3_0.mat"),   ("H_4_0&42000", "H_4_0.mat"),   ("H_5_0&42000", "H_5_0.mat"),   
+    ("H_6_0&42000", "H_6_0.mat"),   ("H_7_0&42000", "H_7_0.mat"),   ("H_8_0&42000", "H_8_0.mat"),   ("H_9_0&42000", "H_9_0.mat"),   ("H_10_0&42000", "H_10_0.mat"),  
+    ("H_11_0&42000", "H_11_0.mat"),  ("H_12_0&42000", "H_12_0.mat"),  ("H_13_0&42000", "H_13_0.mat"),  ("H_14_0&42000", "H_14_0.mat"),  ("H_15_0&42000", "H_15_0.mat"), 
+    ("H_16_0&42000", "H_16_0.mat"),  ("H_17_0&42000", "H_17_0.mat"),  ("H_18_0&42000", "H_18_0.mat"),  ("H_19_0&42000", "H_19_0.mat"),  ("H_20_0&42000", "H_20_0.mat"),  
+    ("I_1_2&42000", "I_1_2.mat"),   ("I_2_2&42000", "I_2_2.mat"),   ("I_3_2&42000", "I_3_2.mat"),   ("I_4_2&42000", "I_4_2.mat"),   ("I_5_2&42000", "I_5_2.mat"),   
+    ("O_6_2&42000", "O_6_2.mat"),   ("O_7_2&42000", "O_7_2.mat"),   ("O_8_2&42000", "O_8_2.mat"),   ("O_9_2&42000", "O_9_2.mat"),   ("O_10_2&42000", "O_10_2.mat"),  
+    ("B_11_2&42000", "B_11_2.mat"),  ("B_12_2&42000", "B_12_2.mat"),  ("B_13_2&42000", "B_13_2.mat"),  ("B_14_2&42000", "B_14_2.mat"),  ("B_15_2&42000", "B_15_2.mat"),  
+    ("C_16_2&42000", "C_16_2.mat"),  ("C_17_2&42000", "C_17_2.mat"),  ("C_18_2&42000", "C_18_2.mat"),  ("C_19_2&42000", "C_19_2.mat"),  ("C_20_2&42000", "C_20_2.mat")
 ]
 
 def list_of_bearings_mert():
@@ -209,7 +209,7 @@ class UORED_VAFCLS():
         for x, (bearing_label, bearing_file) in enumerate(list_of_bearings):
             print('\r', f" loading acquisitions {100*(x+1)/len(list_of_bearings):.2f} %", end='')
             matlab_file = scipy.io.loadmat(os.path.join(self.rawfilesdir, bearing_file))
-            label = re.findall(r'[A-Z]_\d{2}_\d{1,2}', bearing_label)
+            label = re.findall(r'[A-Z]_\d{1,2}_\d{1}', bearing_label)[0]
             if self.acquisition_maxsize:
                 vibration_data = np.array([elem for singleList in matlab_file[label] for elem in singleList][:self.acquisition_maxsize])
             else:
@@ -217,7 +217,7 @@ class UORED_VAFCLS():
             vibration_data = vibration_data[np.newaxis, :]
             acquisitions = split_acquisition(vibration_data, self.sample_size)
             self.signal.add_acquisitions(bearing_label, acquisitions)
-        print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
+        print(f"  ({np.size(self.signal.labels)} examples) | labels: {np.unique(self.signal.labels)}")
 
     def get_acquisitions(self):
         logging.info(self) # show name of dataset
@@ -227,7 +227,7 @@ class UORED_VAFCLS():
             self.load_acquisitions()
             self.signal.save_cache(self.cache_filepath)
         groups = self.groups()
-        return self.signal_data, self.labels, groups
+        return self.signal, groups
              
     def group_acquisition(self):
         groups = []
