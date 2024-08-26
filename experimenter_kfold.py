@@ -30,7 +30,6 @@ logging.basicConfig(level=logging.INFO, format='%(message)s', handlers=[
 
 # Define the k-fold procedure
 def kfold(datasets, clfmaker, repetitions=3):
-    total = np.array([])
     if isinstance(datasets, Iterable):
         X, y, groups = get_acquisitions(datasets)
         n_folds = 10
@@ -43,12 +42,16 @@ def kfold(datasets, clfmaker, repetitions=3):
         logging.info(datasets)
     logging.info('-----------------------------------------')
     init = time.time()        
+    total = np.array([])
     for i in range(repetitions):
+        #log
         logging.info(f"X.shape {X.shape}")
-        logging.info(f"{i+1}/{repetitions} repetitions: ")
-        accuracies = []
-        accuracies = run_kfold(X, y, groups, n_folds, clfmaker)
-        mean_accuracy = sum(accuracies)/len(accuracies)
+        logging.info(f"{i+1}/{repetitions} repetitions: ")        
+        # running experimenter
+        accuracies = run_kfold(X, y, groups, n_folds, clfmaker)        
+        # get mean accuracy by repetition
+        mean_accuracy = sum(accuracies)/len(accuracies)        
+        # log
         logging.info(f" Mean accuracy: {mean_accuracy}")
         total = np.append(total, mean_accuracy)
     logging.info('-----------------------------------------')
@@ -85,4 +88,4 @@ def experimenter(datasets=datasets, clfmaker=factory, repetitions=1):
 
 # Run the experimenter
 if __name__ == "__main__":
-    experimenter(clfmaker=factory, repetitions=10)
+    experimenter(clfmaker=factory, repetitions=1)
