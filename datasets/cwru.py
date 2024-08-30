@@ -102,28 +102,6 @@ def list_of_bearings_FE():
         ("O.021.FE.@3_3&12000","318.mat"),    
     ]
 
-def list_of_bearings_FEDE():
-    return [
-        ("N.000.NN_0&12000","97.mat"),        ("N.000.NN_1&12000","98.mat"),        ("N.000.NN_2&12000","99.mat"),        ("N.000.NN_3&12000","100.mat"),
-        ("I.007.DE_0&12000","105.mat"),       ("I.007.DE_1&12000","106.mat"),       ("I.007.DE_2&12000","107.mat"),       ("I.007.DE_3&12000","108.mat"),
-        ("I.007.FE_0&12000","278.mat"),       ("I.007.FE_1&12000","279.mat"),       ("I.007.FE_2&12000","280.mat"),       ("I.007.FE_3&12000","281.mat"),    
-        ("B.007.DE_0&12000","118.mat"),       ("B.007.DE_1&12000","119.mat"),       ("B.007.DE_2&12000","120.mat"),       ("B.007.DE_3&12000","121.mat"),
-        ("B.007.FE_0&12000","282.mat"),       ("B.007.FE_1&12000","283.mat"),       ("B.007.FE_2&12000","284.mat"),       ("B.007.FE_3&12000","285.mat"),    
-        ("O.007.DE.@6_0&12000","130.mat"),    ("O.007.DE.@6_1&12000","131.mat"),    ("O.007.DE.@6_2&12000","132.mat"),    ("O.007.DE.@6_3&12000","133.mat"),
-        ("O.007.FE.@6_0&12000","294.mat"),    ("O.007.FE.@6_1&12000","295.mat"),    ("O.007.FE.@6_2&12000","296.mat"),    ("O.007.FE.@6_3&12000","297.mat"),    
-        ("O.007.DE.@3_0&12000","144.mat"),    ("O.007.DE.@3_1&12000","145.mat"),    ("O.007.DE.@3_2&12000","146.mat"),    ("O.007.DE.@3_3&12000","147.mat"),
-        ("O.007.FE.@3_0&12000","298.mat"),    ("O.007.FE.@3_1&12000","299.mat"),    ("O.007.FE.@3_2&12000","300.mat"),    ("O.007.FE.@3_3&12000","301.mat"),    
-        ("O.007.DE.@12_0&12000","156.mat"),   ("O.007.DE.@12_1&12000","158.mat"),   ("O.007.DE.@12_2&12000","159.mat"),   ("O.007.DE.@12_3&12000","160.mat"),
-        ("O.007.FE.@12_0&12000","302.mat"),   ("O.007.FE.@12_1&12000","305.mat"),   ("O.007.FE.@12_2&12000","306.mat"),   ("O.007.FE.@12_3&12000","307.mat"), 
-        ("I.014.DE_0&12000","169.mat"),       ("I.014.DE_1&12000","170.mat"),       ("I.014.DE_2&12000","171.mat"),       ("I.014.DE_3&12000","172.mat"),    
-        ("I.014.FE_0&12000","274.mat"),       ("I.014.FE_1&12000","275.mat"),       ("I.014.FE_2&12000","276.mat"),       ("I.014.FE_3&12000","277.mat"),
-        ("B.014.DE_0&12000","185.mat"),       ("B.014.DE_1&12000","186.mat"),       ("B.014.DE_2&12000","187.mat"),       ("B.014.DE_3&12000","188.mat"),
-        ("B.014.FE_0&12000","286.mat"),       ("B.014.FE_1&12000","287.mat"),       ("B.014.FE_2&12000","288.mat"),       ("B.014.FE_3&12000","289.mat"),
-        ("O.014.DE.@6_0&12000","197.mat"),    ("O.021.DE.@6_0&12000","234.mat"),    ("O.021.DE.@3_1&12000","247.mat"),    ("O.021.DE.@3_2&12000","248.mat"),    
-        ("O.014.FE.@3_0&12000","310.mat"),    ("O.021.FE.@6_0&12000","315.mat"),    ("O.021.FE.@3_1&12000","316.mat"),    ("O.021.FE.@3_2&12000","317.mat"),    
-        ("O.021.DE.@3_3&12000","249.mat"),   ("O.021.FE.@3_3&12000","318.mat"),
-    ]
-
 
 def list_of_bearings_all():
     return list_of_bearings_48k() + list_of_bearings_12k()
@@ -227,13 +205,16 @@ class CWRU():
         full_path = os.path.join(f'{self.rawfilesdir}/{bearing_file}')
         matlab_file = scipy.io.loadmat(full_path)
         keys = re.findall(r'X\d{3}_[A-Z]{2}_time', str(matlab_file.keys()))
+        positions = [k[-7:-5] for k in keys]
+        bearing_position = positions if bearing_label.split('.')[2][:2] == 'NN' else [bearing_label.split('.')[2][:2]]
         for key in keys:
-            if self.acquisition_maxsize:
-                data = matlab_file[key].reshape(1, -1)[:, :self.acquisition_maxsize]
-            else:
-                data = matlab_file[key].reshape(1, -1)
-            acquisitions = split_acquisition(data, self.sample_size)
-            self.signal.add_acquisitions(bearing_label, acquisitions)
+            if key[-7:-5] in bearing_position:
+                if self.acquisition_maxsize:
+                    data = matlab_file[key].reshape(1, -1)[:, :self.acquisition_maxsize]
+                else:
+                    data = matlab_file[key].reshape(1, -1)
+                acquisitions = split_acquisition(data, self.sample_size)
+                self.signal.add_acquisitions(bearing_label, acquisitions)
                     
     def load_acquisitions(self):
         os.path.exists(self.rawfilesdir) or self.download()
@@ -268,18 +249,7 @@ class CWRU():
         groups = []
         for i in self.signal.keys:
             groups = np.append(groups, int(i[-7]) % self.n_folds)
-        return groups
-
-    def group_settings(self):
-        logging.info(' Grouping the data by settings.')
-        groups = []
-        hash = dict()
-        for i in self.signal.keys:
-            load = i[-7]
-            if load not in hash:
-                hash[load] = len(hash)
-            groups = np.append(groups, hash[load])
-        return groups
+        return groups   
 
     def group_severity(self):
         logging.info(' Grouping the data by severity.')
@@ -293,19 +263,7 @@ class CWRU():
             if load_severity not in hash:
                 hash[load_severity] = len(hash)
             groups = np.append(groups, hash[load_severity])
-        return groups
-    
-    def group_sensor_position(self):
-        logging.info(' Grouping the data by accelerometer position: FE, DE, and BA.')
-        self.n_folds = 2
-        groups = []
-        hash = dict()
-        for key in self.signal.acquisition_keys:
-            acc_position = key[-7:-5]
-            if acc_position not in hash:
-                hash[acc_position] = len(hash)
-            groups = np.append(groups, hash[acc_position])
-        return groups
+        return groups       
         
     def groups(self):
-        return self.group_severity()    
+        return self.group_acquisition()    
