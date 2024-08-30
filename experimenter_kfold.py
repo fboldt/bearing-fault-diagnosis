@@ -44,20 +44,16 @@ def kfold(datasets, clfmaker, repetitions=3):
     init = time.time()        
     total = np.array([])
     for i in range(repetitions):
-        #log
         logging.info(f"X.shape {X.shape}")
         logging.info(f"{i+1}/{repetitions} repetitions: ")        
-        # running experimenter
         accuracies = run_kfold(X, y, groups, n_folds, clfmaker)        
-        # get mean accuracy by repetition
         mean_accuracy = sum(accuracies)/len(accuracies)        
-        # log
         logging.info(f" Mean accuracy: {mean_accuracy}")
         total = np.append(total, mean_accuracy)
+    final = time.time()
     logging.info('-----------------------------------------')
     logging.info(f"Total Mean Accuracy: {np.mean(total)}")
     logging.info(f"Standard Deviation: {np.std(total)}")
-    final = time.time()
     logging.info(f'Processing time: {final-init}')
     logging.info('-----------------------------------------')
 
