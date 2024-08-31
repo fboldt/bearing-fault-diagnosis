@@ -62,3 +62,23 @@ To run an experiment, use the provided **experimenter_kfold.py** script.
 
     ```bash
     python experimenter_kfold.py
+
+## Running the Experiment with Docker
+
+To ensure a consistent and reproducible environment for running the experiment, we recommend using Docker. Follow the steps below to build and run the Docker container.
+
+Please ensure that Docker is installed on your machine as a prerequisite before proceeding with the steps below.
+
+**1. Build the Docker Image**
+
+First, navigate to the root directory of the project where the Dockerfile is located. Then, build the Docker image using the following command:
+
+    ```bash
+    sudo docker build -t bearing-diagnosis-framework:latest .
+
+**2. Run the Experiment**
+
+To run the experiment, use the following command. 
+
+    ```bash
+    sudo docker run --gpus all -v ./data_raw:/app/data_raw -it bearing-diagnosis-framework:latest python experimenter_kfold.py
