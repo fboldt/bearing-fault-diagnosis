@@ -205,7 +205,7 @@ class CWRU():
         full_path = os.path.join(f'{self.rawfilesdir}/{bearing_file}')
         matlab_file = scipy.io.loadmat(full_path)
         keys = re.findall(r'X\d{3}_[A-Z]{2}_time', str(matlab_file.keys()))
-        positions = [k[-7:-5] for k in keys]
+        positions = ['FE', 'DE']
         bearing_position = positions if bearing_label.split('.')[2][:2] == 'NN' else [bearing_label.split('.')[2][:2]]
         for key in keys:
             if key[-7:-5] in bearing_position:

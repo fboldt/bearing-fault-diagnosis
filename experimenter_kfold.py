@@ -1,8 +1,8 @@
 from datasets.cwru import CWRU
-from datasets.hust import Hust
-from datasets.mfpt import MFPT
-from datasets.ottawa import Ottawa
-from datasets.paderborn import Paderborn
+# from datasets.hust import Hust
+# from datasets.mfpt import MFPT
+# from datasets.ottawa import Ottawa
+# from datasets.paderborn import Paderborn
 from datasets.uored_vafcls import UORED_VAFCLS
 from utils.acquisition_handler import get_acquisitions
 from collections.abc import Iterable
@@ -16,17 +16,23 @@ from utils.model_validation import run_kfold
 import logging
 from datetime import datetime
 
-# Configure the logger
-os.makedirs('experiments', exist_ok=True)
-current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-os.makedirs('experiments', exist_ok=True)
-log_filename = f"experiments/{current_time}_experiment_log.txt"
+def configure_logger(log_dir='experiments'):
+    """Configures the logger."""
+    os.makedirs(log_dir, exist_ok=True)
+    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_filename = f"{log_dir}/{current_time}_experiment_log.txt"
 
-# Configure the logger
-logging.basicConfig(level=logging.INFO, format='%(message)s', handlers=[
-    logging.FileHandler(log_filename),
-    logging.StreamHandler()
-])
+    logging.basicConfig(level=logging.INFO, format='%(message)s', handlers=[
+        logging.FileHandler(log_filename),
+        logging.StreamHandler()
+    ])
+
+def log_message(message):
+    if isinstance(message, dict):
+        for key, value in message.items():
+            logging.info(f"{key}: {value}")
+    else:
+        logging.info(message)
 
 # Define the k-fold procedure
 def kfold(datasets, clfmaker, repetitions=3):
@@ -39,23 +45,27 @@ def kfold(datasets, clfmaker, repetitions=3):
         signal, groups = datasets.get_acquisitions()
         X, y = signal.data, signal.labels        
         n_folds = datasets.n_folds
-        logging.info(datasets)
-    logging.info('-----------------------------------------')
-    init = time.time()        
-    total = np.array([])
+    
+    log_message(datasets)
+    
+    start_time = time.time()        
+    total_accuracies = np.array([])
     for i in range(repetitions):
-        logging.info(f"X.shape {X.shape}")
-        logging.info(f"{i+1}/{repetitions} repetitions: ")        
+        log_message('--------------------------')
+        log_message({"X.shape": X.shape, f"{i+1} ":repetitions})
+        # run kfold
         accuracies = run_kfold(X, y, groups, n_folds, clfmaker)        
         mean_accuracy = sum(accuracies)/len(accuracies)        
-        logging.info(f" Mean accuracy: {mean_accuracy}")
-        total = np.append(total, mean_accuracy)
-    final = time.time()
-    logging.info('-----------------------------------------')
-    logging.info(f"Total Mean Accuracy: {np.mean(total)}")
-    logging.info(f"Standard Deviation: {np.std(total)}")
-    logging.info(f'Processing time: {final-init}')
-    logging.info('-----------------------------------------')
+        total_accuracies = np.append(total_accuracies, mean_accuracy)
+        log_message({"Mean accuracy": mean_accuracy})
+    
+    end_time = time.time()
+    processing_time = end_time - start_time    
+    log_message({
+        "Total Mean Accuracy": np.mean(total_accuracies),
+        "Standard Deviation": np.std(total_accuracies),
+        "Processing time": processing_time
+    })
 
 
 # Set the debug mode and define the datasets
@@ -64,11 +74,11 @@ datasets = [  # debug mode
     CWRU(config='dbg'),
 ] if debug else [
     CWRU(config='all'),
-    Hust(config='all'),
-    MFPT(config='all'),
-    Ottawa(config='niob'),
-    Paderborn(config='all'),
     UORED_VAFCLS(config='all'),
+    # Hust(config='all'),
+    # MFPT(config='all'),
+    # Ottawa(config='niob'),
+    # Paderborn(config='all'),
 ]
 
 
@@ -84,4 +94,5 @@ def experimenter(datasets=datasets, clfmaker=factory, repetitions=1):
 
 # Run the experimenter
 if __name__ == "__main__":
+    configure_logger()
     experimenter(clfmaker=factory, repetitions=1)
