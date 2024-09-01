@@ -4,6 +4,7 @@ COPY ./check ./check
 COPY ./datasets ./datasets
 COPY ./estimators ./estimators
 COPY ./utils ./utils
+COPY ./experiments ./experiments
 COPY ./requirements.txt .
 COPY ./experimenter_kfold.py .
 RUN pip install --upgrade pip
