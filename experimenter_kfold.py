@@ -1,38 +1,25 @@
-from datasets.cwru import CWRU
-# from datasets.hust import Hust
-# from datasets.mfpt import MFPT
-# from datasets.ottawa import Ottawa
-# from datasets.paderborn import Paderborn
-from datasets.uored_vafcls import UORED_VAFCLS
-from utils.acquisition_handler import get_acquisitions
-from collections.abc import Iterable
 import numpy as np
 import time
 import os
 
+from collections.abc import Iterable
+
+from sklearn.model_selection import StratifiedGroupKFold
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+from datasets.cwru import CWRU
+from datasets.uored_vafcls import UORED_VAFCLS
+# from datasets.hust import Hust
+# from datasets.mfpt import MFPT
+# from datasets.ottawa import Ottawa
+# from datasets.paderborn import Paderborn
+
+from utils.acquisition_handler import get_acquisitions
+from utils.model_training import train_estimator
+from utils.logger import log_message, configure_logger
+
 from estimators.estimator_factory import EstimatorFactory
-from utils.model_validation import run_kfold
 
-import logging
-from datetime import datetime
-
-def configure_logger(log_dir='experiments'):
-    """Configures the logger."""
-    os.makedirs(log_dir, exist_ok=True)
-    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_filename = f"{log_dir}/{current_time}_experiment_log.txt"
-
-    logging.basicConfig(level=logging.INFO, format='%(message)s', handlers=[
-        logging.FileHandler(log_filename),
-        logging.StreamHandler()
-    ])
-
-def log_message(message):
-    if isinstance(message, dict):
-        for key, value in message.items():
-            logging.info(f"{key}: {value}")
-    else:
-        logging.info(message)
 
 # Define the k-fold procedure
 def kfold(datasets, clfmaker, repetitions=3):
@@ -54,10 +41,26 @@ def kfold(datasets, clfmaker, repetitions=3):
         log_message('--------------------------')
         log_message({"X.shape": X.shape, f"{i+1} ":repetitions})
         # run kfold
-        accuracies = run_kfold(X, y, groups, n_folds, clfmaker)        
-        mean_accuracy = sum(accuracies)/len(accuracies)        
-        total_accuracies = np.append(total_accuracies, mean_accuracy)
-        log_message({"Mean accuracy": mean_accuracy})
+        kf = StratifiedGroupKFold(n_splits=n_folds)    
+        accuracies = []    
+        for x, (train_index, test_index) in enumerate(kf.split(X, y, groups)):
+            Xtr, ytr = X[train_index], y[train_index]
+            Xte, yte = X[test_index], y[test_index]        
+            clf = clfmaker.get_estimator()        
+            train_estimator(clf.fit, Xtr, ytr, groups[train_index])        
+            ypr = clf.predict(Xte)        
+            accuracies.append(accuracy_score(yte, ypr))
+        
+            # Logging info
+            labels = list(set(yte))
+            mean_accuracy = sum(accuracies)/len(accuracies)        
+            total_accuracies = np.append(total_accuracies, mean_accuracy)
+
+            # Recording results
+            log_message({f' Fold {x+1} accuracy': accuracies[-1]})
+            log_message(f' {labels}')
+            log_message(confusion_matrix(yte, ypr, labels=labels))
+            log_message({"Mean accuracy": mean_accuracy})
     
     end_time = time.time()
     processing_time = end_time - start_time    
@@ -73,7 +76,7 @@ debug = True
 datasets = [  # debug mode 
     CWRU(config='dbg'),
 ] if debug else [
-    CWRU(config='all'),
+    CWRU(config='48k'),
     UORED_VAFCLS(config='all'),
     # Hust(config='all'),
     # MFPT(config='all'),
