@@ -31,43 +31,68 @@ def bearing_names_dbg():
     "K001", "KA01", "KI01",
 ]
 
-def download_file(url, dirname, dir_rar, bearing):
-    print("Downloading Bearing Data:", bearing)
-    file_name = bearing + ".rar"
-    try:
-        req = urllib.request.Request(url + file_name, method='HEAD')
-        f = urllib.request.urlopen(req)
-        file_size = int(f.headers['Content-Length'])
-        dir_path = os.path.join(dirname, dir_rar, file_name)
-        if not os.path.exists(dir_path):
-            urllib.request.urlretrieve(url + file_name, dir_path)
-            downloaded_file_size = os.stat(dir_path).st_size
-        else:
-            downloaded_file_size = os.stat(dir_path).st_size
-        if file_size != downloaded_file_size:
-            os.remove(dir_path)
-            print("File Size Incorrect. Downloading Again.")
-            download_file(url, dirname, dir_rar, bearing)
-    except Exception as e:
-        print("Error occurs when downloading file: " + str(e))
-        print("Trying do download again")
-        download_file(url, dirname, dir_rar, bearing)
+import requests
+import time
 
+
+def download_file(url, dirname, dir_rar, bearing):    
+    print("\nDownloading Bearing Data:", bearing)
+    file_name = bearing + ".rar"
+    dir_path = os.path.join(dirname, dir_rar, file_name)
+    full_url = url + file_name
+    try:
+        response = requests.get(full_url, stream=True)
+        response.raise_for_status() # check the response
+        
+        # download progress
+        total_size = int(response.headers.get('content-length', 0))
+        chunk_size = 8192
+        progress = 0  
+        
+        with open(dir_path, 'wb') as file:
+            for chunk in response.iter_content(chunk_size=chunk_size):
+                if chunk:
+                    file.write(chunk)
+                progress += len(chunk)
+                done = int(50 * progress / total_size)
+                print(f"\r[{'=' * done}{' ' * (50-done)}] {progress / (1024*1024):.2f}/{total_size / (1024*1024):.2f} MB", end='')
+    
+    except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as e:
+        print(f"Error downloading file: {e}. Trying again...)")
+        time.sleep(5)
+        download_file(url, dirname, dir_rar, bearing)
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+    
 
 def extract_rar(dirname, dir_rar, bearing):
-    print("Extracting Bearing Data:", bearing)
+    print("\nExtracting Bearing Data:", bearing)
     dir_bearing_rar = os.path.join(dirname, dir_rar, bearing + ".rar")
     dir_bearing_data = os.path.join(dirname, bearing)
+    
     if not os.path.exists(dir_bearing_data):
+        os.makedirs(dir_bearing_data)
         file_name = dir_bearing_rar
-        Archive(file_name).extractall(dirname)
+        
+        rf = rarfile.RarFile(file_name)
+        total_files = len(rf.namelist())
+        
+        with rarfile.RarFile(file_name) as rf:
+            for i, member in enumerate(rf.infolist(), 1):
+                rf.extract(member, path=dirname)
+                # Update and display progress
+                done = int(50 * i / total_files)
+                print(f"\r[{'=' * done}{' ' * (50-done)}] {i}/{total_files} files extracted", end='')
+        
         extracted_files_qnt = len([name for name in os.listdir(dir_bearing_data)
                                    if os.path.isfile(os.path.join(dir_bearing_data, name))])
     else:
         extracted_files_qnt = len([name for name in os.listdir(dir_bearing_data)
                    if os.path.isfile(os.path.join(dir_bearing_data, name))])
+    
     rf = rarfile.RarFile(dir_bearing_rar)
     rar_files_qnt = len(rf.namelist())
+    
     if rar_files_qnt != extracted_files_qnt + 1:
         shutil.rmtree(dir_bearing_data)
         print("Extracted Files Incorrect. Extracting Again.")
@@ -111,9 +136,9 @@ class Paderborn():
         self.n_channels = n_channels
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize
-        self.rawfilesdir = "raw_paderborn"
+        self.rawfilesdir = "data_raw/raw_paderborn"
         self.config = config
-        self.url = "http://groups.uni-paderborn.de/kat/BearingDataCenter/"
+        self.url = "https://groups.uni-paderborn.de/kat/BearingDataCenter/"
         self.n_folds = 4
         self.bearing_names = self.get_paderborn_bearings()
         self.n_acquisitions = 2 if self.config == 'dbg' else 20
@@ -169,7 +194,6 @@ class Paderborn():
         """
         Download and extract compressed files from Paderborn website.
         """
-        # Download RAR Files
         url = self.url
         dirname = self.rawfilesdir
         dir_rar = "rar_files"
@@ -179,9 +203,10 @@ class Paderborn():
             os.mkdir(os.path.join(dirname, dir_rar))
         print("Downloading and Extracting RAR files:")
         for bearing in self.bearing_names:
-            # download_file(url, dirname, dir_rar, bearing)
+            download_file(url, dirname, dir_rar, bearing)
             extract_rar(dirname, dir_rar, bearing)
-        print("Dataset Loaded.")
+        shutil.rmtree(os.path.join(dirname,dir_rar)) # remove the rar files
+        print("\nDataset Loaded.")
 
     def load_acquisitions(self):
         """
