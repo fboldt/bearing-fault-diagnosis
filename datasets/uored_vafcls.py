@@ -220,10 +220,11 @@ class UORED_VAFCLS():
         print(f"  ({np.size(self.signal.labels)} examples) | labels: {np.unique(self.signal.labels)}")
 
     def get_acquisitions(self):
-        logging.info(self) # show name of dataset
+        logging.info(self)
         if self.signal.check_is_cached():
             self.signal.load_cache(self.cache_filepath)
         else:
+            os.path.exists(self.rawfilesdir) or self.download()
             self.load_acquisitions()
             self.signal.save_cache(self.cache_filepath)
         groups = self.groups()

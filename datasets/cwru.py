@@ -217,7 +217,6 @@ class CWRU():
                 self.signal.add_acquisitions(bearing_label, acquisitions)
                     
     def load_acquisitions(self):
-        os.path.exists(self.rawfilesdir) or self.download()
         list_of_bearings = eval(f"list_of_bearings_{self.config}()")
         for x, (bearing_label, bearing_file) in enumerate(list_of_bearings):
             print('\r', f" Loading acquisitions {100*(x+1)/len(list_of_bearings):.2f} %", end='')
@@ -225,10 +224,11 @@ class CWRU():
         print(f"  ({np.size(self.signal.labels)} examples) | labels: {np.unique(self.signal.labels)}")
     
     def get_acquisitions(self):
-        logging.info(self) # show name of dataset
+        logging.info(self)
         if self.signal.check_is_cached():
             self.signal.load_cache(self.cache_filepath)
         else:
+            os.path.exists(self.rawfilesdir) or self.download()
             self.load_acquisitions()
             self.signal.save_cache(self.cache_filepath)
         groups = self.groups()        
