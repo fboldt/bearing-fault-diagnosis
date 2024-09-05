@@ -168,9 +168,11 @@ class Ottawa():
     load_acquisitions()
       Extract data from files
     """
+
     def __str__(self):
         return f"Ottawa ({self.config})"
     
+
     def __init__(self, sample_size=4096, acquisition_maxsize=None, config='all'):
         self.config = config
         self.n_channels = 2 # channel 1: vibration data, channel 2: rotational speed data
@@ -181,9 +183,7 @@ class Ottawa():
         self.url="https://prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com/"
         self.n_folds = 4
         self.signal = Signal('Ottawa', self.cache_filepath)
-
         
-
 
     def download(self):
         list_of_bearings = list_of_bearings_all()
@@ -221,6 +221,7 @@ class Ottawa():
             self.signal.add_acquisitions(bl, acquisitions)
         print(f"  ({np.size(self.signal.labels)} examples) | labels: {np.unique(self.signal.labels)}")
 
+
     def get_acquisitions(self):
         logging.info(self)
         if self.signal.check_is_cached():
@@ -232,6 +233,7 @@ class Ottawa():
         groups = self.groups()        
         return self.signal, groups
              
+
     def group_acquisition(self):
         logging.info(' Grouping the data by acquisition.')
         groups = []
@@ -241,6 +243,7 @@ class Ottawa():
                 hash[i] = len(hash)
             groups = np.append(groups, hash[i])
         return groups
+
 
     def groups(self):
         return self.group_acquisition()
