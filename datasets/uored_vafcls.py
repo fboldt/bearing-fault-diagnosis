@@ -124,16 +124,13 @@ def list_of_bearings_developed():
     ("C_16_2&42000", "C_16_2.mat"),  ("C_17_2&42000", "C_17_2.mat"),  ("C_18_2&42000", "C_18_2.mat"),  ("C_19_2&42000", "C_19_2.mat"),  ("C_20_2&42000", "C_20_2.mat")
 ]
 
-def list_of_bearings_mert():
+def list_of_bearings_dbg():
     return [
     ("H_1_0&42000", "H_1_0.mat"),   ("H_2_0&42000", "H_2_0.mat"),   ("H_3_0&42000", "H_3_0.mat"), ("H_4_0&42000", "H_4_0.mat"), ("H_5_0&42000", "H_5_0.mat"), 
     ("I_1_2&42000", "I_1_2.mat"),   ("I_2_2&42000", "I_2_2.mat"),   ("I_3_2&42000", "I_3_2.mat"), ("I_4_2&42000", "I_4_2.mat"), ("I_5_2&42000", "I_5_2.mat"), 
     ("O_6_2&42000", "O_6_2.mat"),   ("O_7_2&42000", "O_7_2.mat"),   ("O_8_2&42000", "O_8_2.mat"), ("O_9_2&42000", "O_9_2.mat"), ("O_10_2&42000", "O_10_2.mat"),
     ("B_11_2&42000", "B_11_2.mat"),  ("B_12_1&42000", "B_12_1.mat"),  ("B_13_2&42000", "B_13_2.mat"), ("B_14_2&42000", "B_14_2.mat"), ("B_15_2&42000", "B_15_2.mat"),
 ]
-
-def list_of_bearings_dbg():
-    return list_of_bearings_mert()
 
 def download_file(url, dirname, bearing):
     print("Downloading Bearing Data:", bearing)   
@@ -193,6 +190,7 @@ class UORED_VAFCLS():
         self.n_folds = 5
         self.signal = Signal('UORED', self.cache_filepath)
 
+
     def download(self):
         dirname = self.rawfilesdir
         if not os.path.exists(dirname):
@@ -200,6 +198,7 @@ class UORED_VAFCLS():
         for _, bearing_file in list_of_bearings_all():
             url = self.url + files_hash()[bearing_file[:-4]]        
             download_file(url, dirname, bearing_file)
+
 
     def load_acquisitions(self):
         """
@@ -219,6 +218,7 @@ class UORED_VAFCLS():
             self.signal.add_acquisitions(bearing_label, acquisitions)
         print(f"  ({np.size(self.signal.labels)} examples) | labels: {np.unique(self.signal.labels)}")
 
+
     def get_acquisitions(self):
         logging.info(self)
         if self.signal.check_is_cached():
@@ -230,6 +230,7 @@ class UORED_VAFCLS():
         groups = self.groups()
         return self.signal, groups
              
+
     def group_acquisition(self):
         groups = []
         hash = dict()
@@ -238,6 +239,7 @@ class UORED_VAFCLS():
                 hash[i] = len(hash)
             groups = np.append(groups, hash[i])
         return groups
+
 
     def groups(self):
         return self.group_acquisition()
