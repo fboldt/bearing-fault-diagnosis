@@ -11,7 +11,7 @@ import logging
 
 from datasets.signal_data import Signal
 from utils.acquisition_handler import split_acquisition
-
+from utils.display import display_progress_bar
 
 def files_hash():
     return {
@@ -124,24 +124,39 @@ def list_of_bearings_niob():
 
 
 def download_file(url, dirname, bearing):
-    print("Downloading Bearing Data:", bearing)   
+    """Função responsável pelo download do arquivo com exibição de progresso."""
+    print("Downloading Bearing Data:", bearing)
     file_name = bearing
     try:
         req = urllib.request.Request(url, method='HEAD')
         f = urllib.request.urlopen(req)
-        file_size = int(f.headers['Content-Length'])
-        dir_path = os.path.join(dirname, file_name)              
+        total_size = int(f.headers['Content-Length'])
+        dir_path = os.path.join(dirname, file_name)
+        
         if not os.path.exists(dir_path):
-            urllib.request.urlretrieve(url, dir_path)
+            with urllib.request.urlopen(url) as response, open(dir_path, 'wb') as out_file:
+                block_size = 8192
+                progress = 0
+                while True:
+                    chunk = response.read(block_size)
+                    if not chunk:
+                        break
+                    progress += len(chunk)
+                    out_file.write(chunk)
+                    display_progress_bar(progress, total_size)  # Chama a função de barra de progresso
+
             downloaded_file_size = os.stat(dir_path).st_size
-            if file_size != downloaded_file_size:
+            if total_size != downloaded_file_size:
                 os.remove(dir_path)
                 download_file(url, dirname, bearing)
+            else:
+                print(' - ok!')
         else:
-            return        
+            print("File already exists.")
+            return
     except Exception as e:
         print("Error occurs when downloading file: " + str(e))
-        print("Trying do download again")
+        print("Trying to download again")
         download_file(url, dirname, bearing)
 
 
