@@ -9,10 +9,10 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 
 from datasets.cwru import CWRU
 from datasets.uored_vafcls import UORED_VAFCLS
-# from datasets.hust import Hust
+from datasets.ottawa import Ottawa
+from datasets.paderborn import Paderborn
+from datasets.hust import Hust
 # from datasets.mfpt import MFPT
-# from datasets.ottawa import Ottawa
-# from datasets.paderborn import Paderborn
 
 from utils.acquisition_handler import get_acquisitions
 from utils.model_training import train_estimator
@@ -33,14 +33,16 @@ def kfold(datasets, clfmaker, repetitions=3):
         X, y = signal.data, signal.labels        
         n_folds = datasets.n_folds
     
-    log_message(datasets)
+    # set the minimum number of fold
+    group_size = np.size(np.unique(groups))
+    n_folds = group_size if n_folds > group_size else n_folds
+    log_message(f' Number of folds: {n_folds}')    
     
     start_time = time.time()        
     total_accuracies = np.array([])
     for i in range(repetitions):
         log_message('--------------------------')
         log_message({"X.shape": X.shape, f"{i+1} ":repetitions})
-        # run kfold
         kf = StratifiedGroupKFold(n_splits=n_folds)    
         accuracies = []    
         for x, (train_index, test_index) in enumerate(kf.split(X, y, groups)):
@@ -62,25 +64,32 @@ def kfold(datasets, clfmaker, repetitions=3):
             log_message(confusion_matrix(yte, ypr, labels=labels))
             log_message({"Mean accuracy": mean_accuracy})
     
+    # processing time
     end_time = time.time()
-    processing_time = end_time - start_time    
+    processing_time = (end_time - start_time)
+    minutes = int((processing_time / 60) % 60)
+    hours = int((processing_time / 60) // 60) 
+    formated_time = f'{minutes}min{int(processing_time % 60)}s' if minutes < 60 else f'{hours}h{minutes}min{int(processing_time%60)}s'   
+    
+    # show and record accuracy and processing time
     log_message({
         "Total Mean Accuracy": np.mean(total_accuracies),
         "Standard Deviation": np.std(total_accuracies),
-        "Processing time": processing_time
+        "Processing time": formated_time
     })
 
 
 # Set the debug mode and define the datasets
 debug = True
 datasets = [  # debug mode 
-    CWRU(config='dbg'),
+    Ottawa(config='all'),
 ] if debug else [
     CWRU(config='48k'),
     UORED_VAFCLS(config='all'),
-    # Hust(config='all'),
+    Ottawa(config='niob'),
+    Paderborn(config='all'),
+    Hust(config='all'),
     # MFPT(config='all'),
-    # Ottawa(config='niob'),
     # Paderborn(config='all'),
 ]
 
