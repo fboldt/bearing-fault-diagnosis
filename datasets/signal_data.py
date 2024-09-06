@@ -39,8 +39,10 @@ class Signal:
             self._data = np.load(f)
             self._labels = np.load(f)
             self._keys = np.load(f)
-    
 
+    def get_num_samples(self):
+        return self._data.shape[0]
+    
     @property
     def data(self):
         return self._data
@@ -52,6 +54,10 @@ class Signal:
     @property
     def keys(self):
         return self._keys
+
+    @property
+    def sample_size(self):
+        return self._data.shape[1]
     
     @property
     def dataset_name(self):
