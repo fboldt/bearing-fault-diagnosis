@@ -9,6 +9,9 @@ import urllib
 import re
 import logging
 
+from utils.acquisition_handler import split_acquisition
+from utils.display import display_progress_bar
+from datasets.signal_data import Signal
 
 def files_hash():
     return {
@@ -191,25 +194,6 @@ def list_of_bearings_ru():
         ('OB802&51200', 'OB802.mat'), ('OB804&51200', 'OB804.mat')
     ]
 
-def list_of_bearings_B5():
-    return [
-        ('N500&51200', 'N500.mat'), ('N502&51200', 'N502.mat'), ('N504&51200', 'N504.mat'),
-        ('B500&51200', 'B500.mat'), ('B502&51200', 'B502.mat'), ('B504&51200', 'B504.mat'),
-        ('I500&51200', 'I500.mat'), ('I502&51200', 'I502.mat'), ('I504&51200', 'I504.mat'),
-        ('O500&51200', 'O500.mat'), ('O502&51200', 'O502.mat'), ('O504&51200', 'O504.mat'),        
-    ]
-
-def list_of_bearings_B6():
-    return [
-        ('N600&51200', 'N600.mat'), ('N602&51200', 'N602.mat'), ('N604&51200', 'N604.mat'),
-        ('B600&51200', 'B600.mat'), ('B602&51200', 'B602.mat'), ('B604&51200', 'B604.mat'),
-        ('I600&51200', 'I600.mat'), ('I602&51200', 'I602.mat'), ('I604&51200', 'I604.mat'),
-        ('O600&51200', 'O600.mat'), ('O602&51200', 'O602.mat'), ('O604&51200', 'O604.mat'),
-    ]
-
-def list_of_bearings_B56():
-    return list_of_bearings_B5() + list_of_bearings_B6()
-
 
 def list_of_bearings_dbg():
     return [
@@ -225,20 +209,34 @@ def download_file(url, dirname, bearing):
     try:
         req = urllib.request.Request(url, method='HEAD')
         f = urllib.request.urlopen(req)
-        file_size = int(f.headers['Content-Length'])
+        total_size = int(f.headers['Content-Length'])
         dir_path = os.path.join(dirname, file_name)              
         if not os.path.exists(dir_path):
-            urllib.request.urlretrieve(url, dir_path)
+            with urllib.request.urlopen(url) as response, open(dir_path, 'wb') as out_file:
+                block_size = 8192
+                progress = 0
+                while True:
+                    chunk = response.read(block_size)
+                    if not chunk:
+                        break
+                    progress += len(chunk)
+                    out_file.write(chunk)
+                    display_progress_bar(progress, total_size)  # Chamada para a função de progresso
             downloaded_file_size = os.stat(dir_path).st_size
-            if file_size != downloaded_file_size:
+            if total_size != downloaded_file_size:
                 os.remove(dir_path)
+                print("Trying to download again")
                 download_file(url, dirname, bearing)
+            else:
+                print(' - ok!')
         else:
+            print("File already exists.")
             return        
     except Exception as e:
         print("Error occurs when downloading file: " + str(e))
-        print("Trying do download again")
+        print("Trying to download again")
         download_file(url, dirname, bearing)
+
 
 class Hust():
     """
@@ -275,40 +273,37 @@ class Hust():
         self.n_channels = n_channels
         self.acquisition_maxsize = acquisition_maxsize
         self.config = config
-        self.rawfilesdir = "raw_hust"
         self.n_folds = 3
+        self.rawfilesdir = "data_raw/raw_hust"
+        self.cache_filepath = f'cache/hust_{self.config}.npy'
+        self.list_of_bearings = eval(f"list_of_bearings_{self.config}()")
         self.accelerometers = ['DE'][:self.n_channels]
-        self.signal_data = np.empty((0, self.sample_size, len(self.accelerometers)))
-        self.labels = []
-        self.keys = []
+        self.signal = Signal('Hust', self.cache_filepath)
 
-        logging.info(f"CWRU ({self.config})")
+        logging.info(f"Hust ({self.config})")
 
 
-    # def __str__(self):
-    #     return f"HUST ({self.config})"      
+    def __str__(self):
+        return f"HUST ({self.config})"      
 
-    def download(self):
-        list_of_bearings = eval("list_of_bearings_"+self.config+"()")
+
+    def download(self, config='all'):
         dirname = self.rawfilesdir
-        if not os.path.exists(dirname):
+        if not os.path.isdir(dirname):
             os.mkdir(dirname)
-        for acquisition in list_of_bearings:
-            url = self.url + files_hash()[acquisition] 
-            files_name = acquisition + '.mat'       
-            download_file(url, dirname, files_name)
+        for key, filename in eval("list_of_bearings_"+config+"()"):
+            url = self.url + files_hash()[key.split('&')[0]] 
+            download_file(url, dirname, filename)
 
 
     def load_acquisitions(self):
         """
         Extracts the acquisitions of each file in the dictionary files_names.
         """
-        cwd = os.getcwd()
-        list_of_bearings = eval(f"list_of_bearings_{self.config}()")
-        for x, bearing in enumerate(list_of_bearings):
-            matlab_file = scipy.io.loadmat(os.path.join(cwd, f'{self.rawfilesdir}/{bearing[1]}'))           
+        for x, bearing in enumerate(self.list_of_bearings):
+            matlab_file = scipy.io.loadmat(os.path.join(self.rawfilesdir,bearing[1]))           
             acquisition = []
-            print('\r', f" loading acquisitions {100*(x+1)/len(list_of_bearings):.2f} %", end='')
+            print('\r', f" loading acquisitions {100*(x+1)/len(self.list_of_bearings):.2f} %", end='')
             if self.acquisition_maxsize:
                 acquisition.append(matlab_file["data"].reshape(1, -1)[0][:self.acquisition_maxsize])
             else:
@@ -316,38 +311,41 @@ class Hust():
             acquisition = np.array(acquisition)
             if len(acquisition.shape)<2 or acquisition.shape[0]<self.n_channels:
                 continue
-            for i in range(acquisition.shape[1]//self.sample_size): 
-                sample = acquisition[:,(i * self.sample_size):((i + 1) * self.sample_size)]
-                self.signal_data = np.append(self.signal_data, np.array([sample.T]), axis=0)
-                label = re.match(r'^[a-zA-Z]+', bearing[0]).group(0) if re.match(r'^[A-Z]+', bearing[0]) else ''
-                self.labels = np.append(self.labels, label)
-                self.keys = np.append(self.keys, bearing[0])
-        print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
+            label = re.match(r'^[a-zA-Z]+', bearing[0]).group(0) if re.match(r'^[A-Z]+', bearing[0]) else ''
+            acquisitions = split_acquisition(acquisition, self.sample_size)
+            self.signal.add_acquisitions(label, acquisitions)
+        print(f"\n  ({np.size(self.signal.labels)} examples) | labels: {np.unique(self.signal.labels)}")
+
 
     def get_acquisitions(self):        
-        if self.cache_file is not None:
-            self.load_cache(self.cache_file)                    
-        if len(self.labels) == 0:
+        logging.info(self)
+        if self.signal.check_is_cached():
+            print('found in cache ')
+            self.signal.load_cache(self.cache_filepath)
+        else:
+            print('not found in cache ')
+            os.path.exists(self.rawfilesdir) or self.download()
             self.load_acquisitions()
+            self.signal.save_cache(self.cache_filepath)
         groups = self.groups()
-        sampling_rate = np.array([int(key.split('&')[1]) for key in self.keys])
-        logging.info(f"Config: {self.config}")     
-        return self.signal_data, self.labels, groups, sampling_rate
+        return self.signal, groups
     
+
     def group_acquisition(self):
         logging.info('Grouping data by acquisition.')
         groups = []
         hash = dict()
-        for i in self.keys:
+        for i in self.signal.keys:
             if i not in hash:
                 hash[i] = len(hash)
             groups = np.append(groups, hash[i])
         return groups
     
+
     def group_load(self):
         logging.info('Grouping data by load condition.')  
         groups = []
-        for i in self.keys:
+        for i in self.signal.keys:
             load = i.split('&')[0][-1]
             groups = np.append(groups, int(load) % self.n_folds)
         return groups
@@ -355,44 +353,11 @@ class Hust():
     def group_bearing_type(self):
         logging.info('Grouping data by bearing type.')  
         groups = []
-        for i in self.keys:
+        for i in self.signal.keys:
             bearing = i.split('&')[0][-3]
             groups = np.append(groups, int(bearing) % self.n_folds)
         return groups
 
     def groups(self):
-        # return self.group_acquisition()
-        return self.group_load()
-        # return self.group_bearing_type()
+        return self.group_acquisition()
     
-    def save_cache(self, filename):
-        with open(filename, 'wb') as f:
-            np.save(f, self.signal_data)
-            np.save(f, self.labels)
-            np.save(f, self.keys)
-            np.save(f, self.config)
-    
-    def load_cache(self, filename):
-        with open(filename, 'rb') as f:
-            self.signal_data = np.load(f)
-            self.labels = np.load(f)
-            self.keys = np.load(f)
-            self.config = np.load(f)
-
-if __name__ == "__main__":
-    config = "all" # "dbg"
-    cache_file = f"cache/hust_{config}.npy"    
-    
-    dataset = Hust(config=config, acquisition_maxsize=21_000)
-    os.path.exists("raw_hust") or dataset.download()    
-    if not os.path.exists(cache_file):
-        dataset.load_acquisitions()
-        dataset.save_cache(cache_file)
-    else:
-        dataset.load_cache(cache_file)
-
-    print("Signal datase shape", dataset.signal_data.shape)
-    labels = list(set(dataset.labels))
-    print("labels", labels, f"({len(labels)})")    
-    keys = list(set(dataset.keys))
-    print("keys", np.array(keys), f"({len(keys)})")
