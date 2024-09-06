@@ -2,17 +2,19 @@
 Class definition of Paderborn Bearing dataset download and acquisitions extraction.
 """
 
-import urllib.request
 import scipy.io
 import numpy as np
 import os
-import urllib
 import rarfile
 import shutil
-import sys
+import logging
+import requests
+import time
+
+from datasets.signal_data import Signal
 
 # Unpack Tools
-from pyunpack import Archive
+# from pyunpack import Archive
 
 def bearing_names_all():
     return [
@@ -30,9 +32,6 @@ def bearing_names_dbg():
     return [
     "K001", "KA01", "KI01",
 ]
-
-import requests
-import time
 
 
 def download_file(url, dirname, dir_rar, bearing):    
@@ -98,6 +97,24 @@ def extract_rar(dirname, dir_rar, bearing):
         print("Extracted Files Incorrect. Extracting Again.")
         extract_rar(dirname, dir_rar, bearing)
 
+def get_list_of_bearings(n_acquisitions, config):
+        bearing_names = eval("bearing_names_"+config+"()")
+        settings_files = ["N15_M07_F10_", "N09_M07_F10_", "N15_M01_F10_", "N15_M07_F04_"]
+        list_of_bearings = []
+        for bearing in bearing_names:
+            if bearing[1] == '0':
+                tp = "Normal_"
+            elif bearing[1] == 'A':
+                tp = "OR_"
+            else:
+                tp = "IR_"
+            for idx, setting in enumerate(settings_files):
+                for i in range(1, n_acquisitions + 1):
+                    key = tp + bearing + "_" + str(idx) + "_" + str(i)
+                    list_of_bearings.append((key, os.path.join(bearing, setting + bearing +
+                                                   "_" + str(i) + ".mat")))
+        return list_of_bearings
+
 
 class Paderborn():
     """
@@ -122,29 +139,26 @@ class Paderborn():
     load_acquisitions()
       Extract vibration data from files
     """
-
-    def get_paderborn_bearings(self):
-        # Get bearings to be considered to be
-        bearing_names = eval("bearing_names_"+self.config+"()")
-        return bearing_names
+    
 
     def __str__(self):
         return f"Paderborn ({self.config})"
 
+
     def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, config="all"):
-        self.sample_rate = 64000 # Hz
+        self.sample_rate = 64000
         self.n_channels = n_channels
         self.sample_size = sample_size
         self.acquisition_maxsize = acquisition_maxsize
         self.rawfilesdir = "data_raw/raw_paderborn"
         self.config = config
+        self.cache_filepath = f'cache/paderborn_{self.config}.npy'
         self.url = "https://groups.uni-paderborn.de/kat/BearingDataCenter/"
         self.n_folds = 4
-        self.bearing_names = self.get_paderborn_bearings()
         self.n_acquisitions = 2 if self.config == 'dbg' else 20
-        self.signal_data = np.empty((0, self.sample_size, self.n_channels))
-        self.labels = []
-        self.keys = []
+        self.list_of_bearings = get_list_of_bearings(self.n_acquisitions, self.config)
+        self.signal = Signal('paderborn', self.cache_filepath)
+        self.n_samples_acquisition = None
 
         """
         Associate each file name to a bearing condition in a Python dictionary. 
@@ -173,22 +187,7 @@ class Paderborn():
         algarism representing the setting and end with an algarism representing 
         the sample sequential. All features are separated by an underscore character.
         """
-        settings_files = ["N15_M07_F10_", "N09_M07_F10_", "N15_M01_F10_", "N15_M07_F04_"]
-        # Files Paths ordered by bearings
-        files_path = {}
-        for bearing in self.bearing_names:
-            if bearing[1] == '0':
-                tp = "Normal_"
-            elif bearing[1] == 'A':
-                tp = "OR_"
-            else:
-                tp = "IR_"
-            for idx, setting in enumerate(settings_files):
-                for i in range(1, self.n_acquisitions + 1):
-                    key = tp + bearing + "_" + str(idx) + "_" + str(i)
-                    files_path[key] = os.path.join(self.rawfilesdir, bearing, setting + bearing +
-                                                   "_" + str(i) + ".mat")
-        self.files = files_path
+        
 
     def download(self):
         """
@@ -202,25 +201,22 @@ class Paderborn():
         if not os.path.isdir(os.path.join(dirname, dir_rar)):
             os.mkdir(os.path.join(dirname, dir_rar))
         print("Downloading and Extracting RAR files:")
-        for bearing in self.bearing_names:
+        for bearing in eval(f'bearing_names_{self.config}()'):
             download_file(url, dirname, dir_rar, bearing)
             extract_rar(dirname, dir_rar, bearing)
-        shutil.rmtree(os.path.join(dirname,dir_rar)) # remove the rar files
+        shutil.rmtree(os.path.join(dirname,dir_rar)) # remove the rar files 
         print("\nDataset Loaded.")
+
 
     def load_acquisitions(self):
         """
         Extracts the acquisitions of each file in the dictionary files_names.
         """
-        cwd = os.getcwd()
-        for x, key in enumerate(self.files):
-            # print("Loading vibration data:", key)
-            print('\r', f" loading acquisitions {100*(x+1)/len(self.files):.2f} %", end='')
-            matlab_file = scipy.io.loadmat(os.path.join(cwd, self.files[key]))
-            if len(self.files[key]) > 41:
-                vibration_data_raw = matlab_file[self.files[key][19:38]]['Y'][0][0][0][6][2]
-            else:
-                vibration_data_raw = matlab_file[self.files[key][19:37]]['Y'][0][0][0][6][2]
+        for x, (key, filename_path) in enumerate(self.list_of_bearings):
+            print('\r', f" Loading acquisitions {100*(x+1)/len(self.list_of_bearings):.2f} %", end='')
+            matlab_file = scipy.io.loadmat(os.path.join(self.rawfilesdir, filename_path))
+            bearing_label = os.path.splitext(os.path.split(filename_path)[-1])[0]
+            vibration_data_raw = matlab_file[bearing_label]['Y'][0][0][0][6][2]
             if self.acquisition_maxsize:
                 vibration_data = vibration_data_raw[0][:self.acquisition_maxsize]
             else:
@@ -231,46 +227,52 @@ class Paderborn():
                 for j in range(self.n_channels):
                     sample[:,j] = vibration_data[(i * self.sample_size):((i + 1) * self.sample_size)]
                 sample = np.array([sample]).reshape(1, -1, self.n_channels)
-                self.signal_data = np.append(self.signal_data, sample, axis=0)
-                self.labels = np.append(self.labels, key[0])
-                self.keys = np.append(self.keys, key)
-        print(f"  ({len(self.labels)} examples) | labels: {set(self.labels)}")
+                self.signal.add_acquisitions(key, sample)
+        print(f"  ({np.size(self.signal.labels)} examples) | labels: {np.unique(self.signal.labels)}")
+
 
     def get_acquisitions(self):
-        if len(self.labels) == 0:
+        logging.info(self)
+        if self.signal.check_is_cached():
+            self.signal.load_cache(self.cache_filepath)
+        else:
+            os.path.exists(self.rawfilesdir) or self.download()
             self.load_acquisitions()
+            self.signal.save_cache(self.cache_filepath)
         groups = self.groups()
-        return self.signal_data, self.labels, groups
+        return self.signal, groups
+    
                  
     def group_acquisition(self):
         groups = []
         hash = dict()
-        for i in self.keys:
+        for i in self.signal.keys:
             if i not in hash:
                 hash[i] = len(hash)
             groups = np.append(groups, hash[i])
         return groups
+    
 
-    def groups(self):
-        return self.group_acquisition()
-
+    """
     def group_settings(self):
         groups = []
-        for i in range(len(self.bearing_names)):
+        for i in range(len(self.list_of_bearings)):
             for k in range(4): # Number of Settings - 4
                 for j in range(self.n_samples_acquisition*self.n_acquisitions):
                     groups = np.append(groups, k)
         return groups
-
-    def group_bearings(self):
-        if len(self.signal_data) == 0:
+    """
+    
+    """
+    def group_bearings(self):        
+        if not self.signal.check_is_cached:
             self.load_acquisitions()
         groups = []
         n_keys_bearings = 1
         n_normal = 1
         n_outer = 1
         n_inner = 1
-        for key in self.keys:
+        for key in self.signal.keys:
             if key[0] == 'N':
                 groups = np.append(groups, n_normal % self.n_folds)
             if key[0] == 'O':
@@ -289,23 +291,32 @@ class Paderborn():
                 n_inner = n_inner + 1
                 n_keys_bearings = 1
         return groups
+    """
 
 
-if __name__ == "__main__":
-    config = "dbg" # "all" # "reduced"
-    cache_name = f"paderborn_{config}.npy"
-    
-    dataset = Paderborn(config='dbg', acquisition_maxsize=21_000)
-    os.path.exists("raw_paderborn") or dataset.download()
+    def group_settings(self):
+        logging.info(' Grouping the data by settings.')
+        groups = []
+        hash = dict()
+        for key in self.signal.keys:
+            setting = key[:11]
+            if setting not in hash:
+                hash[setting] = len(hash)
+            groups = np.append(groups, hash[setting])
+        return groups
 
-    if not os.path.exists(cache_name):
-        dataset.load_acquisitions()
-        dataset.save_cache(cache_name)
-    else:
-        dataset.load_cache(cache_name)    
-    
-    print("Signal datase shape", dataset.signal_data.shape)
-    labels = list(set(dataset.labels))
-    print("labels", labels, f"({len(labels)})")
-    keys = list(set(dataset.keys))
-    print("keys", np.array(keys), f"({len(keys)})")
+
+    def group_bearings(self):
+        logging.info(' Grouping the data by bearing.')
+        groups = []
+        hash = dict()
+        for key in self.signal.keys:
+            id = key.split('_')[1]
+            if id not in hash:
+                hash[id] = len(hash)
+            groups = np.append(groups, hash[id])
+        return groups
+
+
+    def groups(self):
+        return self.group_bearings()
