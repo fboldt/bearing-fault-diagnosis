@@ -1,56 +1,72 @@
+import os
+import copy
+
 from datasets.cwru import CWRU
 from datasets.hust import Hust
-from datasets.mfpt import MFPT
+# from datasets.mfpt import MFPT
 from datasets.ottawa import Ottawa
 from datasets.paderborn import Paderborn
 from datasets.uored_vafcls import UORED_VAFCLS
-from estimators.cnn1d import CNN1D
+from estimators.estimator_factory import EstimatorFactory
 from sklearn.metrics import accuracy_score, confusion_matrix
 from experimenter_kfold import train_estimator
 from utils.acquisition_handler import get_acquisitions
-import copy
 
-def cross_dataset(sources, targets, clf=CNN1D()):
+from utils.logger import configure_logger, log_message
+
+def cross_dataset(sources, target, clf):
+    log_message('Sources:')
+    for source in sources:
+        log_message(f' {source}')    
     clf = copy.copy(clf)
-    print("loading sources acquisitions...")
+    print(" loading sources acquisitions...")
     Xtr, ytr, groups = get_acquisitions(sources)
-    print("training estimator...")
+    print(" training estimator...")
     train_estimator(clf.fit, Xtr, ytr, groups)
-    print("loading target acquisitions...")
-    Xte, yte, _ = get_acquisitions(targets)
-    print("inferencing predictions...")
-    ypr = clf.predict(Xte)
-    print(f"Accuracy {accuracy_score(yte, ypr)}")
-    labels = list(set(yte))
-    print(f" {labels}")
-    print(confusion_matrix(yte, ypr, labels=labels))
+    
+    log_message(f'Target:')
+    log_message(f' {target[0]}')
+    print(" loading target acquisitions...")
+    for t in target:
+        print(t)
+        Xte, yte, _ = get_acquisitions([t])
+        print(" inferencing predictions...")
+        ypr = clf.predict(Xte)
+        print(f"Accuracy {accuracy_score(yte, ypr)}")
+        labels = list(set(yte))
+        print(f" {labels}")
+        print(confusion_matrix(yte, ypr, labels=labels))
 
-debug = True
+paderborn_config = os.getenv('PADERBORN_CONFIG', 'artificial')
+hust_config = os.getenv('HUST_CONFIG', '6204,6205,6206,6207,6208')
+list_hust_config = hust_config.split(',')
 
 datasets = [
-    # PHM(config="motor_tr", acquisition_maxsize=64_000)
-    CWRU48k(config='dbg', acquisition_maxsize=21_000),
-    MFPT(config='dbg', acquisition_maxsize=21_000),
-    Hust(config='dbg', acquisition_maxsize=21_000),
-    # Ottawa(config='dbg', acquisition_maxsize=21_000),
-    # Paderborn(config='dbg', acquisition_maxsize=21_000),
-    # UORED_VAFCLS(config='dbg', acquisition_maxsize=21_000),
-] if debug else [
-    CWRU48k(config='all'),
-    Hust(config='all'),
-    MFPT(config='all'),
-    Ottawa(config='all'),
-    Paderborn(config='all'),
-    UORED_VAFCLS(config='all'),
+    Paderborn(config=paderborn_config),
+    Hust(config=list_hust_config[0]),
+    Hust(config=list_hust_config[1]),
+    Hust(config=list_hust_config[2]),
+    Hust(config=list_hust_config[3]),
+    Hust(config=list_hust_config[4]),
+    CWRU(config='FE'),
+    CWRU(config='DE'),
 ]
 
-sources = datasets[:-1]
-target = list(set(datasets) - set(sources))
+# sources = datasets[:-1]
+# target = list(set(datasets) - set(sources))
+sources = [datasets[0]]
+target = datasets[1:]
 
-def experimenter(sources=sources, target=target, clf=CNN1D()):
+# Initialize the estimator factory
+factory = EstimatorFactory()
+factory.set_estimator('cnn1d')
+
+
+def experimenter(sources=sources, target=target, clf=factory):
     print("cross dataset")
     cross_dataset(sources, target, clf=clf)
 
 if __name__ == "__main__":
-    experimenter(clf=CNN1D(epochs=20))
+    configure_logger()
+    experimenter(clf=factory.get_estimator())
     
