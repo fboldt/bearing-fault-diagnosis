@@ -2,3 +2,4 @@ imblearn
 scikit_learn
 scipy
 rarfile
+PyWavelets
