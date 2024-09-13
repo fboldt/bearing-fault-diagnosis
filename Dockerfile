@@ -7,6 +7,7 @@ COPY ./utils ./utils
 COPY ./experiments ./experiments
 COPY ./requirements.txt .
 COPY ./experimenter_kfold.py .
+COPY ./experimenter_cross_dataset.py .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt -v
 # CMD [ "python", "experimenter_kfold.py" ]
