@@ -23,15 +23,32 @@ def bearing_names_all():
     "KI01", "KI03", "KI04", "KI05", "KI07", "KI08", "KI14", "KI16", "KI17", "KI18", "KI21", 
 ]
 
-def bearing_names_reduced():
+def bearing_names_reference():
     return [
-    "K002", "KA03", "KI03",
-]
+        "K001", "K002", "K003", "K004", "K005", "K006",
+    ]
+
+def bearing_names_artificial():
+    return bearing_names_reference() + [
+        "KA01", "KA03", "KA05", "KA06", "KA07", "KA09", "KI01", "KI03", "KI05", "KI07", "KI08"
+    ]
+
+def bearing_names_real():
+    return bearing_names_reference() + [
+        "KA04", "KA15", "KA16", "KA22", "KA30", "KI04", "KI14", "KI16", "KI17", "KI18", "KI21"
+    ]
 
 def bearing_names_dbg():
     return [
-    "K001", "KA01", "KI01",
+    "K001", "KA01", "KI16",
 ]
+
+def manufacturers(): 
+    return {
+        "K001": "IBU", "K002": "IBU", "K003": "IBU", "K004": "IBU", "K005": "IBU", "K006": "IBU", 
+        "KA01": "MTK", "KA03": "MTK", "KA04": "FAG", "KA05": "IBU", "KA06": "IBU", "KA07": "IBU", "KA09": "IBU", "KA15": "FAG", "KA16": "MTK", "KA22": "IBU", "KA30": "MTK", 
+        "KI01": "MTK", "KA03": "MTK", "KI03": "MTK", "KI04": "MTK", "KI05": "IBU", "KI07": "IBU", "KI08": "IBU", "KI14": "MTK", "KI16": "FAG", "KI17": "MTK", "KI18": "MTK", "KI21": "FAG", 
+    }
 
 
 def download_file(url, dirname, dir_rar, bearing):    
@@ -145,7 +162,7 @@ class Paderborn():
         return f"Paderborn ({self.config})"
 
 
-    def __init__(self, sample_size=8400, n_channels=1, acquisition_maxsize=None, config="all"):
+    def __init__(self, sample_size=4096, n_channels=1, acquisition_maxsize=None, config="all"):
         self.sample_rate = 64000
         self.n_channels = n_channels
         self.sample_size = sample_size
@@ -154,7 +171,7 @@ class Paderborn():
         self.config = config
         self.cache_filepath = f'cache/paderborn_{self.config}.npy'
         self.url = "https://groups.uni-paderborn.de/kat/BearingDataCenter/"
-        self.n_folds = 4
+        self.n_folds = 2
         self.n_acquisitions = 2 if self.config == 'dbg' else 20
         self.list_of_bearings = get_list_of_bearings(self.n_acquisitions, self.config)
         self.signal = Signal('paderborn', self.cache_filepath)
@@ -189,7 +206,7 @@ class Paderborn():
         """
         
 
-    def download(self):
+    def download(self, config='all'):
         """
         Download and extract compressed files from Paderborn website.
         """
@@ -201,7 +218,7 @@ class Paderborn():
         if not os.path.isdir(os.path.join(dirname, dir_rar)):
             os.mkdir(os.path.join(dirname, dir_rar))
         print("Downloading and Extracting RAR files:")
-        for bearing in eval(f'bearing_names_{self.config}()'):
+        for bearing in eval(f'bearing_names_{config}()'):
             download_file(url, dirname, dir_rar, bearing)
             extract_rar(dirname, dir_rar, bearing)
         shutil.rmtree(os.path.join(dirname,dir_rar)) # remove the rar files 
@@ -244,6 +261,7 @@ class Paderborn():
     
                  
     def group_acquisition(self):
+        logging.info(' Grouping the data by acquisition.')
         groups = []
         hash = dict()
         for i in self.signal.keys:
@@ -252,47 +270,16 @@ class Paderborn():
             groups = np.append(groups, hash[i])
         return groups
     
-
-    """
-    def group_settings(self):
+    def group_manufacturer(self):
+        logging.info(' Grouping the data by manufacturer.')
         groups = []
-        for i in range(len(self.list_of_bearings)):
-            for k in range(4): # Number of Settings - 4
-                for j in range(self.n_samples_acquisition*self.n_acquisitions):
-                    groups = np.append(groups, k)
-        return groups
-    """
-    
-    """
-    def group_bearings(self):        
-        if not self.signal.check_is_cached:
-            self.load_acquisitions()
-        groups = []
-        n_keys_bearings = 1
-        n_normal = 1
-        n_outer = 1
-        n_inner = 1
+        hash = dict()
         for key in self.signal.keys:
-            if key[0] == 'N':
-                groups = np.append(groups, n_normal % self.n_folds)
-            if key[0] == 'O':
-                groups = np.append(groups, n_outer % self.n_folds)
-            if key[0] == 'I':
-                groups = np.append(groups, n_inner % self.n_folds)
-            if n_keys_bearings < 4 * self.n_acquisitions*self.n_samples_acquisition:
-                n_keys_bearings = n_keys_bearings + 1
-            elif key[0] == 'N':
-                n_normal = n_normal + 1
-                n_keys_bearings = 1
-            elif key[0] == 'O':
-                n_outer = n_outer + 1
-                n_keys_bearings = 1
-            elif key[0] == 'I':
-                n_inner = n_inner + 1
-                n_keys_bearings = 1
+            manufacturer = manufacturers()[key.split('_')[1]]
+            if manufacturer not in hash:    
+                hash[manufacturer] = len(hash)
+            groups = np.append(groups, hash[manufacturer])
         return groups
-    """
-
 
     def group_settings(self):
         logging.info(' Grouping the data by settings.')
@@ -319,4 +306,4 @@ class Paderborn():
 
 
     def groups(self):
-        return self.group_bearings()
+        return self.group_manufacturer()

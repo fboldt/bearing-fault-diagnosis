@@ -164,6 +164,21 @@ def list_of_bearings_niob():
         ('O804&51200', 'O804.mat')
     ]
 
+def list_of_bearings_6204():
+    return [b for b in list_of_bearings_niob() if b[0][1]=='4']
+
+def list_of_bearings_6205():
+    return [b for b in list_of_bearings_niob() if b[0][1]=='5']
+
+def list_of_bearings_6206():
+    return [b for b in list_of_bearings_niob() if b[0][1]=='6']
+
+def list_of_bearings_6207():
+    return [b for b in list_of_bearings_niob() if b[0][1]=='7']
+
+def list_of_bearings_6208():
+    return [b for b in list_of_bearings_niob() if b[0][1]=='8']
+
 # The OB400 was removed. It does not have the run-up feature.
 def list_of_bearings_ru():
     return [
@@ -360,4 +375,4 @@ class Hust():
 
     def groups(self):
         return self.group_acquisition()
-    
+       
