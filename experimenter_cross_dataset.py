@@ -39,27 +39,21 @@ def cross_dataset(sources, target, clf):
 
 paderborn_config = os.getenv('PADERBORN_CONFIG', 'artificial')
 hust_config = os.getenv('HUST_CONFIG', '6204,6205,6206,6207,6208')
+estimator = os.getenv('ESTIMATOR', 'cnn1d')
 list_hust_config = hust_config.split(',')
 
 datasets = [
-    Paderborn(config=paderborn_config),
-    Hust(config=list_hust_config[0]),
-    Hust(config=list_hust_config[1]),
-    Hust(config=list_hust_config[2]),
-    Hust(config=list_hust_config[3]),
-    Hust(config=list_hust_config[4]),
+    Paderborn(config=paderborn_config),    
     CWRU(config='FE'),
     CWRU(config='DE'),
 ]
 
-# sources = datasets[:-1]
-# target = list(set(datasets) - set(sources))
-sources = [datasets[0]]
-target = datasets[1:]
+sources = datasets[:-1]
+target = list(set(datasets) - set(sources))
 
 # Initialize the estimator factory
 factory = EstimatorFactory()
-factory.set_estimator('cnn1d')
+factory.set_estimator(estimator)
 
 
 def experimenter(sources=sources, target=target, clf=factory):
